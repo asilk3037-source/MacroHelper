@@ -1,0 +1,158 @@
+<UserControl x:Class="MacroHelper.UI.Views.IntegracoesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <UserControl.RenderTransform>
+        <TranslateTransform x:Name="PageSlide"/>
+    </UserControl.RenderTransform>
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard><Storyboard>
+                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.22"/>
+            </Storyboard></BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <Grid>
+        <Grid Panel.ZIndex="10">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding MostrarFormulario}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <Border Background="#80000000"/>
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Width="440" Background="{DynamicResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="14">
+                <StackPanel Margin="28,24">
+                    <Grid Margin="0,0,0,20">
+                        <TextBlock Text="Webhook" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        <Button HorizontalAlignment="Right" Style="{StaticResource ButtonIconOnly}"
+                                Command="{Binding CancelarFormCommand}" Width="28" Height="28">
+                            <TextBlock Text="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                       Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Button>
+                    </Grid>
+                    <Border Background="{DynamicResource DangerBgBrush}" BorderBrush="{DynamicResource DangerBrush}"
+                            BorderThickness="1" CornerRadius="8" Padding="12,9" Margin="0,0,0,14"
+                            Visibility="{Binding FormErro, Converter={StaticResource NullToVis}}">
+                        <TextBlock Text="{Binding FormErro}" Foreground="{DynamicResource DangerBrush}" FontSize="12"/>
+                    </Border>
+                    <TextBlock Text="NOME *" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                    <TextBox Style="{StaticResource InputStyle}" Height="42" Text="{Binding FormNome, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,14"/>
+                    <TextBlock Text="URL *" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                    <TextBox Style="{StaticResource InputStyle}" Height="42" Text="{Binding FormUrl, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,14"/>
+                    <TextBlock Text="EVENTO" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                    <ComboBox ItemsSource="{Binding EventosDisponiveis}" SelectedItem="{Binding FormEvento}"
+                              Height="42" Margin="0,0,0,14" FontSize="13"
+                              Background="{DynamicResource InputBgBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                              BorderBrush="{DynamicResource InputBorderBrush}"/>
+                    <CheckBox Content="Ativo" IsChecked="{Binding FormAtivo}" Margin="0,0,0,20"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Cancelar" Style="{StaticResource ButtonSecondary}" Command="{Binding CancelarFormCommand}" Margin="0,0,10,0" Width="100"/>
+                        <Button Style="{StaticResource ButtonPrimary}" Command="{Binding SalvarWebhookCommand}" Width="130">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" FontSize="13" VerticalAlignment="Center" Margin="0,0,7,0"/>
+                                <TextBlock Text="Salvar" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <DockPanel>
+            <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceBrush}"
+                    BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}" Padding="28,18">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Integrações" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        <TextBlock Text="Webhooks disparados em eventos do sistema"
+                                   FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Style="{StaticResource ButtonPrimary}" Command="{Binding NovoWebhookCommand}" Height="38" Padding="16,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="13" VerticalAlignment="Center" Margin="0,0,7,0"/>
+                            <TextBlock Text="Novo Webhook" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <Border DockPanel.Dock="Top" Margin="28,12,28,0" CornerRadius="8" Padding="14,10"
+                    Visibility="{Binding Mensagem, Converter={StaticResource NullToVis}}">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{DynamicResource SuccessBgBrush}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource SuccessBrush}"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                    </Style>
+                </Border.Style>
+                <TextBlock Text="{Binding Mensagem}" FontSize="12" Foreground="{DynamicResource SuccessBrush}"/>
+            </Border>
+
+            <ScrollViewer Padding="28,14,28,28">
+                <ItemsControl ItemsSource="{Binding Webhooks}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
+                                    BorderThickness="1" CornerRadius="10" Padding="16,14" Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{Binding Nome}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                        <TextBlock Text="{Binding Url}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
+                                        <TextBlock FontSize="10" Foreground="{DynamicResource TextMutedBrush}" Margin="0,4,0,0">
+                                            <Run Text="{Binding Evento}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <Button Content="Testar" Style="{StaticResource ButtonSecondary}" Height="30" Padding="10,0" Margin="0,0,8,0"
+                                                CommandParameter="{Binding}"
+                                                Command="{Binding DataContext.TestarWebhookCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                        <Button Style="{StaticResource ButtonIconOnly}" CommandParameter="{Binding}"
+                                                Command="{Binding DataContext.EditarWebhookCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                Width="30" Height="30" Margin="0,0,2,0">
+                                            <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                        </Button>
+                                        <Button Width="30" Height="30" BorderThickness="0" Background="Transparent" Cursor="Hand"
+                                                CommandParameter="{Binding}"
+                                                Command="{Binding DataContext.ExcluirWebhookCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="bg" CornerRadius="6" Background="{TemplateBinding Background}">
+                                                        <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="bg" Property="Background" Value="{DynamicResource DangerBgBrush}"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
+    </Grid>
+</UserControl>

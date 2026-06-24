@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MacroHelper.Mobile.Pages.CategoriasPage"
+             Title="Categorias"
+             BackgroundColor="{AppThemeBinding Light=#f5f5f0, Dark=#0f0f14}">
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header com botão novo -->
+        <Border Grid.Row="0" Margin="16,12,16,0"
+                BackgroundColor="{AppThemeBinding Light=#ffffff, Dark=#1a1a24}"
+                Stroke="{AppThemeBinding Light=#e0ded8, Dark=#2e2e3e}" StrokeThickness="1" Padding="16,14">
+            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Grid.Column="0">
+                    <Label Text="Categorias" FontSize="17" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#1a1a18, Dark=#f0effa}"/>
+                    <Label Text="Organize suas macros" FontSize="12"
+                           TextColor="{AppThemeBinding Light=#9b9b96, Dark=#5e5c7a}"/>
+                </VerticalStackLayout>
+                <Button Grid.Column="1" Text="+ Nova" Command="{Binding NovaCategoriaCommand}"
+                        BackgroundColor="#6C5CE7" TextColor="White" CornerRadius="9"
+                        FontSize="12" Padding="14,8" HeightRequest="36"/>
+            </Grid>
+        </Border>
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Categorias}"
+                        Margin="16,12,16,16">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout Spacing="4" Margin="0,0,0,12">
+                        <!-- Categoria raiz -->
+                        <Border BackgroundColor="{AppThemeBinding Light=#ffffff, Dark=#1a1a24}"
+                                Stroke="{AppThemeBinding Light=#e0ded8, Dark=#2e2e3e}"
+                                StrokeThickness="1" Padding="16,12">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Border Grid.Column="0" BackgroundColor="#1e1c35"
+                                        WidthRequest="40" HeightRequest="40" Margin="0,0,12,0">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                                    <Label Text="{Binding Nome, Converter={StaticResource PrimeiraLetraConverter}}"
+                                           FontSize="16" FontAttributes="Bold" TextColor="#b0a8ff"
+                                           HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{Binding Nome}" FontSize="14" FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light=#1a1a18, Dark=#f0effa}"/>
+                                    <Label FontSize="11" TextColor="{AppThemeBinding Light=#9b9b96, Dark=#5e5c7a}">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0} subcategorias">
+                                                <Binding Path="Subcategorias.Count"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                </VerticalStackLayout>
+                                <StackLayout Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                                    <Button Text="Editar" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditarCommand}"
+                                            CommandParameter="{Binding}"
+                                            BackgroundColor="{AppThemeBinding Light=#f0eee8, Dark=#1e1e2a}"
+                                            TextColor="{AppThemeBinding Light=#6b6b66, Dark=#9896b8}"
+                                            CornerRadius="8" FontSize="11" HeightRequest="34" Padding="10,0"/>
+                                    <Button Text="Excluir" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ExcluirCommand}"
+                                            CommandParameter="{Binding}"
+                                            BackgroundColor="#2a1010" TextColor="#f87171"
+                                            CornerRadius="8" FontSize="11" HeightRequest="34" Padding="10,0"/>
+                                </StackLayout>
+                            </Grid>
+                        </Border>
+                        <!-- Subcategorias -->
+                        <CollectionView ItemsSource="{Binding Subcategorias}" Margin="24,0,0,0">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="0,0,0,4"
+                                            BackgroundColor="{AppThemeBinding Light=#fafaf8, Dark=#161622}"
+                                            Stroke="{AppThemeBinding Light=#edecea, Dark=#252535}"
+                                            StrokeThickness="1" Padding="14,10">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="9"/></Border.StrokeShape>
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <Label Grid.Column="0" Text="↳" FontSize="13"
+                                                   TextColor="{AppThemeBinding Light=#9b9b96, Dark=#5e5c7a}"
+                                                   Margin="0,0,8,0" VerticalOptions="Center"/>
+                                            <Label Grid.Column="1" Text="{Binding Nome}"
+                                                   TextColor="{AppThemeBinding Light=#1a1a18, Dark=#f0effa}"
+                                                   FontSize="13" VerticalOptions="Center"/>
+                                            <Button Grid.Column="2" Text="Editar"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditarCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    BackgroundColor="Transparent"
+                                                    TextColor="{AppThemeBinding Light=#9b9b96, Dark=#5e5c7a}"
+                                                    FontSize="11" HeightRequest="30" Padding="8,0"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

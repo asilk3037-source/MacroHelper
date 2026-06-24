@@ -1,0 +1,31 @@
+## .NET / Visual Studio
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## Publish output / installers
+publish/
+*.msi
+
+## Test results
+TestResults/
+
+## Logs
+*.log
+
+## Local SQLite db files (vestigial / dev only)
+*.db
+*.db-shm
+*.db-wal
+
+## Session/credential files that may exist locally during dev/testing
+session.dat
+
+## OS files
+Thumbs.db
+.DS_Store
+
+## Local Claude Code settings (machine-specific, not part of the project)
+.claude/

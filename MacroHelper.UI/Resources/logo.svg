@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#6C5CE7"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#A78BFA"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+  <!-- Fundo arredondado -->
+  <rect width="200" height="200" rx="44" fill="url(#g1)"/>
+  <!-- Brilho sutil no topo -->
+  <rect width="200" height="100" rx="44" fill="white" opacity="0.06"/>
+  <!-- Letra S -->
+  <text x="34" y="138" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="96" font-weight="700" fill="white" opacity="0.95">S</text>
+  <!-- Letra K deslocada -->
+  <text x="102" y="138" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="96" font-weight="700" fill="white" opacity="0.70">K</text>
+  <!-- Ponto decorativo -->
+  <circle cx="170" cy="148" r="8" fill="white" opacity="0.5"/>
+</svg>

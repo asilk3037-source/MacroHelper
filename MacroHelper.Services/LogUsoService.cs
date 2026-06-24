@@ -1,0 +1,89 @@
+using MacroHelper.Core.Entities;
+using MacroHelper.Data.Repositories;
+using System.Runtime.InteropServices;
+using System.Text;
+
+namespace MacroHelper.Services;
+
+public class LogUsoService
+{
+    private readonly LogUsoRepository _repo;
+    private readonly WebhookService?  _webhookService;
+    public LogUsoService(LogUsoRepository repo, WebhookService? webhookService = null)
+    {
+        _repo = repo;
+        _webhookService = webhookService;
+    }
+
+    // Estimativa: usuário digitaria a uma média de 200 caracteres/minuto; a inserção da macro leva ~2s.
+    private const double CHARS_POR_MINUTO_DIGITANDO = 200.0;
+    private const double SEGUNDOS_POR_INSERCAO       = 2.0;
+
+    public async Task RegistrarAsync(int? macroId, string titulo, string atalho, int? usuarioId, int caracteres = 0)
+    {
+        var app = ObterAplicativoAtivo();
+        await _repo.RegistrarAsync(new LogUso
+        {
+            MacroId = macroId, MacroTitulo = titulo,
+            MacroAtalho = atalho, Aplicativo = app, UsuarioId = usuarioId,
+            Caracteres = caracteres
+        });
+
+        if (_webhookService != null)
+            await _webhookService.DispararAsync(EventosWebhook.MacroUsada, new { titulo, atalho, usuarioId });
+    }
+
+    public async Task<IEnumerable<LogUso>> ObterRecentesAsync(int limite = 200)
+        => await _repo.GetRecentesAsync(limite);
+
+    public async Task<IEnumerable<LogUso>> ObterPorPeriodoAsync(DateTime de, DateTime ate)
+        => await _repo.GetByPeriodoAsync(de, ate);
+
+    public async Task<int> TotalHojeAsync() => await _repo.GetTotalHojeAsync();
+
+    public async Task<IEnumerable<(string Titulo, string Atalho, int Total)>> ObterTopMacrosAsync(DateTime de, DateTime ate, int limite = 10)
+        => await _repo.GetTopMacrosAsync(de, ate, limite);
+
+    public async Task<IEnumerable<(DateTime Dia, int Total)>> ObterUsoPorDiaAsync(DateTime de, DateTime ate)
+        => await _repo.GetUsoPorDiaAsync(de, ate);
+
+    public async Task<IEnumerable<(int? UsuarioId, string UsuarioNome, int Total)>> ObterTopUsuariosAsync(DateTime de, DateTime ate, int limite = 10)
+        => await _repo.GetTopUsuariosAsync(de, ate, limite);
+
+    /// <summary>Agrega em LogUsoResumo e remove da tabela de detalhe os registros anteriores à data informada.</summary>
+    public async Task<int> ArquivarAntigosAsync(DateTime antesDe) => await _repo.ArquivarAnterioresAsync(antesDe);
+
+    public async Task<IEnumerable<(string AnoMes, int Total)>> ObterResumoArquivadoAsync()
+        => await _repo.GetResumoArquivadoAsync();
+
+    /// <summary>Estima o tempo economizado (em minutos) com base nos caracteres inseridos via macro no período.</summary>
+    public async Task<double> EstimarMinutosEconomizadosAsync(DateTime de, DateTime ate)
+    {
+        var registros = (await _repo.GetByPeriodoAsync(de, ate)).ToList();
+        var totalChars = registros.Sum(r => r.Caracteres);
+        var minutosDigitacao = totalChars / CHARS_POR_MINUTO_DIGITANDO;
+        var minutosGastos    = registros.Count * (SEGUNDOS_POR_INSERCAO / 60.0);
+        return Math.Max(0, minutosDigitacao - minutosGastos);
+    }
+
+    private static string ObterAplicativoAtivo()
+    {
+#if WINDOWS
+        try
+        {
+            var hwnd = GetForegroundWindow();
+            var buf  = new StringBuilder(256);
+            GetWindowText(hwnd, buf, 256);
+            return buf.Length > 0 ? buf.ToString() : "Desconhecido";
+        }
+        catch { return "Desconhecido"; }
+#else
+        return "API";
+#endif
+    }
+
+#if WINDOWS
+    [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
+    [DllImport("user32.dll")] private static extern int GetWindowText(IntPtr h, StringBuilder t, int c);
+#endif
+}

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MacroHelper.Mobile.Pages.MacroFormPage"
+             Title="{Binding Titulo2}"
+             BackgroundColor="{AppThemeBinding Light=#f5f5f0, Dark=#0f0f14}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="IA" Command="{Binding AbrirIACommand}"/>
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="*,Auto">
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20,16" Spacing="0">
+
+                <!-- Erro -->
+                <Border BackgroundColor="#2a1010" Stroke="#f87171" StrokeThickness="1"
+                        Padding="14,10" Margin="0,0,0,16"
+                        IsVisible="{Binding Erro, Converter={StaticResource NotEmptyConverter}}">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                    <Label Text="{Binding Erro}" TextColor="#f87171" FontSize="13"/>
+                </Border>
+
+                <!-- ATALHO -->
+                <Label Text="ATALHO *" TextColor="#8886a8" FontSize="11" FontAttributes="Bold" Margin="0,0,0,6"/>
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,0,0,4">
+                    <Border Grid.Column="0"
+                            BackgroundColor="{AppThemeBinding Light=#ffffff, Dark=#1a1a24}"
+                            Stroke="{AppThemeBinding Light=#e0ded8, Dark=#2e2e3e}" StrokeThickness="1"
+                            Padding="4,0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Entry Text="{Binding Atalho}" Placeholder="ex: chamado-recebido"
+                               PlaceholderColor="#5e5c7a"
+                               TextColor="{AppThemeBinding Light=#1a1a18, Dark=#b0a8ff}"
+                               BackgroundColor="Transparent" FontFamily="Courier New"/>
+                    </Border>
+                    <Button Grid.Column="1" Text="IA" Command="{Binding SugerirAtalhoCommand}"
+                            BackgroundColor="#1e1c35" TextColor="#a29bfe"
+                            CornerRadius="10" HeightRequest="46" WidthRequest="46"
+                            ToolTipProperties.Text="Sugerir atalho com IA"/>
+                </Grid>
+                <Label Text="Será convertido para minúsculas-com-hifens"
+                       FontSize="10" TextColor="#5e5c7a" Margin="0,0,0,16"/>
+
+                <!-- TÍTULO -->
+                <Label Text="TÍTULO *" TextColor="#8886a8" FontSize="11" FontAttributes="Bold" Margin="0,0,0,6"/>
+                <Border BackgroundColor="{AppThemeBinding Light=#ffffff, Dark=#1a1a24}"
+                        Stroke="{AppThemeBinding Light=#e0ded8, Dark=#2e2e3e}" StrokeThickness="1"
+                        Padding="4,0" Margin="0,0,0,16">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <Entry Text="{Binding Titulo}" Placeholder="Nome da macro"
+                           PlaceholderColor="#5e5c7a"
+                           TextColor="{AppThemeBinding Light=#1a1a18, Dark=#f0effa}"
+                           BackgroundColor="Transparent"/>
+                </Border>
+
+                <!-- CATEGORIA -->
+                <Label Text="CATEGORIA" TextColor="#8886a8" FontSize="11" FontAttributes="Bold" Margin="0,0,0,6"/>
+                <Border BackgroundColor="{AppThemeBinding Light=#ffffff, Dark=#1a1a24}"
+                        Stroke="{AppThemeBinding Light=#e0ded8, Dark=#2e2e3e}" StrokeThickness="1"
+                        Padding="4,0" Margin="0,0,0,16">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <Picker ItemsSource="{Binding Categorias}"
+                            SelectedItem="{Binding CategoriaSelecionada}"
+                            ItemDisplayBinding="{Binding Nome}"
+                            Title="Selecione uma categoria"
+                            TitleColor="#5e5c7a"
+                            TextColor="{AppThemeBinding Light=#1a1a18, Dark=#f0effa}"
+                            BackgroundColor="Transparent"/>
+                </Border>
+
+                <!-- CONTEÚDO -->
+                <Label Text="CONTEÚDO *" TextColor="#8886a8" FontSize="11" FontAttributes="Bold" Margin="0,0,0,6"/>
+                <Border BackgroundColor="{AppThemeBinding Light=#ffffff, Dark=#1a1a24}"
+                        Stroke="{AppThemeBinding Light=#e0ded8, Dark=#2e2e3e}" StrokeThickness="1"
+                        Padding="4,4" Margin="0,0,0,6">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <Editor Text="{Binding Conteudo}" MinimumHeightRequest="160"
+                            Placeholder="Digite o texto completo da macro..."
+                            PlaceholderColor="#5e5c7a"
+                            TextColor="{AppThemeBinding Light=#1a1a18, Dark=#f0effa}"
+                            BackgroundColor="Transparent" Margin="8,4"/>
+                </Border>
+
+                <!-- Botões de ajustar tom -->
+                <Label Text="Ajustar tom com IA:" TextColor="#8886a8" FontSize="11" Margin="0,4,0,6"/>
+                <FlexLayout Wrap="Wrap" Direction="Row" Gap="8" Margin="0,0,0,20">
+                    <Button Text="Formal" Command="{Binding AjustarTomCommand}"
+                            CommandParameter="formal"
+                            BackgroundColor="{AppThemeBinding Light=#f0eee8, Dark=#1e1e2a}"
+                            TextColor="{AppThemeBinding Light=#6b6b66, Dark=#9896b8}"
+                            FontSize="12" CornerRadius="8" Padding="12,6" HeightRequest="34"/>
+                    <Button Text="Informal" Command="{Binding AjustarTomCommand}"
+                            CommandParameter="informal"
+                            BackgroundColor="{AppThemeBinding Light=#f0eee8, Dark=#1e1e2a}"
+                            TextColor="{AppThemeBinding Light=#6b6b66, Dark=#9896b8}"
+                            FontSize="12" CornerRadius="8" Padding="12,6" HeightRequest="34"/>
+                    <Button Text="Curto" Command="{Binding AjustarTomCommand}"
+                            CommandParameter="curto"
+                            BackgroundColor="{AppThemeBinding Light=#f0eee8, Dark=#1e1e2a}"
+                            TextColor="{AppThemeBinding Light=#6b6b66, Dark=#9896b8}"
+                            FontSize="12" CornerRadius="8" Padding="12,6" HeightRequest="34"/>
+                    <Button Text="Empático" Command="{Binding AjustarTomCommand}"
+                            CommandParameter="empatico"
+                            BackgroundColor="{AppThemeBinding Light=#f0eee8, Dark=#1e1e2a}"
+                            TextColor="{AppThemeBinding Light=#6b6b66, Dark=#9896b8}"
+                            FontSize="12" CornerRadius="8" Padding="12,6" HeightRequest="34"/>
+                </FlexLayout>
+
+                <!-- Toggle ativo -->
+                <Grid ColumnDefinitions="*,Auto"
+                      BackgroundColor="{AppThemeBinding Light=#ffffff, Dark=#1a1a24}"
+                      Padding="16,14">
+                    <VerticalStackLayout Grid.Column="0">
+                        <Label Text="Macro ativa" FontSize="14" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#1a1a18, Dark=#f0effa}"/>
+                        <Label Text="Macros inativas não aparecem nas sugestões"
+                               FontSize="11" TextColor="#8886a8"/>
+                    </VerticalStackLayout>
+                    <Switch Grid.Column="1" IsToggled="{Binding Ativo}"
+                            OnColor="#6C5CE7" VerticalOptions="Center"/>
+                </Grid>
+
+                <!-- Painel IA para gerar conteúdo -->
+                <Border BackgroundColor="#1e1c35" Stroke="#6C5CE7" StrokeThickness="1.5"
+                        Padding="18,16" Margin="0,16,0,0"
+                        IsVisible="{Binding MostrarIA}">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="Gerar com IA"
+                                   FontSize="15" FontAttributes="Bold" TextColor="#f0effa"/>
+                            <Button Grid.Column="1" Text="X" Command="{Binding FecharIACommand}"
+                                    BackgroundColor="Transparent" TextColor="#5e5c7a"
+                                    FontSize="16" Padding="0" HeightRequest="32" WidthRequest="32"/>
+                        </Grid>
+                        <Label Text="Descreva o que a macro deve fazer:"
+                               FontSize="12" TextColor="#9896b8"/>
+                        <Border BackgroundColor="#0f0f14" Stroke="#2e2e3e" StrokeThickness="1" Padding="4,0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                            <Editor Text="{Binding DescricaoIA}"
+                                    MinimumHeightRequest="80"
+                                    Placeholder="Ex: resposta para cliente que reclamou de atraso, tom empático"
+                                    PlaceholderColor="#5e5c7a" TextColor="#f0effa"
+                                    BackgroundColor="Transparent" Margin="8,4"/>
+                        </Border>
+                        <Button Text="{Binding GerandoIA, Converter={StaticResource LoadingConverter},
+                                        ConverterParameter='Gerar conteúdo|Gerando...'}"
+                                Command="{Binding GerarComIACommand}"
+                                BackgroundColor="#6C5CE7" TextColor="White"
+                                FontAttributes="Bold" CornerRadius="10" HeightRequest="46"/>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Botões de ação fixos no rodapé -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,2*" ColumnSpacing="12"
+              Padding="20,12,20,24"
+              BackgroundColor="{AppThemeBinding Light=#ffffff, Dark=#1a1a24}">
+            <Border Grid.ColumnSpan="2" HeightRequest="1"
+                    BackgroundColor="{AppThemeBinding Light=#e0ded8, Dark=#2e2e3e}"
+                    VerticalOptions="Start" Margin="-20,-12,-20,0"/>
+            <Button Grid.Column="0" Text="Cancelar" Command="{Binding CancelarCommand}"
+                    BackgroundColor="Transparent"
+                    BorderColor="{AppThemeBinding Light=#e0ded8, Dark=#2e2e3e}"
+                    BorderWidth="1"
+                    TextColor="{AppThemeBinding Light=#6b6b66, Dark=#9896b8}"
+                    CornerRadius="12" HeightRequest="50"/>
+            <Button Grid.Column="1"
+                    Text="{Binding Salvando, Converter={StaticResource LoadingConverter},
+                           ConverterParameter='Salvar macro|Salvando...'}"
+                    Command="{Binding SalvarCommand}"
+                    BackgroundColor="#6C5CE7" TextColor="White"
+                    FontAttributes="Bold" CornerRadius="12" HeightRequest="50"/>
+        </Grid>
+    </Grid>
+</ContentPage>

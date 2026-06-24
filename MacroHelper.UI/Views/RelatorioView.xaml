@@ -1,0 +1,502 @@
+<UserControl x:Class="MacroHelper.UI.Views.RelatorioView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <UserControl.RenderTransform>
+        <TranslateTransform x:Name="PageSlide"/>
+    </UserControl.RenderTransform>
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard><Storyboard>
+                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.22"/>
+                <DoubleAnimation Storyboard.TargetName="PageSlide" Storyboard.TargetProperty="Y" From="10" To="0" Duration="0:0:0.22">
+                    <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            </Storyboard></BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <DockPanel>
+        <!-- Header -->
+        <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceBrush}"
+                BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}"
+                Padding="28,18">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Relatório de Uso" FontSize="20" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    <TextBlock Text="Histórico de macros inseridas e aplicativos utilizados"
+                               FontSize="12" Foreground="{DynamicResource TextMutedBrush}"
+                               Margin="0,2,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Style="{StaticResource ButtonSecondary}"
+                            Command="{Binding ExportarCsvCommand}"
+                            Height="38" Padding="14,0" Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE898;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                       VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="CSV" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource ButtonSecondary}"
+                            Command="{Binding ExportarRtfCommand}"
+                            Height="38" Padding="14,0" Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                       VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="Word (RTF)" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource ButtonSecondary}"
+                            Command="{Binding ExportarHtmlParaPdfCommand}"
+                            Height="38" Padding="14,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xEA90;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                       VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="PDF" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Totalizadores -->
+        <Border DockPanel.Dock="Top" Padding="28,16,28,0" Background="{DynamicResource BackgroundBrush}">
+            <StackPanel Orientation="Horizontal">
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="10"
+                        Padding="20,16" Margin="0,0,12,0" MinWidth="160">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="9"
+                                Background="{DynamicResource AccentLightBrush}" Margin="0,0,14,0">
+                            <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       Foreground="{DynamicResource AccentBrush}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="HOJE" FontSize="10" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,2"/>
+                            <TextBlock Text="{Binding TotalHoje}" FontSize="26" FontWeight="Bold"
+                                       Foreground="{DynamicResource AccentBrush}" LineHeight="28"/>
+                            <TextBlock Text="macros" FontSize="11"
+                                       Foreground="{DynamicResource TextMutedBrush}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="10"
+                        Padding="20,16" Margin="0,0,12,0" MinWidth="160">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="9"
+                                Background="{DynamicResource SurfaceElevatedBrush}" Margin="0,0,14,0">
+                            <TextBlock Text="&#xE9D2;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="PERÍODO" FontSize="10" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,2"/>
+                            <TextBlock Text="{Binding TotalGeral}" FontSize="26" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" LineHeight="28"/>
+                            <TextBlock Text="no filtro" FontSize="11"
+                                       Foreground="{DynamicResource TextMutedBrush}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="10"
+                        Padding="20,16" MinWidth="160">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="9"
+                                Background="{DynamicResource SuccessBgBrush}" Margin="0,0,14,0">
+                            <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       Foreground="{DynamicResource SuccessBrush}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="TEMPO ECONOMIZADO" FontSize="10" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,2"/>
+                            <TextBlock Text="{Binding MinutosEconomizados}" FontSize="26" FontWeight="Bold"
+                                       Foreground="{DynamicResource SuccessBrush}" LineHeight="28"/>
+                            <TextBlock Text="estimado" FontSize="11"
+                                       Foreground="{DynamicResource TextMutedBrush}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- Ranking + Gráfico de uso por dia -->
+        <Border DockPanel.Dock="Top" Padding="28,16,28,0" Background="{DynamicResource BackgroundBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Ranking -->
+                <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="10" Padding="20,16" Margin="0,0,12,0">
+                    <StackPanel>
+                        <TextBlock Text="Top macros mais usadas" FontSize="13" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                        <ItemsControl ItemsSource="{Binding Ranking}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Titulo}" FontSize="12" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock FontFamily="Consolas" FontSize="10"
+                                                       Foreground="{DynamicResource TextMutedBrush}">
+                                                <Run Text="/"/><Run Text="{Binding Atalho, Mode=OneWay}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <Border Grid.Column="1" Background="{DynamicResource AccentLightBrush}"
+                                                CornerRadius="4" Padding="8,3" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Total}" FontSize="11" FontWeight="Bold"
+                                                       Foreground="{DynamicResource AccentTextBrush}"/>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="Nenhum dado no período." FontSize="12"
+                                   Foreground="{DynamicResource TextMutedBrush}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Ranking.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Gráfico de barras por dia -->
+                <Border Grid.Column="1" Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="10" Padding="20,16" Margin="12,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Uso por dia" FontSize="13" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding UsoPorDia}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Height="140"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Width="34" Margin="3,0" VerticalAlignment="Bottom">
+                                            <TextBlock Text="{Binding Total}" FontSize="9" HorizontalAlignment="Center"
+                                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,2"/>
+                                            <Border Height="{Binding AlturaBarra}" CornerRadius="3,3,0,0"
+                                                    Background="{DynamicResource AccentBrush}" VerticalAlignment="Bottom"/>
+                                            <TextBlock Text="{Binding Dia, StringFormat=dd/MM}" FontSize="8"
+                                                       HorizontalAlignment="Center"
+                                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                        <TextBlock Text="Nenhum dado no período." FontSize="12"
+                                   Foreground="{DynamicResource TextMutedBrush}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding UsoPorDia.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Filtros -->
+        <Border DockPanel.Dock="Top" Padding="28,12,28,14" Background="{DynamicResource BackgroundBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="160"/>
+                    <ColumnDefinition Width="160"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" BorderBrush="{DynamicResource InputBorderBrush}"
+                        BorderThickness="1" CornerRadius="8"
+                        Background="{DynamicResource InputBgBrush}"
+                        Height="40" Margin="0,0,10,0">
+                    <Grid>
+                        <TextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets"
+                                   FontSize="13" Margin="11,0,0,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource TextMutedBrush}"/>
+                        <TextBox Background="Transparent" BorderThickness="0"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 FontSize="12" Padding="34,0,10,0"
+                                 VerticalContentAlignment="Center"
+                                 Text="{Binding Busca, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+                </Border>
+                <DatePicker Grid.Column="1"
+                            SelectedDate="{Binding DataInicio}"
+                            Height="40" Margin="0,0,10,0"
+                            FontSize="12"
+                            Background="{DynamicResource InputBgBrush}"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
+                            BorderBrush="{DynamicResource InputBorderBrush}"/>
+                <DatePicker Grid.Column="2"
+                            SelectedDate="{Binding DataFim}"
+                            Height="40"
+                            FontSize="12"
+                            Background="{DynamicResource InputBgBrush}"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
+                            BorderBrush="{DynamicResource InputBorderBrush}"/>
+            </Grid>
+        </Border>
+
+        <!-- Toast -->
+        <Border DockPanel.Dock="Top" Margin="28,0,28,10" CornerRadius="8" Padding="14,10"
+                Background="{DynamicResource SuccessBgBrush}"
+                BorderBrush="{DynamicResource SuccessBrush}" BorderThickness="1"
+                Visibility="{Binding Mensagem, Converter={StaticResource NullToVis}}">
+            <TextBlock Text="{Binding Mensagem}" FontSize="12"
+                       Foreground="{DynamicResource SuccessBrush}"/>
+        </Border>
+
+        <!-- Top usuários + Auditoria (admin) -->
+        <Border DockPanel.Dock="Top" Padding="28,0,28,0" Background="{DynamicResource BackgroundBrush}">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsAdmin}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="10" Padding="20,16" Margin="0,0,12,0">
+                    <StackPanel>
+                        <TextBlock Text="Top usuários" FontSize="13" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                        <ItemsControl ItemsSource="{Binding RankingUsuarios}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding UsuarioNome}" FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                        <Border Grid.Column="1" Background="{DynamicResource AccentLightBrush}"
+                                                CornerRadius="4" Padding="8,3">
+                                            <TextBlock Text="{Binding Total}" FontSize="11" FontWeight="Bold"
+                                                       Foreground="{DynamicResource AccentTextBrush}"/>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="10" Padding="20,16" Margin="12,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Auditoria recente" FontSize="13" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                        <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding Auditoria}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,0,0,8">
+                                            <TextBlock FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}">
+                                                <Run Text="{Binding UsuarioNome, Mode=OneWay}" FontWeight="SemiBold"/>
+                                                <Run Text=" "/>
+                                                <Run Text="{Binding Acao, Mode=OneWay}"/>
+                                                <Run Text=" "/>
+                                                <Run Text="{Binding Entidade, Mode=OneWay}"/>
+                                            </TextBlock>
+                                            <TextBlock FontSize="10" Foreground="{DynamicResource TextMutedBrush}">
+                                                <Run Text="{Binding Data, StringFormat=dd/MM/yyyy HH:mm, Mode=OneWay}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Tabela -->
+        <Border Margin="28,0,28,28" CornerRadius="10"
+                Background="{DynamicResource SurfaceBrush}"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                ClipToBounds="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Background="{DynamicResource TableHeaderBgBrush}"
+                        BorderThickness="0,0,0,1"
+                        BorderBrush="{DynamicResource BorderBrush}" Padding="16,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="110"/>
+                            <ColumnDefinition Width="220"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="DATA / HORA" FontSize="10"
+                                   FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}"/>
+                        <TextBlock Grid.Column="1" Text="MACRO" FontSize="10"
+                                   FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}"/>
+                        <TextBlock Grid.Column="2" Text="ATALHO" FontSize="10"
+                                   FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}"/>
+                        <TextBlock Grid.Column="3" Text="APLICATIVO" FontSize="10"
+                                   FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}"/>
+                    </Grid>
+                </Border>
+
+                <ScrollViewer Grid.Row="1">
+                    <ItemsControl ItemsSource="{Binding Registros}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="16,10"
+                                        BorderThickness="0,0,0,1"
+                                        BorderBrush="{DynamicResource BorderLightBrush}">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background"
+                                                            Value="{DynamicResource TableRowHoverBrush}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="130"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="110"/>
+                                            <ColumnDefinition Width="220"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="{Binding DataUso, StringFormat=dd/MM/yyyy}"
+                                                       FontSize="12" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                            <TextBlock Text="{Binding DataUso, StringFormat=HH:mm:ss}"
+                                                       FontSize="10"
+                                                       Foreground="{DynamicResource TextMutedBrush}"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="{Binding MacroTitulo}"
+                                                   FontSize="12"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <Border Grid.Column="2" VerticalAlignment="Center"
+                                                Background="{DynamicResource AccentLightBrush}"
+                                                CornerRadius="4" Padding="6,2">
+                                            <TextBlock Text="{Binding MacroAtalho}"
+                                                       FontFamily="Consolas" FontSize="10"
+                                                       Foreground="{DynamicResource AccentTextBrush}"/>
+                                        </Border>
+                                        <TextBlock Grid.Column="3" Text="{Binding Aplicativo}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- Empty state -->
+                <Border Grid.Row="1" Padding="40">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Registros.Count}" Value="0">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Border Width="56" Height="56" CornerRadius="14"
+                                Background="{DynamicResource SurfaceElevatedBrush}"
+                                HorizontalAlignment="Center" Margin="0,0,0,16">
+                            <TextBlock Text="&#xE9D2;" FontFamily="Segoe MDL2 Assets" FontSize="26"
+                                       Foreground="{DynamicResource TextMutedBrush}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Nenhum uso registrado no período"
+                                   FontSize="14" FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        <TextBlock Text="Use macros com /atalho em qualquer aplicativo para registrar aqui."
+                                   FontSize="12" HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   Margin="0,6,0,0" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+    </DockPanel>
+</UserControl>

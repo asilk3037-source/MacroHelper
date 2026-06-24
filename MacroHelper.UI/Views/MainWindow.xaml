@@ -1,0 +1,343 @@
+<Window x:Class="MacroHelper.UI.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:MacroHelper.UI.ViewModels"
+        xmlns:views="clr-namespace:MacroHelper.UI.Views"
+        xmlns:conv="clr-namespace:MacroHelper.UI.Converters"
+        Title="SK MacroHelper" Height="720" Width="1140" xml:lang="pt-BR"
+        MinHeight="580" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BackgroundBrush}"
+        WindowStyle="None" AllowsTransparency="True"
+        Activated="Window_Activated">
+
+    <Window.Resources>
+        <conv:KioskSidebarWidthConverter x:Key="KioskSidebarWidthConverter"/>
+
+        <!-- Estilo de nav item reutilizável -->
+        <Style x:Key="NavItem" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,1"/>
+            <Setter Property="Foreground" Value="{DynamicResource SidebarTextBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="bg" CornerRadius="7"
+                                    Background="{TemplateBinding Background}" Margin="4,0"/>
+                            <Border x:Name="accentBar" Width="3" HorizontalAlignment="Left"
+                                    CornerRadius="0,2,2,0" Background="Transparent"/>
+                            <StackPanel Orientation="Horizontal" Margin="20,0,10,0">
+                                <TextBlock x:Name="icon"
+                                           FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                           VerticalAlignment="Center" Margin="0,0,10,0"
+                                           Text="{TemplateBinding Tag}"
+                                           Foreground="{TemplateBinding Foreground}"/>
+                                <ContentPresenter VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bg" Property="Background"
+                                        Value="{DynamicResource SidebarItemHoverBrush}"/>
+                                <Setter TargetName="icon" Property="Foreground"
+                                        Value="{DynamicResource TextSecondaryBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Template de item de nav dinâmico, consumido pelos ItemsControl ligados a NavGeral/NavEquipe/NavSistema -->
+        <DataTemplate x:Key="NavItemTemplate" DataType="{x:Type vm:NavItem}">
+            <Button Tag="{Binding Icone}" Command="{Binding Comando}"
+                    Visibility="{Binding Visivel, Converter={StaticResource BoolToVis}}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Ativo}" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource SidebarItemActiveBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <TextBlock Text="{Binding Label}" FontSize="12" FontWeight="SemiBold">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{DynamicResource SidebarTextBrush}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Ativo}" Value="True">
+                                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Button>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Border CornerRadius="12" ClipToBounds="True">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="32" ShadowDepth="0" Opacity="0.4" Color="Black"/>
+        </Border.Effect>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding ModoKiosk, Converter={StaticResource KioskSidebarWidthConverter}}"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ══════════════ SIDEBAR (recolhida a 0 no modo totem) ══════════════ -->
+            <Border Grid.Column="0" Background="{DynamicResource SidebarBrush}"
+                    BorderThickness="0,0,1,0" BorderBrush="{DynamicResource BorderLightBrush}"
+                    ClipToBounds="True">
+                <DockPanel>
+
+                    <!-- Logo -->
+                    <Border DockPanel.Dock="Top" Padding="18,20,18,14">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="34" Height="34" CornerRadius="8" Margin="0,0,11,0"
+                                    Background="{DynamicResource AccentBrush}">
+                                <TextBlock Text="SK" FontSize="13" FontWeight="Bold"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="MacroHelper" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                <TextBlock Text="by Aline Martins" FontSize="9"
+                                           Foreground="{DynamicResource TextMutedBrush}" Margin="0,1,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Status -->
+                    <Border DockPanel.Dock="Top" Padding="14,0,14,12">
+                        <Border Padding="10,7" CornerRadius="7"
+                                Background="{DynamicResource SidebarItemHoverBrush}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- Dot pulsando -->
+                                <Ellipse Grid.Column="0" x:Name="StatusDot" Width="6" Height="6"
+                                         Fill="{DynamicResource SuccessBrush}" VerticalAlignment="Center">
+                                    <Ellipse.Triggers>
+                                        <EventTrigger RoutedEvent="Loaded">
+                                            <BeginStoryboard>
+                                                <Storyboard RepeatBehavior="Forever">
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                        From="1" To="0.25" Duration="0:0:1.2" AutoReverse="True">
+                                                        <DoubleAnimation.EasingFunction>
+                                                            <SineEase EasingMode="EaseInOut"/>
+                                                        </DoubleAnimation.EasingFunction>
+                                                    </DoubleAnimation>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Ellipse.Triggers>
+                                </Ellipse>
+                                <TextBlock Grid.Column="1" Margin="8,0,0,0" FontSize="10"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource SidebarTextBrush}"
+                                           Text="Hook ativo"/>
+                                <TextBlock Grid.Column="2" FontSize="9"
+                                           Foreground="{DynamicResource TextMutedBrush}"
+                                           VerticalAlignment="Center">
+                                    <Run Text="{Binding TotalMacros, Mode=OneWay}"/>
+                                    <Run Text=" macros"/>
+                                </TextBlock>
+                            </Grid>
+                        </Border>
+                    </Border>
+
+                    <Border DockPanel.Dock="Top" Height="1"
+                            Background="{DynamicResource BorderLightBrush}" Margin="14,0,14,4"/>
+
+                    <!-- ── NAV (gerada dinamicamente a partir de NavGeral/NavEquipe/NavSistema) ── -->
+                    <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto" Height="380">
+                        <StackPanel>
+                            <TextBlock Text="GERAL" FontSize="9" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextMutedBrush}" Margin="20,6,0,4"/>
+                            <ItemsControl ItemsSource="{Binding NavGeral}" ItemTemplate="{StaticResource NavItemTemplate}" Margin="4,0"/>
+
+                            <TextBlock Text="EQUIPE" FontSize="9" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextMutedBrush}" Margin="20,12,0,4"
+                                       Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}"/>
+                            <ItemsControl ItemsSource="{Binding NavEquipe}" ItemTemplate="{StaticResource NavItemTemplate}" Margin="4,0"/>
+
+                            <TextBlock Text="SISTEMA" FontSize="9" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextMutedBrush}" Margin="20,12,0,4"/>
+                            <ItemsControl ItemsSource="{Binding NavSistema}" ItemTemplate="{StaticResource NavItemTemplate}" Margin="4,0"/>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- Footer -->
+                    <Border DockPanel.Dock="Bottom" Padding="14,12"
+                            BorderThickness="0,1,0,0"
+                            BorderBrush="{DynamicResource BorderLightBrush}">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                <Border Background="{DynamicResource SurfaceElevatedBrush}"
+                                        CornerRadius="4" Padding="5,2" Margin="0,0,5,0">
+                                    <TextBlock Text="Ctrl+Espaço" FontSize="9"
+                                               FontFamily="Consolas"
+                                               Foreground="{DynamicResource AccentTextBrush}"/>
+                                </Border>
+                                <TextBlock Text="busca rápida" FontSize="9"
+                                           Foreground="{DynamicResource TextMutedBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock FontSize="9" Foreground="{DynamicResource TextMutedBrush}">
+                                <Run Text="{Binding NomeUsuario, Mode=OneWay}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                    <Grid/>
+                </DockPanel>
+            </Border>
+
+            <!-- ══════════════ MAIN CONTENT ══════════════ -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="44"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Title bar -->
+                <Border Grid.Row="0" Background="{DynamicResource TitleBarBgBrush}"
+                        BorderThickness="0,0,0,1"
+                        BorderBrush="{DynamicResource BorderLightBrush}"
+                        MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                    <Grid Margin="16,0">
+                        <TextBlock VerticalAlignment="Center" FontSize="11"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   Text="{Binding StatusMensagem}"/>
+                        <Button HorizontalAlignment="Right" Margin="0,0,176,0"
+                                Style="{StaticResource ButtonSecondary}"
+                                Command="{Binding SairDoModoKioskCommand}"
+                                Visibility="{Binding ModoKiosk, Converter={StaticResource BoolToVis}}"
+                                Height="28" Padding="12,0" FontSize="11">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                           VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="Sair do modo totem" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                                    VerticalAlignment="Center">
+                            <Button Style="{StaticResource ButtonIconOnly}"
+                                    Command="{Binding NavigarParaNotificacoesCommand}" Width="32" Height="32" Margin="0,0,2,0">
+                                <Grid>
+                                    <TextBlock Text="&#xEA8F;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Border Background="{DynamicResource DangerBrush}" CornerRadius="7"
+                                            Width="14" Height="14" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                            Margin="0,-2,-2,0"
+                                            Visibility="{Binding NotificacoesNaoLidas, Converter={StaticResource IntToVis}}">
+                                        <TextBlock Text="{Binding NotificacoesNaoLidas}" FontSize="8" FontWeight="Bold"
+                                                   Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </Grid>
+                            </Button>
+                            <Button Style="{StaticResource ButtonIconOnly}"
+                                    Click="MinimizeButton_Click" Width="32" Height="32">
+                                <TextBlock Text="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </Button>
+                            <Button Style="{StaticResource ButtonIconOnly}"
+                                    Click="MaximizeButton_Click" Margin="2,0" Width="32" Height="32">
+                                <TextBlock Text="&#xE922;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </Button>
+                            <Button Click="CloseButton_Click" Width="32" Height="32"
+                                    Cursor="Hand" BorderThickness="0" Background="Transparent">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="bg" CornerRadius="6"
+                                                Background="{TemplateBinding Background}">
+                                            <TextBlock Text="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="bg" Property="Background" Value="#C0392B"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Content router com animação de transição -->
+                <ContentControl Grid.Row="1" Content="{Binding CurrentView}">
+                    <ContentControl.Resources>
+                        <DataTemplate DataType="{x:Type vm:MacrosViewModel}">
+                            <views:MacrosView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:ConfiguracoesViewModel}">
+                            <views:ConfiguracoesView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:CategoriasViewModel}">
+                            <views:CategoriasView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:RelatorioViewModel}">
+                            <views:RelatorioView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:UsuariosViewModel}">
+                            <views:UsuariosView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+                            <views:DashboardView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:VariaveisGlobaisViewModel}">
+                            <views:VariaveisGlobaisView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:HistoricoVersoesViewModel}">
+                            <views:HistoricoVersoesView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:AgendamentosViewModel}">
+                            <views:AgendamentosView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:GruposViewModel}">
+                            <views:GruposView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:AuditoriaViewModel}">
+                            <views:AuditoriaView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:ComunidadeViewModel}">
+                            <views:ComunidadeView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:PermissoesViewModel}">
+                            <views:PermissoesView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:IntegracoesViewModel}">
+                            <views:IntegracoesView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:NotificacoesViewModel}">
+                            <views:NotificacoesView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:PerfilViewModel}">
+                            <views:PerfilView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:AjudaViewModel}">
+                            <views:AjudaView/>
+                        </DataTemplate>
+                    </ContentControl.Resources>
+                </ContentControl>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

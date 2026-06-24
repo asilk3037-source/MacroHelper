@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MacroHelper.Mobile.Pages.LoginPage"
+             BackgroundColor="#1a1a2e"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32,60,32,32" Spacing="0">
+
+            <!-- Logo SK -->
+            <Border BackgroundColor="#6C5CE7" StrokeThickness="0"
+                    WidthRequest="80" HeightRequest="80"
+                    HorizontalOptions="Center" Margin="0,0,0,16">
+                <Border.StrokeShape><RoundRectangle CornerRadius="22"/></Border.StrokeShape>
+                <Label Text="SK" FontSize="34" FontAttributes="Bold"
+                       TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+            </Border>
+
+            <Label Text="MacroHelper" FontSize="26" FontAttributes="Bold"
+                   TextColor="White" HorizontalOptions="Center"/>
+            <Label Text="by Aline Martins · Silk" FontSize="12"
+                   TextColor="#8886a8" HorizontalOptions="Center" Margin="0,4,0,40"/>
+
+            <!-- Erro -->
+            <Border BackgroundColor="#2a1010" Stroke="#f87171" StrokeThickness="1"
+                    Padding="14,10" Margin="0,0,0,16" IsVisible="{Binding Erro, Converter={StaticResource NotEmptyConverter}}">
+                <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                <Label Text="{Binding Erro}" TextColor="#f87171" FontSize="13"/>
+            </Border>
+
+            <!-- FORM LOGIN -->
+            <VerticalStackLayout Spacing="14" IsVisible="{Binding MostrarCriar, Converter={StaticResource InvertBoolConverter}}">
+                <Label Text="URL da API" TextColor="#8886a8" FontSize="11" FontAttributes="Bold"/>
+                <Border BackgroundColor="#1E1E2A" Stroke="#2e2e3e" StrokeThickness="1" Padding="4,0">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <Entry Text="{Binding ApiUrl}" TextColor="White" PlaceholderColor="#5e5c7a"
+                           Placeholder="http://192.168.x.x:5000" BackgroundColor="Transparent"/>
+                </Border>
+
+                <Label Text="E-MAIL" TextColor="#8886a8" FontSize="11" FontAttributes="Bold"/>
+                <Border BackgroundColor="#1E1E2A" Stroke="#2e2e3e" StrokeThickness="1" Padding="4,0">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <Entry Text="{Binding Email}" Keyboard="Email" TextColor="White"
+                           PlaceholderColor="#5e5c7a" Placeholder="seu@email.com"
+                           BackgroundColor="Transparent"/>
+                </Border>
+
+                <Label Text="SENHA" TextColor="#8886a8" FontSize="11" FontAttributes="Bold"/>
+                <Border BackgroundColor="#1E1E2A" Stroke="#2e2e3e" StrokeThickness="1" Padding="4,0">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <Entry Text="{Binding Senha}" IsPassword="True" TextColor="White"
+                           PlaceholderColor="#5e5c7a" Placeholder="••••••"
+                           BackgroundColor="Transparent"/>
+                </Border>
+
+                <Button Text="{Binding Carregando, Converter={StaticResource LoadingConverter}, ConverterParameter='Entrar|Entrando...'}"
+                        Command="{Binding EntrarCommand}"
+                        BackgroundColor="#6C5CE7" TextColor="White"
+                        FontAttributes="Bold" CornerRadius="12" HeightRequest="50"/>
+
+                <Label HorizontalOptions="Center" Margin="0,8,0,0">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Não tem conta? " TextColor="#8886a8"/>
+                            <Span Text="Criar conta" TextColor="#a29bfe" FontAttributes="Bold">
+                                <Span.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding AlternarCriarCommand}"/>
+                                </Span.GestureRecognizers>
+                            </Span>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </VerticalStackLayout>
+
+            <!-- FORM CRIAR CONTA -->
+            <VerticalStackLayout Spacing="14" IsVisible="{Binding MostrarCriar}">
+                <Label Text="NOME COMPLETO" TextColor="#8886a8" FontSize="11" FontAttributes="Bold"/>
+                <Border BackgroundColor="#1E1E2A" Stroke="#2e2e3e" StrokeThickness="1" Padding="4,0">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <Entry Text="{Binding NovoNome}" TextColor="White" BackgroundColor="Transparent"/>
+                </Border>
+
+                <Label Text="E-MAIL" TextColor="#8886a8" FontSize="11" FontAttributes="Bold"/>
+                <Border BackgroundColor="#1E1E2A" Stroke="#2e2e3e" StrokeThickness="1" Padding="4,0">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <Entry Text="{Binding NovoEmail}" Keyboard="Email" TextColor="White" BackgroundColor="Transparent"/>
+                </Border>
+
+                <Label Text="SENHA" TextColor="#8886a8" FontSize="11" FontAttributes="Bold"/>
+                <Border BackgroundColor="#1E1E2A" Stroke="#2e2e3e" StrokeThickness="1" Padding="4,0">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <Entry Text="{Binding NovaSenha}" IsPassword="True" TextColor="White" BackgroundColor="Transparent"/>
+                </Border>
+
+                <Label Text="CONFIRMAR SENHA" TextColor="#8886a8" FontSize="11" FontAttributes="Bold"/>
+                <Border BackgroundColor="#1E1E2A" Stroke="#2e2e3e" StrokeThickness="1" Padding="4,0">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <Entry Text="{Binding Confirmar}" IsPassword="True" TextColor="White" BackgroundColor="Transparent"/>
+                </Border>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,8,0,0">
+                    <Button Grid.Column="0" Text="Cancelar" Command="{Binding AlternarCriarCommand}"
+                            BackgroundColor="#2e2e3e" TextColor="White" CornerRadius="12" HeightRequest="46"/>
+                    <Button Grid.Column="1" Text="Criar conta" Command="{Binding CriarContaCommand}"
+                            BackgroundColor="#6C5CE7" TextColor="White" FontAttributes="Bold"
+                            CornerRadius="12" HeightRequest="46"/>
+                </Grid>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

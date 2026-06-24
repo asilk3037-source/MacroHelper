@@ -1,0 +1,78 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MacroHelper.Core.Entities;
+using MacroHelper.Services;
+using System.Collections.ObjectModel;
+
+namespace MacroHelper.UI.ViewModels;
+
+public partial class VariaveisGlobaisViewModel : ObservableObject
+{
+    private readonly VariavelGlobalService _svc;
+
+    [ObservableProperty] private ObservableCollection<VariavelGlobal> _variaveis = new();
+    [ObservableProperty] private bool    _mostrarFormulario = false;
+    [ObservableProperty] private bool    _isLoading = false;
+    [ObservableProperty] private string? _mensagem;
+    [ObservableProperty] private bool    _mensagemSucesso = true;
+
+    [ObservableProperty] private int     _formId = 0;
+    [ObservableProperty] private string  _formNome = string.Empty;
+    [ObservableProperty] private string  _formValorPadrao = string.Empty;
+    [ObservableProperty] private string  _formDescricao = string.Empty;
+    [ObservableProperty] private string  _formTitulo = "Nova Variável";
+    [ObservableProperty] private string? _formErro;
+
+    public VariaveisGlobaisViewModel(VariavelGlobalService svc) => _svc = svc;
+
+    public async Task CarregarAsync()
+    {
+        IsLoading = true;
+        try { Variaveis = new ObservableCollection<VariavelGlobal>(await _svc.ObterTodasAsync()); }
+        finally { IsLoading = false; }
+    }
+
+    [RelayCommand]
+    public void NovaVariavel()
+    {
+        FormId = 0; FormNome = string.Empty; FormValorPadrao = string.Empty; FormDescricao = string.Empty;
+        FormErro = null; FormTitulo = "Nova Variável"; MostrarFormulario = true;
+    }
+
+    [RelayCommand]
+    public void EditarVariavel(VariavelGlobal v)
+    {
+        FormId = v.Id; FormNome = v.Nome; FormValorPadrao = v.ValorPadrao; FormDescricao = v.Descricao ?? string.Empty;
+        FormErro = null; FormTitulo = "Editar Variável"; MostrarFormulario = true;
+    }
+
+    [RelayCommand]
+    public void CancelarForm() => MostrarFormulario = false;
+
+    [RelayCommand]
+    public async Task SalvarVariavelAsync()
+    {
+        FormErro = null;
+        var v = new VariavelGlobal { Id = FormId, Nome = FormNome, ValorPadrao = FormValorPadrao, Descricao = FormDescricao };
+        var (ok, msg) = await _svc.SalvarAsync(v);
+        if (!ok) { FormErro = msg; return; }
+        MostrarFormulario = false;
+        await CarregarAsync();
+        MostrarMensagem(msg, true);
+    }
+
+    [RelayCommand]
+    public async Task ExcluirVariavelAsync(VariavelGlobal v)
+    {
+        await _svc.ExcluirAsync(v.Id);
+        await CarregarAsync();
+        MostrarMensagem("Variável excluída.", true);
+    }
+
+    private void MostrarMensagem(string msg, bool ok)
+    {
+        Mensagem = msg; MensagemSucesso = ok;
+        if (System.Threading.SynchronizationContext.Current != null)
+            Task.Delay(3500).ContinueWith(_ => Mensagem = null, TaskScheduler.FromCurrentSynchronizationContext());
+    }
+}

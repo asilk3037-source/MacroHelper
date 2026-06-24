@@ -1,0 +1,112 @@
+<UserControl x:Class="MacroHelper.UI.Views.PerfilView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <UserControl.RenderTransform>
+        <TranslateTransform x:Name="PageSlide"/>
+    </UserControl.RenderTransform>
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard><Storyboard>
+                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.22"/>
+            </Storyboard></BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceBrush}"
+                BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}" Padding="28,18">
+            <StackPanel>
+                <TextBlock Text="Meu Perfil" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock Text="Gerencie seus dados pessoais e senha"
+                           FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Padding="28,20,28,28">
+            <StackPanel MaxWidth="460">
+
+                <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="12" Padding="20" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Dados pessoais" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,4"/>
+                        <TextBlock Text="{Binding Perfil}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,16"/>
+
+                        <Border Background="{DynamicResource SuccessBgBrush}" BorderBrush="{DynamicResource SuccessBrush}"
+                                BorderThickness="1" CornerRadius="8" Padding="12,9" Margin="0,0,0,14"
+                                Visibility="{Binding MensagemPerfil, Converter={StaticResource NullToVis}}">
+                            <TextBlock Text="{Binding MensagemPerfil}" Foreground="{DynamicResource SuccessBrush}" FontSize="12"/>
+                        </Border>
+
+                        <TextBlock Text="NOME" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                        <TextBox Style="{StaticResource InputStyle}" Height="42" Text="{Binding Nome, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,14"/>
+
+                        <TextBlock Text="E-MAIL" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                        <TextBox Style="{StaticResource InputStyle}" Height="42" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,18"/>
+
+                        <Button Content="Salvar perfil" Style="{StaticResource ButtonPrimary}"
+                                Command="{Binding SalvarPerfilCommand}" HorizontalAlignment="Left" Width="140"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="12" Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="Trocar senha" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,16"/>
+
+                        <Border Background="{DynamicResource DangerBgBrush}" BorderBrush="{DynamicResource DangerBrush}"
+                                BorderThickness="1" CornerRadius="8" Padding="12,9" Margin="0,0,0,14"
+                                Visibility="{Binding MensagemSenha, Converter={StaticResource NullToVis}}">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding MensagemSenhaSucesso}" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource SuccessBgBrush}"/>
+                                            <Setter Property="BorderBrush" Value="{DynamicResource SuccessBrush}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Text="{Binding MensagemSenha}" FontSize="12">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding MensagemSenhaSucesso}" Value="True">
+                                                <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
+
+                        <TextBlock Text="SENHA ATUAL" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                        <PasswordBox x:Name="SenhaAtualBox" Height="42" Margin="0,0,0,14" FontSize="13"
+                                     Background="{DynamicResource InputBgBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                                     BorderBrush="{DynamicResource InputBorderBrush}"
+                                     PasswordChanged="SenhaAtualBox_PasswordChanged"/>
+
+                        <TextBlock Text="NOVA SENHA" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                        <PasswordBox x:Name="NovaSenhaBox" Height="42" Margin="0,0,0,14" FontSize="13"
+                                     Background="{DynamicResource InputBgBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                                     BorderBrush="{DynamicResource InputBorderBrush}"
+                                     PasswordChanged="NovaSenhaBox_PasswordChanged"/>
+
+                        <TextBlock Text="CONFIRMAR NOVA SENHA" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                        <PasswordBox x:Name="ConfirmarSenhaBox" Height="42" Margin="0,0,0,18" FontSize="13"
+                                     Background="{DynamicResource InputBgBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                                     BorderBrush="{DynamicResource InputBorderBrush}"
+                                     PasswordChanged="ConfirmarSenhaBox_PasswordChanged"/>
+
+                        <Button Content="Trocar senha" Style="{StaticResource ButtonPrimary}"
+                                Command="{Binding TrocarSenhaCommand}" HorizontalAlignment="Left" Width="140"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
