@@ -51,9 +51,15 @@
                     <TextBlock Text="MACRO *" FontSize="10" FontWeight="SemiBold"
                                Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
                     <ComboBox ItemsSource="{Binding MacrosDisponiveis}" SelectedItem="{Binding FormMacro}"
-                              DisplayMemberPath="Titulo" Height="42" Margin="0,0,0,14" FontSize="13"
+                              Height="42" Margin="0,0,0,14" FontSize="13"
                               Background="{DynamicResource InputBgBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
-                              BorderBrush="{DynamicResource InputBorderBrush}"/>
+                              BorderBrush="{DynamicResource InputBorderBrush}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Titulo}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
 
                     <TextBlock Text="DIAS DA SEMANA" FontSize="10" FontWeight="SemiBold"
                                Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>

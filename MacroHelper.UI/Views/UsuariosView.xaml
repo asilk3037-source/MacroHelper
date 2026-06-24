@@ -57,10 +57,16 @@
                                Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,20,0,8"/>
                     <ComboBox ItemsSource="{Binding GruposDisponiveis}"
                               SelectedValuePath="Id" SelectedValue="{Binding GrupoSelecionadoId}"
-                              DisplayMemberPath="Nome" Height="38" Margin="0,0,0,10"
+                              Height="38" Margin="0,0,0,10"
                               Background="{DynamicResource InputBgBrush}"
                               Foreground="{DynamicResource TextPrimaryBrush}"
-                              BorderBrush="{DynamicResource InputBorderBrush}" FontSize="13"/>
+                              BorderBrush="{DynamicResource InputBorderBrush}" FontSize="13">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Nome}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
 
                     <Grid Margin="0,0,0,16">
                         <Grid.ColumnDefinitions>
