@@ -65,17 +65,8 @@
                         <Border Background="{DynamicResource DangerBgBrush}"
                                 BorderBrush="{DynamicResource DangerBrush}"
                                 BorderThickness="1" CornerRadius="6"
-                                Padding="12,8" Margin="0,0,0,16">
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Erro}" Value="{x:Null}">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
+                                Padding="12,8" Margin="0,0,0,16"
+                                Visibility="{Binding Erro, Converter={StaticResource NullToVis}}">
                             <TextBlock Text="{Binding Erro}"
                                        Foreground="{DynamicResource DangerBrush}"
                                        FontSize="12" TextWrapping="Wrap"/>
