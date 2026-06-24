@@ -133,6 +133,11 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     public void SairDoModoKiosk() => _kioskService.Definir(false);
 
+    public event EventHandler? LogoutSolicitado;
+
+    [RelayCommand]
+    public void Logout() => LogoutSolicitado?.Invoke(this, EventArgs.Empty);
+
     [RelayCommand] public void NavigarParaMacros()
     {
         PaginaAtiva = "macros"; CurrentView = _macrosVM; AtualizarNavAtiva();

@@ -68,11 +68,14 @@
 
         <!-- Totalizadores -->
         <Border DockPanel.Dock="Top" Padding="28,16,28,0" Background="{DynamicResource BackgroundBrush}">
-            <StackPanel Orientation="Horizontal">
-                <Border Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1" CornerRadius="10"
-                        Padding="20,16" Margin="0,0,12,0" MinWidth="160">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource CardStyle}" Padding="20,16" Margin="0,0,8,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -94,10 +97,7 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-                <Border Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1" CornerRadius="10"
-                        Padding="20,16" Margin="0,0,12,0" MinWidth="160">
+                <Border Grid.Column="1" Style="{StaticResource CardStyle}" Padding="20,16" Margin="4,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -119,10 +119,7 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-                <Border Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1" CornerRadius="10"
-                        Padding="20,16" MinWidth="160">
+                <Border Grid.Column="2" Style="{StaticResource CardStyle}" Padding="20,16" Margin="8,0,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -144,7 +141,7 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-            </StackPanel>
+            </Grid>
         </Border>
 
         <!-- Ranking + Gráfico de uso por dia -->
@@ -156,9 +153,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Ranking -->
-                <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                        CornerRadius="10" Padding="20,16" Margin="0,0,12,0">
+                <Border Grid.Column="0" Style="{StaticResource CardStyle}" Padding="20,16" Margin="0,0,8,0">
                     <StackPanel>
                         <TextBlock Text="Top macros mais usadas" FontSize="13" FontWeight="Bold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12"/>
@@ -205,9 +200,7 @@
                 </Border>
 
                 <!-- Gráfico de barras por dia -->
-                <Border Grid.Column="1" Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                        CornerRadius="10" Padding="20,16" Margin="12,0,0,0">
+                <Border Grid.Column="1" Style="{StaticResource CardStyle}" Padding="20,16" Margin="8,0,0,0">
                     <StackPanel>
                         <TextBlock Text="Uso por dia" FontSize="13" FontWeight="Bold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12"/>
@@ -319,9 +312,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                        CornerRadius="10" Padding="20,16" Margin="0,0,12,0">
+                <Border Grid.Column="0" Style="{StaticResource CardStyle}" Padding="20,16" Margin="0,0,8,0">
                     <StackPanel>
                         <TextBlock Text="Top usuários" FontSize="13" FontWeight="Bold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12"/>
@@ -347,9 +338,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Column="1" Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                        CornerRadius="10" Padding="20,16" Margin="12,0,0,0">
+                <Border Grid.Column="1" Style="{StaticResource CardStyle}" Padding="20,16" Margin="8,0,0,0">
                     <StackPanel>
                         <TextBlock Text="Auditoria recente" FontSize="13" FontWeight="Bold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12"/>

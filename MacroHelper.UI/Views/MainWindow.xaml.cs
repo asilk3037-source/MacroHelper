@@ -1,3 +1,4 @@
+using MacroHelper.Data.Context;
 using MacroHelper.Services;
 using MacroHelper.UI.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ public partial class MainWindow : Window
     private MacroPopupWindow?             _popup;
     private BuscadorRapidoWindow?         _buscador;
     private bool                          _hookAtivo = true;
+    private bool                          _fazendoLogout = false;
 
     public MainWindow()
     {
@@ -48,6 +50,8 @@ public partial class MainWindow : Window
             mvm.ModoKioskAlterado += (_, ativo) =>
                 Dispatcher.Invoke(() => WindowState = ativo ? WindowState.Maximized : WindowState.Normal);
             if (mvm.ModoKiosk) WindowState = WindowState.Maximized;
+
+            mvm.LogoutSolicitado += (_, _) => Dispatcher.Invoke(() => _ = ExecutarLogoutAsync());
         }
     }
 
@@ -342,6 +346,7 @@ public partial class MainWindow : Window
 
     private void OnWindowClosing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
+        if (_fazendoLogout) return; // cleanup e fechamento já tratados em ExecutarLogoutAsync
         try
         {
             if (Properties.Settings.Default.MinimizarParaBandeja)
@@ -356,6 +361,29 @@ public partial class MainWindow : Window
         }
         catch { }
         FecharApp();
+    }
+
+    // ── Logout (encerra sessão Supabase, limpa sessão local e volta para a tela de login) ──
+    private async Task ExecutarLogoutAsync()
+    {
+        if (_fazendoLogout) return;
+        _fazendoLogout = true;
+
+        try { await App.Services.GetRequiredService<SupabaseContext>().Auth.SignOut(); } catch { }
+        SupabaseSessionStore.Clear();
+        _usuarioService.Logout();
+
+        _hookService.Parar();
+        _hotkeyService.Dispose();
+        _trayService.Dispose();
+        _popup?.Close();
+        _buscador?.Close();
+
+        var login = App.Services.GetRequiredService<LoginWindow>();
+        Application.Current.MainWindow = login;
+        login.Show();
+
+        Close();
     }
 
     private void FecharApp()
