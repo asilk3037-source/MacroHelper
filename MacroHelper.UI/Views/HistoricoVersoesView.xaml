@@ -19,10 +19,9 @@
                 BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}"
                 Padding="28,18">
             <StackPanel>
-                <TextBlock Text="Histórico de Versões" FontSize="20" FontWeight="Bold"
-                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock Text="Histórico de Versões" Style="{StaticResource PageTitleText}"/>
                 <TextBlock Text="Escolha uma macro para ver e comparar versões anteriores"
-                           FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
+                           Style="{StaticResource PageSubtitleText}"/>
             </StackPanel>
         </Border>
 
@@ -48,7 +47,7 @@
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="Button">
-                                                        <Border x:Name="bg" CornerRadius="7" Background="{TemplateBinding Background}"
+                                                        <Border x:Name="bg" CornerRadius="10" Background="{TemplateBinding Background}"
                                                                 Padding="{TemplateBinding Padding}">
                                                             <ContentPresenter/>
                                                         </Border>

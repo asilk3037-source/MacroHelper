@@ -18,9 +18,8 @@
         <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceBrush}"
                 BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}" Padding="28,18">
             <StackPanel>
-                <TextBlock Text="Meu Perfil" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                <TextBlock Text="Gerencie seus dados pessoais e senha"
-                           FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
+                <TextBlock Text="Meu Perfil" Style="{StaticResource PageTitleText}"/>
+                <TextBlock Text="Gerencie seus dados pessoais e senha." Style="{StaticResource PageSubtitleText}"/>
             </StackPanel>
         </Border>
 
@@ -28,7 +27,7 @@
             <StackPanel MaxWidth="460">
 
                 <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1" CornerRadius="12" Padding="20" Margin="0,0,0,16">
+                        BorderThickness="1" CornerRadius="20" Padding="22" Margin="0,0,0,16">
                     <StackPanel>
                         <TextBlock Text="Dados pessoais" FontSize="14" FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,4"/>
@@ -52,7 +51,7 @@
                 </Border>
 
                 <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1" CornerRadius="12" Padding="20">
+                        BorderThickness="1" CornerRadius="20" Padding="22">
                     <StackPanel>
                         <TextBlock Text="Trocar senha" FontSize="14" FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,16"/>

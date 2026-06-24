@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MacroHelper.Data.Context;
 using MacroHelper.Services;
 using MacroHelper.UI.Properties;
 using System.Windows.Input;
@@ -12,9 +11,6 @@ public partial class ConfiguracoesViewModel : ObservableObject
 {
     private readonly ThemeService    _themeService;
     private readonly IaService?      _iaService;
-    private readonly DatabaseContext _dbContext;
-    private readonly BackupService   _backupService;
-    private readonly SyncService     _syncService;
     private readonly UsuarioService  _usuarioService;
     private readonly VoiceDictationService _voiceService;
     private readonly MacroService    _macroService;
@@ -29,11 +25,6 @@ public partial class ConfiguracoesViewModel : ObservableObject
     [ObservableProperty] private string _mensagem            = string.Empty;
     [ObservableProperty] private bool   _mensagemSucesso     = true;
 
-    // Banco / modo equipe
-    [ObservableProperty] private string _caminhoBanco   = DatabaseConfig.ObterCaminhoAtivo();
-    [ObservableProperty] private bool   _modoEquipe     = DatabaseConfig.IsRedeLocal();
-    [ObservableProperty] private string _statusBanco    = string.Empty;
-
     // IA
     [ObservableProperty] private string _chaveIA        = string.Empty;
     [ObservableProperty] private bool   _iaConfigurada  = false;
@@ -42,19 +33,6 @@ public partial class ConfiguracoesViewModel : ObservableObject
     [ObservableProperty] private string  _gatilhoPrefixo      = "/";
     [ObservableProperty] private string  _appsModoDigitacao   = string.Empty;
     [ObservableProperty] private bool    _sugestaoProativaIA  = true;
-
-    // Backup
-    [ObservableProperty] private bool    _backupAutomatico = false;
-    [ObservableProperty] private string  _pastaBackup      = string.Empty;
-    [ObservableProperty] private bool    _fazendoBackup    = false;
-
-    // Sync (modo equipe via API)
-    [ObservableProperty] private string  _apiServidorUrl   = string.Empty;
-    [ObservableProperty] private string  _syncEmail        = string.Empty;
-    [ObservableProperty] private string  _syncSenha        = string.Empty;
-    [ObservableProperty] private bool    _sincronizando     = false;
-    [ObservableProperty] private bool?   _servidorOnline    = null;
-    [ObservableProperty] private bool    _verificandoServidor = false;
 
     // Aparência avançada / idioma
     [ObservableProperty] private string  _corAccentSelecionada = "#6C5CE7";
@@ -66,13 +44,10 @@ public partial class ConfiguracoesViewModel : ObservableObject
     [ObservableProperty] private bool _ditadoModoContinuo = false;
 
     // Saúde do app
-    [ObservableProperty] private string  _tamanhoBancoTexto   = "—";
-    [ObservableProperty] private string  _ultimoBackupTexto   = "—";
     [ObservableProperty] private int     _totalMacrosHealth   = 0;
     [ObservableProperty] private int     _totalUsuariosHealth = 0;
     [ObservableProperty] private string  _memoriaTexto        = "—";
     [ObservableProperty] private string  _versaoAppTexto      = "—";
-    [ObservableProperty] private bool    _bancoIntegro        = true;
     [ObservableProperty] private bool    _carregandoSaude     = false;
 
     // Recursos da máquina local (do usuário logado nesta sessão)
@@ -90,10 +65,9 @@ public partial class ConfiguracoesViewModel : ObservableObject
     [ObservableProperty] private bool _modoKiosk = false;
 
     public ConfiguracoesViewModel(ThemeService themeService, IaService? iaService,
-        DatabaseContext dbContext, BackupService backupService, SyncService syncService,
-        UsuarioService usuarioService, VoiceDictationService voiceService, MacroService macroService,
-        HealthService healthService, HotkeyService hotkeyService, KeyboardHookService hookService,
-        KioskModeService kioskService)
+        UsuarioService usuarioService, VoiceDictationService voiceService,
+        MacroService macroService, HealthService healthService, HotkeyService hotkeyService,
+        KeyboardHookService hookService, KioskModeService kioskService)
     {
         _healthService   = healthService;
         _hotkeyService   = hotkeyService;
@@ -101,9 +75,6 @@ public partial class ConfiguracoesViewModel : ObservableObject
         _kioskService     = kioskService;
         _themeService    = themeService;
         _iaService       = iaService;
-        _dbContext       = dbContext;
-        _backupService   = backupService;
-        _syncService     = syncService;
         _usuarioService  = usuarioService;
         _voiceService    = voiceService;
         _macroService    = macroService;
@@ -120,11 +91,6 @@ public partial class ConfiguracoesViewModel : ObservableObject
             AppsModoDigitacao  = Settings.Default.AppsModoDigitacao ?? string.Empty;
             SugestaoProativaIA = Settings.Default.SugestaoProativaIA;
 
-            BackupAutomatico = Settings.Default.BackupAutomatico;
-            PastaBackup      = string.IsNullOrEmpty(Settings.Default.PastaBackup) ? _backupService.PastaBackup : Settings.Default.PastaBackup;
-
-            ApiServidorUrl = Settings.Default.ApiServidorUrl ?? string.Empty;
-
             CorAccentSelecionada = string.IsNullOrEmpty(Settings.Default.CorAccent) ? "#6C5CE7" : Settings.Default.CorAccent;
             IdiomaSelecionado    = string.IsNullOrEmpty(Settings.Default.IdiomaInterface) ? "pt-BR" : Settings.Default.IdiomaInterface;
             DitadoModoContinuo   = Settings.Default.DitadoModoContinuo;
@@ -133,7 +99,6 @@ public partial class ConfiguracoesViewModel : ObservableObject
 
         ModoKiosk = _kioskService.Ativo;
 
-        AtualizarStatusBanco();
         AtualizarTextosAtalhos();
         _ = CarregarSaudeAsync();
     }
@@ -148,14 +113,6 @@ public partial class ConfiguracoesViewModel : ObservableObject
         MostrarMsg(ModoKiosk
             ? "Modo totem ativado — a barra lateral foi ocultada."
             : "Modo totem desativado.", true);
-    }
-
-    private void AtualizarStatusBanco()
-    {
-        var caminho = DatabaseConfig.ObterCaminhoAtivo();
-        StatusBanco = DatabaseConfig.IsRedeLocal()
-            ? $"Modo equipe: {caminho}"
-            : $"Modo local: {caminho}";
     }
 
     // ── Atalhos de teclado remapeáveis ─────────────────────────
@@ -267,13 +224,10 @@ public partial class ConfiguracoesViewModel : ObservableObject
         try
         {
             var info = await _healthService.ObterAsync();
-            TamanhoBancoTexto   = FormatarBytes(info.TamanhoBancoBytes);
-            UltimoBackupTexto   = info.UltimoBackup?.ToString("dd/MM/yyyy HH:mm") ?? "Nenhum backup ainda";
             TotalMacrosHealth   = info.TotalMacros;
             TotalUsuariosHealth = info.TotalUsuarios;
             MemoriaTexto        = FormatarBytes(info.MemoriaProcessoBytes);
             VersaoAppTexto      = info.VersaoApp;
-            BancoIntegro        = info.BancoIntegro;
 
             CpuTexto            = $"{info.CpuUsoPercent:0.#}%";
             MemoriaSistemaTexto = info.MemoriaSistemaTotalBytes > 0
@@ -307,29 +261,6 @@ public partial class ConfiguracoesViewModel : ObservableObject
             _        => TemaApp.Sistema
         });
         MostrarMsg("Tema aplicado!", true);
-    }
-
-    [RelayCommand]
-    public void SalvarBanco()
-    {
-        if (string.IsNullOrWhiteSpace(CaminhoBanco))
-        {
-            MostrarMsg("Caminho inválido.", false); return;
-        }
-        try
-        {
-            _dbContext.TrocarCaminho(CaminhoBanco);
-            AtualizarStatusBanco();
-            MostrarMsg("Banco de dados atualizado! Reinicie o app para aplicar.", true);
-        }
-        catch (Exception ex) { MostrarMsg($"Erro: {ex.Message}", false); }
-    }
-
-    [RelayCommand]
-    public void UsarBancoLocal()
-    {
-        CaminhoBanco = DatabaseConfig.CaminhoLocal;
-        SalvarBanco();
     }
 
     [RelayCommand]
@@ -374,73 +305,6 @@ public partial class ConfiguracoesViewModel : ObservableObject
             MostrarMsg("Configurações de gatilho salvas! Reinicie o app para aplicar.", true);
         }
         catch { MostrarMsg("Erro ao salvar.", false); }
-    }
-
-    [RelayCommand]
-    public void SalvarBackupConfig()
-    {
-        try
-        {
-            Settings.Default.BackupAutomatico = BackupAutomatico;
-            Settings.Default.PastaBackup      = PastaBackup;
-            Settings.Default.Save();
-            _backupService.Iniciar(BackupAutomatico, PastaBackup);
-            MostrarMsg("Configurações de backup salvas!", true);
-        }
-        catch (Exception ex) { MostrarMsg($"Erro: {ex.Message}", false); }
-    }
-
-    [RelayCommand]
-    public async Task FazerBackupAgora()
-    {
-        FazendoBackup = true;
-        try
-        {
-            var (ok, msg) = await _backupService.FazerBackupAgoraAsync();
-            MostrarMsg(msg, ok);
-        }
-        finally { FazendoBackup = false; }
-    }
-
-    [RelayCommand]
-    public void SalvarServidorSync()
-    {
-        try
-        {
-            Settings.Default.ApiServidorUrl = ApiServidorUrl;
-            Settings.Default.Save();
-            MostrarMsg("Servidor de sincronização salvo!", true);
-        }
-        catch { MostrarMsg("Erro ao salvar.", false); }
-    }
-
-    [RelayCommand]
-    public async Task Sincronizar()
-    {
-        if (string.IsNullOrWhiteSpace(SyncEmail) || string.IsNullOrWhiteSpace(SyncSenha))
-        {
-            MostrarMsg("Informe e-mail e senha de sincronização.", false); return;
-        }
-        Sincronizando = true;
-        try
-        {
-            var (ok, msg) = await _syncService.SincronizarAsync(ApiServidorUrl, SyncEmail, SyncSenha);
-            MostrarMsg(msg, ok);
-        }
-        finally { Sincronizando = false; }
-    }
-
-    [RelayCommand]
-    public async Task VerificarServidor()
-    {
-        VerificandoServidor = true;
-        try
-        {
-            var (ok, msg) = await _syncService.VerificarServidorAsync(ApiServidorUrl);
-            ServidorOnline = ok;
-            MostrarMsg(msg, ok);
-        }
-        finally { VerificandoServidor = false; }
     }
 
     [RelayCommand]

@@ -18,67 +18,73 @@
     </UserControl.Triggers>
 
     <DockPanel>
-        <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceBrush}"
-                BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}"
-                Padding="28,18">
-            <StackPanel>
-                <TextBlock FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}">
-                    <Run Text="Olá, "/><Run Text="{Binding NomeUsuario, Mode=OneWay}"/><Run Text="!"/>
-                </TextBlock>
-                <TextBlock Text="Aqui está um resumo da sua atividade no SK MacroHelper"
-                           FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
-            </StackPanel>
-        </Border>
+        <ScrollViewer Padding="28,24,28,28">
+            <StackPanel MaxWidth="1100" HorizontalAlignment="Stretch">
 
-        <ScrollViewer Padding="28,20,28,28">
-            <StackPanel>
+                <!-- Hero de boas-vindas -->
+                <Border Style="{StaticResource SectionPanel}" Margin="0,0,0,20" Padding="32,28">
+                    <StackPanel>
+                        <Border Style="{StaticResource BadgePill}" HorizontalAlignment="Left" Margin="0,0,0,12">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE945;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                           Foreground="{DynamicResource AccentBrush}" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Hook ativo" Style="{StaticResource BadgePillText}"/>
+                            </StackPanel>
+                        </Border>
+                        <TextBlock FontSize="30" FontFamily="Segoe UI Semibold" Foreground="{DynamicResource TextPrimaryBrush}">
+                            <Run Text="Olá, "/><Run Text="{Binding NomeUsuario, Mode=OneWay}" Foreground="{DynamicResource AccentBrush}"/>
+                        </TextBlock>
+                        <TextBlock Text="Aqui está um resumo da sua atividade no SK MacroHelper."
+                                   FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Border>
+
                 <!-- Cards de estatística -->
-                <Grid Margin="0,0,0,20">
+                <Grid Margin="0,0,0,16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Border Grid.Column="0" Margin="0,0,8,0" Style="{StaticResource CardStyle}" Padding="20,18">
+                    <Border Grid.Column="0" Margin="0,0,8,0" Style="{StaticResource CardStyle}" Padding="22,20">
                         <StackPanel>
-                            <Border Width="36" Height="36" CornerRadius="9" Margin="0,0,0,12"
-                                    Background="{DynamicResource AccentLightBrush}" HorizontalAlignment="Left">
-                                <TextBlock Text="&#xE8F4;" FontFamily="Segoe MDL2 Assets" FontSize="15"
+                            <Border Style="{StaticResource IconTile}" HorizontalAlignment="Left" Margin="0,0,0,16">
+                                <TextBlock Text="&#xE8F4;" FontFamily="Segoe MDL2 Assets" FontSize="16"
                                            Foreground="{DynamicResource AccentTextBrush}"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            <TextBlock Text="{Binding TotalMacros, Mode=OneWay}" FontSize="22" FontWeight="Bold"
+                            <TextBlock Text="{Binding TotalMacros, Mode=OneWay}" FontSize="30" FontFamily="Segoe UI Semibold"
                                        Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,2"/>
-                            <TextBlock Text="macros cadastradas" FontSize="12" Foreground="{DynamicResource TextMutedBrush}"/>
+                            <TextBlock Text="macros cadastradas" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
                         </StackPanel>
                     </Border>
 
-                    <Border Grid.Column="1" Margin="4,0" Style="{StaticResource CardStyle}" Padding="20,18">
+                    <Border Grid.Column="1" Margin="4,0" Style="{StaticResource CardStyle}" Padding="22,20">
                         <StackPanel>
-                            <Border Width="36" Height="36" CornerRadius="9" Margin="0,0,0,12"
-                                    Background="{DynamicResource AccentLightBrush}" HorizontalAlignment="Left">
-                                <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" FontSize="15"
-                                           Foreground="{DynamicResource AccentTextBrush}"
+                            <Border Style="{StaticResource IconTile}" Background="{DynamicResource CyanSoftBrush}"
+                                    HorizontalAlignment="Left" Margin="0,0,0,16">
+                                <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                           Foreground="{DynamicResource CyanForegroundBrush}"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            <TextBlock Text="{Binding UsadasHoje, Mode=OneWay}" FontSize="22" FontWeight="Bold"
+                            <TextBlock Text="{Binding UsadasHoje, Mode=OneWay}" FontSize="30" FontFamily="Segoe UI Semibold"
                                        Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,2"/>
-                            <TextBlock Text="usos hoje" FontSize="12" Foreground="{DynamicResource TextMutedBrush}"/>
+                            <TextBlock Text="usos hoje" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
                         </StackPanel>
                     </Border>
 
-                    <Border Grid.Column="2" Margin="8,0,0,0" Style="{StaticResource CardStyle}" Padding="20,18">
+                    <Border Grid.Column="2" Margin="8,0,0,0" Style="{StaticResource CardStyle}" Padding="22,20">
                         <StackPanel>
-                            <Border Width="36" Height="36" CornerRadius="9" Margin="0,0,0,12"
-                                    Background="{DynamicResource AccentLightBrush}" HorizontalAlignment="Left">
-                                <TextBlock Text="&#xE823;" FontFamily="Segoe MDL2 Assets" FontSize="15"
-                                           Foreground="{DynamicResource AccentTextBrush}"
+                            <Border Style="{StaticResource IconTile}" Background="{DynamicResource SecondaryBrush}"
+                                    HorizontalAlignment="Left" Margin="0,0,0,16">
+                                <TextBlock Text="&#xE823;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                           Foreground="{DynamicResource SecondaryForegroundBrush}"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            <TextBlock Text="{Binding MinutosEconomizados, Mode=OneWay}" FontSize="22" FontWeight="Bold"
+                            <TextBlock Text="{Binding MinutosEconomizados, Mode=OneWay}" FontSize="30" FontFamily="Segoe UI Semibold"
                                        Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,2"/>
-                            <TextBlock Text="economizados este mês" FontSize="12" Foreground="{DynamicResource TextMutedBrush}"/>
+                            <TextBlock Text="economizados este mês" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -92,8 +98,7 @@
 
                     <Border Grid.Column="0" Margin="0,0,8,0" Style="{StaticResource CardStyle}" Padding="20,18">
                         <StackPanel MinHeight="120">
-                            <TextBlock Text="Macros mais usadas (mês)" FontSize="13" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,14"/>
+                            <TextBlock Text="Macros mais usadas (mês)" Style="{StaticResource SectionTitleText}" Margin="0,0,0,14"/>
                             <ItemsControl ItemsSource="{Binding MaisUsadas}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
@@ -130,8 +135,7 @@
 
                     <Border Grid.Column="1" Margin="8,0,0,0" Style="{StaticResource CardStyle}" Padding="20,18">
                         <StackPanel MinHeight="120">
-                            <TextBlock Text="Atividade recente" FontSize="13" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,14"/>
+                            <TextBlock Text="Atividade recente" Style="{StaticResource SectionTitleText}" Margin="0,0,0,14"/>
                             <ItemsControl ItemsSource="{Binding AtividadeRecente}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>

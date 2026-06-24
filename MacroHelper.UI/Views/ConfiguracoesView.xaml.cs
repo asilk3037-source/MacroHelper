@@ -1,4 +1,3 @@
-using System.Windows.Controls;
 using System.Windows.Input;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using UserControl = System.Windows.Controls.UserControl;
@@ -10,12 +9,6 @@ public partial class ConfiguracoesView : UserControl
     public ConfiguracoesView()
     {
         InitializeComponent();
-    }
-
-    private void PasswordSync_Changed(object sender, System.Windows.RoutedEventArgs e)
-    {
-        if (DataContext is ViewModels.ConfiguracoesViewModel vm && sender is PasswordBox pb)
-            vm.SyncSenha = pb.Password;
     }
 
     private void ConfiguracoesView_PreviewKeyDown(object sender, KeyEventArgs e)

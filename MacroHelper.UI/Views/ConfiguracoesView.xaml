@@ -21,10 +21,9 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel MaxWidth="700" Margin="40,30,40,40" HorizontalAlignment="Left">
 
-            <TextBlock Text="Configurações" FontSize="22" FontWeight="Bold"
-                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,4"/>
+            <TextBlock Text="Configurações" Style="{StaticResource PageTitleText}" Margin="0,0,0,4"/>
             <TextBlock Text="Personalize o SK MacroHelper conforme suas preferências."
-                       FontSize="13" Foreground="{DynamicResource TextMutedBrush}"
+                       Style="{StaticResource PageSubtitleText}"
                        Margin="0,0,0,30"/>
 
             <!-- Toast -->
@@ -58,14 +57,10 @@
             </Border>
 
             <!-- ── TEMA ── -->
-            <Border Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1" CornerRadius="12"
-                    Padding="24,20" Margin="0,0,0,14">
+            <Border Style="{StaticResource SectionPanel}" Margin="0,0,0,14">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                        <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,10,0"
-                                Background="{DynamicResource AccentLightBrush}">
+                        <Border Style="{StaticResource IconTileSmall}" Margin="0,0,10,0">
                             <TextBlock Text="&#xE706;" FontFamily="Segoe MDL2 Assets" FontSize="13"
                                        Foreground="{DynamicResource AccentTextBrush}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -177,14 +172,10 @@
             </Border>
 
             <!-- ── APARÊNCIA AVANÇADA / IDIOMA ── -->
-            <Border Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1" CornerRadius="12"
-                    Padding="24,20" Margin="0,0,0,14">
+            <Border Style="{StaticResource SectionPanel}" Margin="0,0,0,14">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                        <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,10,0"
-                                Background="{DynamicResource AccentLightBrush}">
+                        <Border Style="{StaticResource IconTileSmall}" Margin="0,0,10,0">
                             <TextBlock Text="&#xE790;" FontFamily="Segoe MDL2 Assets" FontSize="13"
                                        Foreground="{DynamicResource AccentTextBrush}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -260,82 +251,11 @@
                 </StackPanel>
             </Border>
 
-            <!-- ── BANCO / MODO EQUIPE ── -->
-            <Border Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1" CornerRadius="12"
-                    Padding="24,20" Margin="0,0,0,14">
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                        <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,10,0"
-                                Background="{DynamicResource AccentLightBrush}">
-                            <TextBlock Text="&#xE909;" FontFamily="Segoe MDL2 Assets" FontSize="13"
-                                       Foreground="{DynamicResource AccentTextBrush}"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <TextBlock Text="Modo Equipe" FontSize="15" FontWeight="Bold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
-                        <Border Background="{DynamicResource AccentLightBrush}"
-                                CornerRadius="5" Padding="7,2" Margin="10,0,0,0">
-                            <TextBlock Text="NOVO" FontSize="9" FontWeight="Bold"
-                                       Foreground="{DynamicResource AccentTextBrush}"/>
-                        </Border>
-                    </StackPanel>
-                    <TextBlock FontSize="12" Foreground="{DynamicResource TextMutedBrush}"
-                               Margin="0,0,0,18" TextWrapping="Wrap">
-                        Aponte o banco de dados para uma pasta de rede compartilhada e toda a equipe usa as mesmas macros — sem servidor, sem internet.
-                    </TextBlock>
-
-                    <Border Background="{DynamicResource SurfaceElevatedBrush}"
-                            CornerRadius="8" Padding="12,10" Margin="0,0,0,14">
-                        <TextBlock Text="{Binding StatusBanco}" FontSize="12"
-                                   Foreground="{DynamicResource TextSecondaryBrush}"
-                                   TextWrapping="Wrap"/>
-                    </Border>
-
-                    <TextBlock Text="CAMINHO DO BANCO (.db)" FontSize="10" FontWeight="Bold"
-                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
-                    <Grid Margin="0,0,0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" Style="{StaticResource InputStyle}" Height="40"
-                                 Text="{Binding CaminhoBanco, UpdateSourceTrigger=PropertyChanged}"
-                                 Margin="0,0,8,0"/>
-                        <Button Grid.Column="1" Style="{StaticResource ButtonPrimary}"
-                                Command="{Binding SalvarBancoCommand}"
-                                Content="Aplicar" Width="80" Height="40"/>
-                    </Grid>
-
-                    <TextBlock FontSize="11" Foreground="{DynamicResource TextMutedBrush}"
-                               TextWrapping="Wrap" Margin="0,0,0,10">
-                        <Run Text="Para modo equipe, use um caminho de rede:  "/>
-                        <Run Text="\\servidor\MacroHelper\macros.db" FontFamily="Consolas"
-                             FontWeight="Bold" Foreground="{DynamicResource AccentTextBrush}"/>
-                    </TextBlock>
-
-                    <Button Style="{StaticResource ButtonSecondary}"
-                            Command="{Binding UsarBancoLocalCommand}"
-                            HorizontalAlignment="Left" Height="34" Padding="14,0" FontSize="12">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#xE72B;" FontFamily="Segoe MDL2 Assets" FontSize="12"
-                                       VerticalAlignment="Center" Margin="0,0,7,0"/>
-                            <TextBlock Text="Voltar para banco local" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-            </Border>
-
             <!-- ── GATILHO E DIGITAÇÃO ── -->
-            <Border Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1" CornerRadius="12"
-                    Padding="24,20" Margin="0,0,0,14">
+            <Border Style="{StaticResource SectionPanel}" Margin="0,0,0,14">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                        <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,10,0"
-                                Background="{DynamicResource AccentLightBrush}">
+                        <Border Style="{StaticResource IconTileSmall}" Margin="0,0,10,0">
                             <TextBlock Text="&#xE765;" FontFamily="Segoe MDL2 Assets" FontSize="13"
                                        Foreground="{DynamicResource AccentTextBrush}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -381,14 +301,10 @@
             </Border>
 
             <!-- ── DITADO POR VOZ ── -->
-            <Border Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1" CornerRadius="12"
-                    Padding="24,20" Margin="0,0,0,14">
+            <Border Style="{StaticResource SectionPanel}" Margin="0,0,0,14">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                        <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,10,0"
-                                Background="{DynamicResource AccentLightBrush}">
+                        <Border Style="{StaticResource IconTileSmall}" Margin="0,0,10,0">
                             <TextBlock Text="&#xE720;" FontFamily="Segoe MDL2 Assets" FontSize="13"
                                        Foreground="{DynamicResource AccentTextBrush}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -412,199 +328,11 @@
                 </StackPanel>
             </Border>
 
-            <!-- ── BACKUP AUTOMÁTICO ── -->
-            <Border Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1" CornerRadius="12"
-                    Padding="24,20" Margin="0,0,0,14">
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                        <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,10,0"
-                                Background="{DynamicResource AccentLightBrush}">
-                            <TextBlock Text="&#xE7B8;" FontFamily="Segoe MDL2 Assets" FontSize="13"
-                                       Foreground="{DynamicResource AccentTextBrush}"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <TextBlock Text="Backup Automático" FontSize="15" FontWeight="Bold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
-                    </StackPanel>
-
-                    <Grid Margin="0,0,0,16">
-                        <StackPanel MaxWidth="440" HorizontalAlignment="Left">
-                            <TextBlock Text="Backup diário automático" FontSize="13" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
-                            <TextBlock Text="Copia o banco de dados a cada 24h, mantendo as últimas 14 versões."
-                                       FontSize="11" Foreground="{DynamicResource TextMutedBrush}"
-                                       Margin="0,3,0,0" TextWrapping="Wrap"/>
-                        </StackPanel>
-                        <CheckBox HorizontalAlignment="Right" VerticalAlignment="Center"
-                                  IsChecked="{Binding BackupAutomatico}"/>
-                    </Grid>
-
-                    <TextBlock Text="PASTA DE BACKUP" FontSize="10" FontWeight="Bold"
-                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
-                    <TextBox Style="{StaticResource InputStyle}" Height="40"
-                             Text="{Binding PastaBackup, UpdateSourceTrigger=PropertyChanged}"
-                             Margin="0,0,0,14"/>
-
-                    <StackPanel Orientation="Horizontal">
-                        <Button Style="{StaticResource ButtonPrimary}"
-                                Command="{Binding SalvarBackupConfigCommand}"
-                                Content="Salvar" Width="100" Height="38" Margin="0,0,10,0"/>
-                        <Button Style="{StaticResource ButtonSecondary}"
-                                Command="{Binding FazerBackupAgoraCommand}"
-                                Width="140" Height="38">
-                            <TextBlock>
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Text" Value="Fazer backup agora"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding FazendoBackup}" Value="True">
-                                                <Setter Property="Text" Value="Fazendo backup..."/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </Button>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
-            <!-- ── SINCRONIZAÇÃO (API) ── -->
-            <Border Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1" CornerRadius="12"
-                    Padding="24,20" Margin="0,0,0,14">
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                        <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,10,0"
-                                Background="{DynamicResource AccentLightBrush}">
-                            <TextBlock Text="&#xE895;" FontFamily="Segoe MDL2 Assets" FontSize="13"
-                                       Foreground="{DynamicResource AccentTextBrush}"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <TextBlock Text="Sincronização via Servidor" FontSize="15" FontWeight="Bold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
-                    </StackPanel>
-                    <TextBlock FontSize="12" Foreground="{DynamicResource TextMutedBrush}"
-                               Margin="0,0,0,16" TextWrapping="Wrap">
-                        Sincroniza macros com o servidor MacroHelper.API: envia o que só existe localmente e recebe o que só existe no servidor.
-                    </TextBlock>
-
-                    <TextBlock Text="URL DO SERVIDOR" FontSize="10" FontWeight="Bold"
-                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
-                    <TextBox Style="{StaticResource InputStyle}" Height="40"
-                             Text="{Binding ApiServidorUrl, UpdateSourceTrigger=PropertyChanged}"
-                             Margin="0,0,0,14"/>
-
-                    <Grid Margin="0,0,0,14">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                            <TextBlock Text="E-MAIL" FontSize="10" FontWeight="Bold"
-                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
-                            <TextBox Style="{StaticResource InputStyle}" Height="40"
-                                     Text="{Binding SyncEmail, UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                            <TextBlock Text="SENHA" FontSize="10" FontWeight="Bold"
-                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
-                            <PasswordBox Height="40" Background="{DynamicResource InputBgBrush}"
-                                         BorderBrush="{DynamicResource InputBorderBrush}"
-                                         Foreground="{DynamicResource TextPrimaryBrush}"
-                                         FontSize="13" Padding="10,0"
-                                         PasswordChanged="PasswordSync_Changed"/>
-                        </StackPanel>
-                    </Grid>
-
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <Button Style="{StaticResource ButtonSecondary}"
-                                Command="{Binding VerificarServidorCommand}"
-                                Width="150" Height="34" Margin="0,0,10,0">
-                            <TextBlock>
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Text" Value="Testar conexão"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding VerificandoServidor}" Value="True">
-                                                <Setter Property="Text" Value="Testando..."/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </Button>
-                        <Border CornerRadius="5" Padding="8,4" VerticalAlignment="Center">
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ServidorOnline}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                            <Setter Property="Background" Value="{DynamicResource SuccessBgBrush}"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ServidorOnline}" Value="False">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                            <Setter Property="Background" Value="{DynamicResource DangerBgBrush}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                            <TextBlock FontSize="11" FontWeight="Bold">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ServidorOnline}" Value="True">
-                                                <Setter Property="Text" Value="Online"/>
-                                                <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ServidorOnline}" Value="False">
-                                                <Setter Property="Text" Value="Offline"/>
-                                                <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </Border>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal">
-                        <Button Style="{StaticResource ButtonSecondary}"
-                                Command="{Binding SalvarServidorSyncCommand}"
-                                Content="Salvar servidor" Width="130" Height="38" Margin="0,0,10,0"/>
-                        <Button Style="{StaticResource ButtonPrimary}"
-                                Command="{Binding SincronizarCommand}"
-                                Width="140" Height="38">
-                            <TextBlock>
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Text" Value="Sincronizar agora"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Sincronizando}" Value="True">
-                                                <Setter Property="Text" Value="Sincronizando..."/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </Button>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
             <!-- ── IA ── -->
-            <Border Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1" CornerRadius="12"
-                    Padding="24,20" Margin="0,0,0,14">
+            <Border Style="{StaticResource SectionPanel}" Margin="0,0,0,14">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                        <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,10,0"
-                                Background="{DynamicResource AccentLightBrush}">
+                        <Border Style="{StaticResource IconTileSmall}" Margin="0,0,10,0">
                             <TextBlock Text="&#xE9CE;" FontFamily="Segoe MDL2 Assets" FontSize="13"
                                        Foreground="{DynamicResource AccentTextBrush}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -665,14 +393,10 @@
             </Border>
 
             <!-- ── COMPORTAMENTO ── -->
-            <Border Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1" CornerRadius="12"
-                    Padding="24,20" Margin="0,0,0,20">
+            <Border Style="{StaticResource SectionPanel}" Margin="0,0,0,20">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
-                        <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,10,0"
-                                Background="{DynamicResource AccentLightBrush}">
+                        <Border Style="{StaticResource IconTileSmall}" Margin="0,0,10,0">
                             <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="13"
                                        Foreground="{DynamicResource AccentTextBrush}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -711,14 +435,10 @@
             </Border>
 
             <!-- ── MODO TOTEM / KIOSK ── -->
-            <Border Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1" CornerRadius="12"
-                    Padding="24,20" Margin="0,0,0,14">
+            <Border Style="{StaticResource SectionPanel}" Margin="0,0,0,14">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                        <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,10,0"
-                                Background="{DynamicResource AccentLightBrush}">
+                        <Border Style="{StaticResource IconTileSmall}" Margin="0,0,10,0">
                             <TextBlock Text="&#xE7F4;" FontFamily="Segoe MDL2 Assets" FontSize="13"
                                        Foreground="{DynamicResource AccentTextBrush}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -742,14 +462,10 @@
             </Border>
 
             <!-- ── ATALHOS DE TECLADO ── -->
-            <Border Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1" CornerRadius="12"
-                    Padding="24,20" Margin="0,0,0,14">
+            <Border Style="{StaticResource SectionPanel}" Margin="0,0,0,14">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                        <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,10,0"
-                                Background="{DynamicResource AccentLightBrush}">
+                        <Border Style="{StaticResource IconTileSmall}" Margin="0,0,10,0">
                             <TextBlock Text="&#xE765;" FontFamily="Segoe MDL2 Assets" FontSize="13"
                                        Foreground="{DynamicResource AccentTextBrush}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -870,15 +586,11 @@
             </Border>
 
             <!-- ── SAÚDE DO APP ── -->
-            <Border Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1" CornerRadius="12"
-                    Padding="24,20" Margin="0,0,0,14">
+            <Border Style="{StaticResource SectionPanel}" Margin="0,0,0,14">
                 <StackPanel>
                     <Grid Margin="0,0,0,16">
                         <StackPanel Orientation="Horizontal">
-                            <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,10,0"
-                                    Background="{DynamicResource AccentLightBrush}">
+                            <Border Style="{StaticResource IconTileSmall}" Margin="0,0,10,0">
                                 <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" FontSize="13"
                                            Foreground="{DynamicResource AccentTextBrush}"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -893,33 +605,6 @@
                         </Button>
                     </Grid>
 
-                    <Border CornerRadius="8" Padding="12,9" Margin="0,0,0,14">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Setter Property="Background" Value="{DynamicResource SuccessBgBrush}"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding BancoIntegro}" Value="False">
-                                        <Setter Property="Background" Value="{DynamicResource DangerBgBrush}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                        <TextBlock FontSize="12">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Text" Value="Banco de dados íntegro."/>
-                                    <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding BancoIntegro}" Value="False">
-                                            <Setter Property="Text" Value="Foram encontrados problemas no banco de dados. Considere restaurar um backup."/>
-                                            <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </Border>
-
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -930,27 +615,20 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,12">
-                            <TextBlock Text="TAMANHO DO BANCO" FontSize="9" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
-                            <TextBlock Text="{Binding TamanhoBancoTexto}" FontSize="14" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
-                        </StackPanel>
-                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,8,12">
                             <TextBlock Text="MEMÓRIA EM USO" FontSize="9" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
                             <TextBlock Text="{Binding MemoriaTexto}" FontSize="14" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
-                        <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,12">
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,8,12">
                             <TextBlock Text="VERSÃO" FontSize="9" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
                             <TextBlock Text="{Binding VersaoAppTexto}" FontSize="14" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,0">
+                        <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,12">
                             <TextBlock Text="MACROS / USUÁRIOS" FontSize="9" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
                             <TextBlock FontSize="14" FontWeight="SemiBold"
@@ -960,32 +638,26 @@
                                 <Run Text="{Binding TotalUsuariosHealth, Mode=OneWay}"/>
                             </TextBlock>
                         </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,0">
-                            <TextBlock Text="ÚLTIMO BACKUP" FontSize="9" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
-                            <TextBlock Text="{Binding UltimoBackupTexto}" FontSize="14" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
-                        </StackPanel>
 
-                        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
                                 BorderThickness="0,1,0,0" BorderBrush="{DynamicResource BorderLightBrush}"
-                                Margin="0,12,0,12" Padding="0,12,0,0">
+                                Margin="0,0,0,12" Padding="0,12,0,0">
                             <TextBlock Text="Recursos do computador (desta sessão)" FontSize="11" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextMutedBrush}"/>
                         </Border>
-                        <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,8,0">
+                        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,8,0">
                             <TextBlock Text="CPU" FontSize="9" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
                             <TextBlock Text="{Binding CpuTexto}" FontSize="14" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
-                        <StackPanel Grid.Row="3" Grid.Column="1" Margin="0,0,8,0">
+                        <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,0,8,0">
                             <TextBlock Text="MEMÓRIA DO COMPUTADOR" FontSize="9" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
                             <TextBlock Text="{Binding MemoriaSistemaTexto}" FontSize="14" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
-                        <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,0">
+                        <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,0">
                             <TextBlock Text="DISCO" FontSize="9" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
                             <TextBlock Text="{Binding DiscoTexto}" FontSize="14" FontWeight="SemiBold"

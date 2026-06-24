@@ -8,7 +8,7 @@
 
     <Border Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource AccentBrush}"
-            BorderThickness="1.5" CornerRadius="10">
+            BorderThickness="1.5" CornerRadius="18">
         <Border.Effect>
             <DropShadowEffect BlurRadius="24" ShadowDepth="4" Opacity="0.3" Color="Black"/>
         </Border.Effect>
@@ -19,7 +19,7 @@
                 <Grid>
                     <StackPanel Orientation="Horizontal">
                         <Border Background="{DynamicResource AccentLightBrush}"
-                                CornerRadius="5" Padding="8,3">
+                                CornerRadius="7" Padding="8,3">
                             <TextBlock x:Name="TxtGatilho"
                                        FontFamily="Consolas" FontSize="12" FontWeight="Bold"
                                        Foreground="{DynamicResource AccentTextBrush}"/>
@@ -57,7 +57,7 @@
                             </StackPanel>
                             <Border Grid.Column="1"
                                     Background="{DynamicResource AccentLightBrush}"
-                                    CornerRadius="4" Padding="6,2"
+                                    CornerRadius="6" Padding="6,2"
                                     VerticalAlignment="Top" Margin="8,0,0,0">
                                 <TextBlock Text="{Binding Atalho}" FontSize="9"
                                            FontFamily="Consolas"
@@ -69,12 +69,13 @@
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Padding" Value="14,9"/>
+                        <Setter Property="Margin" Value="6,2"/>
                         <Setter Property="Cursor" Value="Hand"/>
                         <Setter Property="Background" Value="Transparent"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                    <Border x:Name="bg" Background="{TemplateBinding Background}"
+                                    <Border x:Name="bg" CornerRadius="10" Background="{TemplateBinding Background}"
                                             Padding="{TemplateBinding Padding}">
                                         <ContentPresenter/>
                                     </Border>
@@ -98,25 +99,19 @@
             <!-- Footer atalhos de teclado -->
             <Border Padding="12,7" BorderThickness="0,1,0,0"
                     BorderBrush="{DynamicResource BorderBrush}">
-                <StackPanel Orientation="Horizontal" Opacity=".7">
-                    <Border Background="{DynamicResource TableHeaderBgBrush}"
-                            CornerRadius="3" Padding="5,2" Margin="0,0,4,0">
-                        <TextBlock Text="↑↓" FontSize="9"
-                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                <StackPanel Orientation="Horizontal">
+                    <Border Style="{StaticResource KbdChip}" Margin="0,0,4,0">
+                        <TextBlock Text="↑↓" Style="{StaticResource KbdChipText}"/>
                     </Border>
                     <TextBlock Text="navegar  " FontSize="9"
                                Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
-                    <Border Background="{DynamicResource TableHeaderBgBrush}"
-                            CornerRadius="3" Padding="5,2" Margin="0,0,4,0">
-                        <TextBlock Text="Enter" FontSize="9"
-                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <Border Style="{StaticResource KbdChip}" Margin="0,0,4,0">
+                        <TextBlock Text="Enter" Style="{StaticResource KbdChipText}"/>
                     </Border>
                     <TextBlock Text="inserir  " FontSize="9"
                                Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
-                    <Border Background="{DynamicResource TableHeaderBgBrush}"
-                            CornerRadius="3" Padding="5,2" Margin="0,0,4,0">
-                        <TextBlock Text="Esc" FontSize="9"
-                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <Border Style="{StaticResource KbdChip}" Margin="0,0,4,0">
+                        <TextBlock Text="Esc" Style="{StaticResource KbdChipText}"/>
                     </Border>
                     <TextBlock Text="fechar" FontSize="9"
                                Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>

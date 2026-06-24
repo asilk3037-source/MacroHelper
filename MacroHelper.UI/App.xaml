@@ -16,20 +16,21 @@
             <conv:InverseBoolConverter x:Key="InverseBool"/>
             <conv:IntGreaterThanZeroToVisibilityConverter x:Key="IntToVis"/>
             <conv:IntZeroToVisibilityConverter x:Key="IntZeroToVis"/>
+            <conv:NameInitialsConverter x:Key="NameInitials"/>
 
-            <!-- ── ACCENT GRADIENT (visual moderno: gradiente + glow no lugar do roxo sólido) ── -->
+            <!-- ── ACCENT GRADIENT (usado em tiles de logo/badges "iridescentes" — primary → ciano) ── -->
             <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="{DynamicResource SidebarAccentColor}" Offset="0"/>
-                <GradientStop Color="{DynamicResource AccentColor}" Offset="1"/>
+                <GradientStop Color="{DynamicResource AccentColor}" Offset="0"/>
+                <GradientStop Color="{DynamicResource CyanColor}" Offset="1"/>
             </LinearGradientBrush>
 
             <!-- ── BUTTON PRIMARY ── -->
             <Style x:Key="ButtonPrimary" TargetType="Button">
-                <Setter Property="Background" Value="{DynamicResource AccentGradientBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Padding" Value="20,0"/>
-                <Setter Property="Height" Value="36"/>
+                <Setter Property="Height" Value="38"/>
                 <Setter Property="FontSize" Value="13"/>
                 <Setter Property="FontWeight" Value="SemiBold"/>
                 <Setter Property="Cursor" Value="Hand"/>
@@ -38,7 +39,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="b" Background="{TemplateBinding Background}"
-                                    CornerRadius="8" Padding="{TemplateBinding Padding}"
+                                    CornerRadius="10" Padding="{TemplateBinding Padding}"
                                     RenderTransformOrigin="0.5,0.5">
                                 <Border.RenderTransform>
                                     <ScaleTransform x:Name="scale" ScaleX="1" ScaleY="1"/>
@@ -87,13 +88,14 @@
 
             <!-- ── BUTTON SECONDARY ── -->
             <Style x:Key="ButtonSecondary" TargetType="Button">
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderLightBrush}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="Padding" Value="20,0"/>
-                <Setter Property="Height" Value="36"/>
+                <Setter Property="Height" Value="38"/>
                 <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontWeight" Value="Medium"/>
                 <Setter Property="Cursor" Value="Hand"/>
                 <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                 <Setter Property="Template">
@@ -102,12 +104,12 @@
                             <Border x:Name="b" Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                    CornerRadius="10" Padding="{TemplateBinding Padding}">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="b" Property="Background" Value="{DynamicResource TableRowHoverBrush}"/>
+                                    <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -127,12 +129,47 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="6">
+                            <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="8">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="b" Property="Background" Value="{DynamicResource TableRowHoverBrush}"/>
+                                    <Setter TargetName="b" Property="Background" Value="{DynamicResource SurfaceElevatedBrush}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- ── TOOLBAR ICON BUTTON (botão quadrado com borda, usado em barras de ferramentas agrupadas) ── -->
+            <Style x:Key="ToolbarIconButton" TargetType="Button">
+                <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderLightBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Width" Value="36"/>
+                <Setter Property="Height" Value="36"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="b" Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="10">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                                </Trigger>
+                                <Trigger Property="Tag" Value="Active">
+                                    <Setter TargetName="b" Property="Background" Value="{DynamicResource AccentLightBrush}"/>
+                                    <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -156,9 +193,9 @@
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="8" SnapsToDevicePixels="True">
+                                    CornerRadius="10" SnapsToDevicePixels="True">
                                 <!-- Grid garante centralização vertical sem conflito de Margin+Alignment -->
-                                <Grid Margin="10,0">
+                                <Grid Margin="12,0">
                                     <ScrollViewer x:Name="PART_ContentHost" Focusable="False"
                                                   HorizontalScrollBarVisibility="Hidden"
                                                   VerticalScrollBarVisibility="Hidden"
@@ -199,7 +236,7 @@
                                         Background="{TemplateBinding Background}"
                                         BorderBrush="{TemplateBinding BorderBrush}"
                                         BorderThickness="{TemplateBinding BorderThickness}"
-                                        CornerRadius="8" SnapsToDevicePixels="True">
+                                        CornerRadius="10" SnapsToDevicePixels="True">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
@@ -237,7 +274,7 @@
                                             Background="{DynamicResource SurfaceBrush}"
                                             BorderBrush="{DynamicResource BorderBrush}"
                                             BorderThickness="1"
-                                            CornerRadius="8"
+                                            CornerRadius="12"
                                             Margin="0,4,0,0">
                                         <Border.Effect>
                                             <DropShadowEffect BlurRadius="16" ShadowDepth="0" Opacity="0.3" Color="Black"/>
@@ -275,7 +312,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="ComboBoxItem">
                             <Border x:Name="bg" Background="{TemplateBinding Background}"
-                                    CornerRadius="5" Padding="{TemplateBinding Padding}">
+                                    CornerRadius="8" Padding="{TemplateBinding Padding}">
                                 <ContentPresenter/>
                             </Border>
                             <ControlTemplate.Triggers>
@@ -293,30 +330,30 @@
                 </Setter>
             </Style>
 
-            <!-- ── CARD STYLE (visual moderno: sombra mais profunda + leve elevação no hover) ── -->
+            <!-- ── CARD STYLE (linha de lista — rounded-2xl, leve elevação no hover) ── -->
             <Style x:Key="CardStyle" TargetType="Border">
                 <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderLightBrush}"/>
                 <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="CornerRadius" Value="10"/>
+                <Setter Property="CornerRadius" Value="16"/>
                 <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
                 <Setter Property="RenderTransform">
                     <Setter.Value><TranslateTransform x:Name="lift" Y="0"/></Setter.Value>
                 </Setter>
                 <Setter Property="Effect">
                     <Setter.Value>
-                        <DropShadowEffect x:Name="cardShadow" Color="#000000" ShadowDepth="2" BlurRadius="0" Opacity="0"/>
+                        <DropShadowEffect x:Name="cardShadow" Color="#221F30" ShadowDepth="2" BlurRadius="0" Opacity="0"/>
                     </Setter.Value>
                 </Setter>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
                         <Trigger.EnterActions>
                             <BeginStoryboard>
                                 <Storyboard>
                                     <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(TranslateTransform.Y)" To="-2" Duration="0:0:0.12"/>
-                                    <DoubleAnimation Storyboard.TargetProperty="(Border.Effect).(DropShadowEffect.BlurRadius)" To="14" Duration="0:0:0.15"/>
-                                    <DoubleAnimation Storyboard.TargetProperty="(Border.Effect).(DropShadowEffect.Opacity)" To="0.16" Duration="0:0:0.15"/>
+                                    <DoubleAnimation Storyboard.TargetProperty="(Border.Effect).(DropShadowEffect.BlurRadius)" To="18" Duration="0:0:0.15"/>
+                                    <DoubleAnimation Storyboard.TargetProperty="(Border.Effect).(DropShadowEffect.Opacity)" To="0.12" Duration="0:0:0.15"/>
                                 </Storyboard>
                             </BeginStoryboard>
                         </Trigger.EnterActions>
@@ -331,6 +368,96 @@
                         </Trigger.ExitActions>
                     </Trigger>
                 </Style.Triggers>
+            </Style>
+
+            <!-- ── SECTION PANEL (painel grande — rounded-3xl, usado para agrupar seções de conteúdo) ── -->
+            <Style x:Key="SectionPanel" TargetType="Border">
+                <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderLightBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="CornerRadius" Value="22"/>
+                <Setter Property="Padding" Value="24"/>
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect Color="#221F30" ShadowDepth="2" BlurRadius="16" Opacity="0.05"/>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- ── LIST ROW CARD (linha de lista clicável — categorias, variáveis, integrações, membros) ── -->
+            <Style x:Key="ListRowCard" TargetType="Border" BasedOn="{StaticResource CardStyle}">
+                <Setter Property="Padding" Value="18,14"/>
+            </Style>
+
+            <!-- ── EMPTY STATE PANEL (estado vazio / placeholder "em construção") ── -->
+            <Style x:Key="EmptyStatePanel" TargetType="Border">
+                <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="CornerRadius" Value="22"/>
+                <Setter Property="Padding" Value="40"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+            </Style>
+
+            <!-- ── ÍCONE-TILE (quadrado arredondado com ícone tonalizado — usado em cabeçalhos e listas) ── -->
+            <Style x:Key="IconTile" TargetType="Border">
+                <Setter Property="Width" Value="44"/>
+                <Setter Property="Height" Value="44"/>
+                <Setter Property="CornerRadius" Value="13"/>
+                <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+            <Style x:Key="IconTileSmall" TargetType="Border" BasedOn="{StaticResource IconTile}">
+                <Setter Property="Width" Value="32"/>
+                <Setter Property="Height" Value="32"/>
+                <Setter Property="CornerRadius" Value="9"/>
+            </Style>
+
+            <!-- ── TIPOGRAFIA DE PÁGINA ── -->
+            <Style x:Key="PageTitleText" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Segoe UI Semibold"/>
+                <Setter Property="FontSize" Value="26"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            </Style>
+            <Style x:Key="PageSubtitleText" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+                <Setter Property="Margin" Value="0,4,0,0"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+            </Style>
+            <Style x:Key="SectionTitleText" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Segoe UI Semibold"/>
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            </Style>
+
+            <!-- ── BADGE / PILL (chip pequeno arredondado — status, categorias, contagens) ── -->
+            <Style x:Key="BadgePill" TargetType="Border">
+                <Setter Property="Background" Value="{DynamicResource BadgeBgBrush}"/>
+                <Setter Property="CornerRadius" Value="100"/>
+                <Setter Property="Padding" Value="9,3"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+            </Style>
+            <Style x:Key="BadgePillText" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="11"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Foreground" Value="{DynamicResource BadgeTextBrush}"/>
+            </Style>
+
+            <!-- ── KBD CHIP (atalho de teclado — ex.: "Ctrl+Espaço") ── -->
+            <Style x:Key="KbdChip" TargetType="Border">
+                <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderLightBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="CornerRadius" Value="5"/>
+                <Setter Property="Padding" Value="6,2"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+            </Style>
+            <Style x:Key="KbdChipText" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Consolas"/>
+                <Setter Property="FontSize" Value="10"/>
+                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
             </Style>
 
             <!-- ── SCROLLBAR ── -->

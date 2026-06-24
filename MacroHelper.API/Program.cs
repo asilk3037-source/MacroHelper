@@ -52,7 +52,6 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
 builder.Services.AddSignalR();
 
 // Data
-builder.Services.AddSingleton<DatabaseContext>();
 builder.Services.AddSingleton<SupabaseContext>();
 builder.Services.AddSingleton<IMacroRepository, MacroRepository>();
 builder.Services.AddSingleton<CategoriaRepository>();

@@ -28,11 +28,9 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="Relatório de Uso" FontSize="20" FontWeight="Bold"
-                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    <TextBlock Text="Relatório de Uso" Style="{StaticResource PageTitleText}"/>
                     <TextBlock Text="Histórico de macros inseridas e aplicativos utilizados"
-                               FontSize="12" Foreground="{DynamicResource TextMutedBrush}"
-                               Margin="0,2,0,0"/>
+                               Style="{StaticResource PageSubtitleText}"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button Style="{StaticResource ButtonSecondary}"
@@ -81,7 +79,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="9"
+                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="12"
                                 Background="{DynamicResource AccentLightBrush}" Margin="0,0,14,0">
                             <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="16"
                                        Foreground="{DynamicResource AccentBrush}"
@@ -103,7 +101,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="9"
+                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="12"
                                 Background="{DynamicResource SurfaceElevatedBrush}" Margin="0,0,14,0">
                             <TextBlock Text="&#xE9D2;" FontFamily="Segoe MDL2 Assets" FontSize="16"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
@@ -125,7 +123,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="9"
+                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="12"
                                 Background="{DynamicResource SuccessBgBrush}" Margin="0,0,14,0">
                             <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="16"
                                        Foreground="{DynamicResource SuccessBrush}"
@@ -253,7 +251,7 @@
                     <ColumnDefinition Width="160"/>
                 </Grid.ColumnDefinitions>
                 <Border Grid.Column="0" BorderBrush="{DynamicResource InputBorderBrush}"
-                        BorderThickness="1" CornerRadius="8"
+                        BorderThickness="1" CornerRadius="10"
                         Background="{DynamicResource InputBgBrush}"
                         Height="40" Margin="0,0,10,0">
                     <Grid>
@@ -286,7 +284,7 @@
         </Border>
 
         <!-- Toast -->
-        <Border DockPanel.Dock="Top" Margin="28,0,28,10" CornerRadius="8" Padding="14,10"
+        <Border DockPanel.Dock="Top" Margin="28,0,28,10" CornerRadius="10" Padding="14,10"
                 Background="{DynamicResource SuccessBgBrush}"
                 BorderBrush="{DynamicResource SuccessBrush}" BorderThickness="1"
                 Visibility="{Binding Mensagem, Converter={StaticResource NullToVis}}">
@@ -368,7 +366,7 @@
         </Border>
 
         <!-- Tabela -->
-        <Border Margin="28,0,28,28" CornerRadius="10"
+        <Border Margin="28,0,28,28" CornerRadius="16"
                 Background="{DynamicResource SurfaceBrush}"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                 ClipToBounds="True">
@@ -468,7 +466,7 @@
                         </Style>
                     </Border.Style>
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Border Width="56" Height="56" CornerRadius="14"
+                        <Border Width="56" Height="56" CornerRadius="18"
                                 Background="{DynamicResource SurfaceElevatedBrush}"
                                 HorizontalAlignment="Center" Margin="0,0,0,16">
                             <TextBlock Text="&#xE9D2;" FontFamily="Segoe MDL2 Assets" FontSize="26"

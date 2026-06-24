@@ -18,7 +18,6 @@ public partial class MainWindow : Window
     private readonly TrayService          _trayService;
     private readonly HotkeyService        _hotkeyService;
     private readonly VoiceDictationService _voiceService;
-    private readonly BackupService        _backupService;
     private MacroPopupWindow?             _popup;
     private BuscadorRapidoWindow?         _buscador;
     private bool                          _hookAtivo = true;
@@ -35,7 +34,6 @@ public partial class MainWindow : Window
         _usuarioService   = App.Services.GetRequiredService<UsuarioService>();
         _iaService        = App.Services.GetRequiredService<IaService>();
         _voiceService     = App.Services.GetRequiredService<VoiceDictationService>();
-        _backupService    = App.Services.GetRequiredService<BackupService>();
 
         _trayService   = new TrayService();
         _hotkeyService = App.Services.GetRequiredService<HotkeyService>();
@@ -216,13 +214,6 @@ public partial class MainWindow : Window
         {
             if (DataContext is MainViewModel m) m.StatusMensagem = msg;
         });
-
-        // Backup automático (se configurado em Configurações)
-        try
-        {
-            _backupService.Iniciar(Properties.Settings.Default.BackupAutomatico, Properties.Settings.Default.PastaBackup);
-        }
-        catch { }
 
         // Arquivamento de logs antigos (uma vez por dia)
         _ = ArquivarLogsAntigosSeNecessarioAsync();

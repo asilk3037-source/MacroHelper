@@ -2,7 +2,7 @@ namespace MacroHelper.Data.Context;
 
 /// <summary>
 /// Cliente Supabase (Postgres + Auth) apontando para o schema "macrohelper" do projeto Tarefas.
-/// Registrado como singleton ao lado de DatabaseContext (SQLite) — não o substitui.
+/// Única fonte de dados do app — não há banco local (SQLite) em paralelo.
 /// </summary>
 public class SupabaseContext
 {

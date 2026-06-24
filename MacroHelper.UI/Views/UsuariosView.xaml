@@ -112,18 +112,13 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Usuários" FontSize="20" FontWeight="Bold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
-                        <Border Background="{DynamicResource AccentLightBrush}"
-                                CornerRadius="10" Padding="8,2" Margin="10,0,0,0"
-                                VerticalAlignment="Center">
-                            <TextBlock Text="{Binding Usuarios.Count}" FontSize="11"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource AccentTextBrush}"/>
+                        <TextBlock Text="Usuários" Style="{StaticResource PageTitleText}"/>
+                        <Border Style="{StaticResource BadgePill}" Margin="10,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Usuarios.Count}" Style="{StaticResource BadgePillText}"/>
                         </Border>
                     </StackPanel>
-                    <TextBlock Text="Gerencie os usuários com acesso ao MacroHelper"
-                               FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
+                    <TextBlock Text="Gerencie os usuários com acesso ao MacroHelper."
+                               Style="{StaticResource PageSubtitleText}"/>
                 </StackPanel>
             </Grid>
         </Border>

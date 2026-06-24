@@ -7,7 +7,7 @@
         ShowInTaskbar="False" ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
 
-    <Border CornerRadius="14" Background="{DynamicResource SurfaceBrush}"
+    <Border CornerRadius="20" Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1.5">
         <Border.Effect>
             <DropShadowEffect BlurRadius="40" ShadowDepth="0" Opacity="0.4" Color="Black"/>
@@ -23,8 +23,8 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Width="34" Height="34" CornerRadius="8" Margin="0,0,10,0"
-                            Background="{DynamicResource AccentBrush}">
+                    <Border Grid.Column="0" Width="34" Height="34" CornerRadius="11" Margin="0,0,10,0"
+                            Background="{DynamicResource AccentGradientBrush}">
                         <TextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets" FontSize="15"
                                    Foreground="White"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -66,6 +66,7 @@
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Padding" Value="16,11"/>
+                        <Setter Property="Margin" Value="8,2"/>
                         <Setter Property="Background" Value="Transparent"/>
                         <Setter Property="Cursor" Value="Hand"/>
                         <Setter Property="Focusable" Value="True"/>
@@ -73,7 +74,7 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                    <Border x:Name="bg" Background="{TemplateBinding Background}"
+                                    <Border x:Name="bg" CornerRadius="12" Background="{TemplateBinding Background}"
                                             Padding="{TemplateBinding Padding}">
                                         <ContentPresenter/>
                                     </Border>
@@ -129,7 +130,7 @@
                                     </TextBlock.Style>
                                 </TextBlock>
                             </Button>
-                            <Border Grid.Column="2" CornerRadius="5" Padding="8,3"
+                            <Border Grid.Column="2" CornerRadius="7" Padding="8,3"
                                     Background="{DynamicResource AccentLightBrush}"
                                     VerticalAlignment="Top" Margin="0,0,0,0">
                                 <TextBlock Text="{Binding Atalho}" FontFamily="Consolas"
@@ -177,22 +178,19 @@
             <!-- Footer -->
             <Border Padding="14,8" BorderThickness="0,1,0,0"
                     BorderBrush="{DynamicResource BorderBrush}">
-                <StackPanel Orientation="Horizontal" Opacity=".7">
-                    <Border Background="{DynamicResource TableHeaderBgBrush}"
-                            CornerRadius="3" Padding="5,2" Margin="0,0,4,0">
-                        <TextBlock Text="↑↓" FontSize="9" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                <StackPanel Orientation="Horizontal">
+                    <Border Style="{StaticResource KbdChip}" Margin="0,0,4,0">
+                        <TextBlock Text="↑↓" Style="{StaticResource KbdChipText}"/>
                     </Border>
                     <TextBlock Text="navegar  " FontSize="9" Foreground="{DynamicResource TextMutedBrush}"
                                VerticalAlignment="Center"/>
-                    <Border Background="{DynamicResource TableHeaderBgBrush}"
-                            CornerRadius="3" Padding="5,2" Margin="0,0,4,0">
-                        <TextBlock Text="Enter" FontSize="9" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <Border Style="{StaticResource KbdChip}" Margin="0,0,4,0">
+                        <TextBlock Text="Enter" Style="{StaticResource KbdChipText}"/>
                     </Border>
                     <TextBlock Text="inserir  " FontSize="9" Foreground="{DynamicResource TextMutedBrush}"
                                VerticalAlignment="Center"/>
-                    <Border Background="{DynamicResource TableHeaderBgBrush}"
-                            CornerRadius="3" Padding="5,2" Margin="0,0,4,0">
-                        <TextBlock Text="Ctrl+Espaço" FontSize="9" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <Border Style="{StaticResource KbdChip}" Margin="0,0,4,0">
+                        <TextBlock Text="Ctrl+Espaço" Style="{StaticResource KbdChipText}"/>
                     </Border>
                     <TextBlock Text="abrir/fechar" FontSize="9" Foreground="{DynamicResource TextMutedBrush}"
                                VerticalAlignment="Center"/>

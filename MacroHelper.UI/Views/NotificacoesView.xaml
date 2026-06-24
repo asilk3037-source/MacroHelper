@@ -23,9 +23,8 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="Notificações" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                    <TextBlock Text="Eventos do sistema: backups, novos usuários e mais"
-                               FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
+                    <TextBlock Text="Notificações" Style="{StaticResource PageTitleText}"/>
+                    <TextBlock Text="Eventos do sistema: backups, novos usuários e mais." Style="{StaticResource PageSubtitleText}"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button Content="Marcar todas como lidas" Style="{StaticResource ButtonSecondary}"
@@ -40,15 +39,13 @@
             <ItemsControl ItemsSource="{Binding Notificacoes}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="{DynamicResource BorderBrush}"
-                                BorderThickness="1" CornerRadius="10" Padding="16,12" Margin="0,0,0,6"
+                        <Border Padding="18,14" Margin="0,0,0,6"
                                 Cursor="Hand" MouseLeftButtonUp="Item_MouseLeftButtonUp">
                             <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                                <Style TargetType="Border" BasedOn="{StaticResource CardStyle}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Lida}" Value="False">
-                                            <Setter Property="Background" Value="{DynamicResource SidebarItemHoverBrush}"/>
+                                            <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>

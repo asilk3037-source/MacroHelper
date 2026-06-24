@@ -18,8 +18,8 @@
         <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceBrush}"
                 BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}" Padding="28,18">
             <StackPanel>
-                <TextBlock Text="Central de Ajuda" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                <TextBlock FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0">
+                <TextBlock Text="Central de Ajuda" Style="{StaticResource PageTitleText}"/>
+                <TextBlock Style="{StaticResource PageSubtitleText}">
                     <Run Text="Perguntas frequentes · SK MacroHelper v"/><Run Text="{Binding VersaoApp}"/>
                 </TextBlock>
             </StackPanel>
@@ -30,8 +30,7 @@
                 <ItemsControl ItemsSource="{Binding Faqs}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
-                                    BorderThickness="1" CornerRadius="10" Padding="18,14" Margin="0,0,0,8">
+                            <Border Style="{StaticResource CardStyle}" Padding="20,16" Margin="0,0,0,8">
                                 <StackPanel>
                                     <TextBlock Text="{Binding Pergunta}" FontSize="13" FontWeight="SemiBold"
                                                Foreground="{DynamicResource TextPrimaryBrush}"/>
@@ -43,8 +42,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1" CornerRadius="10" Padding="18,14" Margin="0,8,0,0">
+                <Border Style="{StaticResource CardStyle}" Padding="20,16" Margin="0,8,0,0">
                     <StackPanel>
                         <TextBlock Text="Atalhos úteis" FontSize="13" FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8"/>

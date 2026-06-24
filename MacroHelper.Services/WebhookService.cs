@@ -9,9 +9,8 @@ public static class EventosWebhook
 {
     public const string MacroUsada      = "MacroUsada";
     public const string UsuarioCriado   = "UsuarioCriado";
-    public const string BackupConcluido = "BackupConcluido";
 
-    public static readonly string[] Todos = [MacroUsada, UsuarioCriado, BackupConcluido];
+    public static readonly string[] Todos = [MacroUsada, UsuarioCriado];
 }
 
 public class WebhookService

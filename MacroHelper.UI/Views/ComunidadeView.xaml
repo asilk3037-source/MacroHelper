@@ -18,9 +18,8 @@
         <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceBrush}"
                 BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}" Padding="28,18">
             <StackPanel>
-                <TextBlock Text="Comunidade" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                <TextBlock Text="Macros compartilhadas publicamente pela equipe"
-                           FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
+                <TextBlock Text="Comunidade" Style="{StaticResource PageTitleText}"/>
+                <TextBlock Text="Macros compartilhadas publicamente pela equipe." Style="{StaticResource PageSubtitleText}"/>
             </StackPanel>
         </Border>
 
@@ -56,8 +55,7 @@
                 <ItemsControl ItemsSource="{Binding MacrosPublicas}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
-                                    BorderThickness="1" CornerRadius="10" Padding="16,14" Margin="0,0,0,8">
+                            <Border Style="{StaticResource CardStyle}" Padding="18,15" Margin="0,0,0,8">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>

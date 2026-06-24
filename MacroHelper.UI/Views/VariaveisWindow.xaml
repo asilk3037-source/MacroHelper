@@ -7,7 +7,7 @@
         Background="Transparent" ResizeMode="NoResize"
         Topmost="True">
 
-    <Border CornerRadius="14" Background="{DynamicResource SurfaceBrush}"
+    <Border CornerRadius="20" Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1.5">
         <Border.Effect>
             <DropShadowEffect BlurRadius="30" ShadowDepth="0" Opacity="0.35" Color="Black"/>
@@ -18,8 +18,8 @@
             <Grid Margin="0,0,0,20">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                        <Border Background="{DynamicResource AccentBrush}" Width="30" Height="30"
-                                CornerRadius="8" Margin="0,0,10,0">
+                        <Border Background="{DynamicResource AccentGradientBrush}" Width="32" Height="32"
+                                CornerRadius="10" Margin="0,0,10,0">
                             <TextBlock Text="&#xE945;" FontFamily="Segoe MDL2 Assets" FontSize="14"
                                        Foreground="White"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -44,7 +44,7 @@
             <!-- Prévia -->
             <Border Background="{DynamicResource SurfaceElevatedBrush}"
                     BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1" CornerRadius="8"
+                    BorderThickness="1" CornerRadius="12"
                     Padding="14,10" Margin="0,16,0,20">
                 <StackPanel>
                     <TextBlock Text="PRÉ-VIA" FontSize="10" FontWeight="Bold"

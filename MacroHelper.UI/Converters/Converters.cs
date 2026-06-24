@@ -26,7 +26,7 @@ public class InverseBoolConverter : IValueConverter
 public class KioskSidebarWidthConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        => value is true ? new GridLength(0) : new GridLength(220);
+        => value is true ? new GridLength(0) : new GridLength(248);
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();
@@ -46,6 +46,26 @@ public class IntZeroToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         => value is int i && i == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+/// <summary>Nome completo -> iniciais (até 2 letras), usado no avatar circular do usuário.</summary>
+public class NameInitialsConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        var nome = (value as string)?.Trim();
+        if (string.IsNullOrEmpty(nome)) return "?";
+        var partes = nome.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return partes.Length switch
+        {
+            0 => "?",
+            1 => partes[0][..Math.Min(2, partes[0].Length)].ToUpperInvariant(),
+            _ => $"{partes[0][0]}{partes[^1][0]}".ToUpperInvariant()
+        };
+    }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();

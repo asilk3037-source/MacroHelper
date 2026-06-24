@@ -111,7 +111,6 @@ public partial class App : Application
     private static void ConfigureServices(IServiceCollection s)
     {
         // Infra
-        s.AddSingleton<DatabaseContext>();
         s.AddSingleton<SupabaseContext>();
         s.AddSingleton<IMacroRepository, MacroRepository>();
         s.AddSingleton<CategoriaRepository>();
@@ -137,8 +136,6 @@ public partial class App : Application
         s.AddSingleton<TextInsertionService>();
         s.AddSingleton<KeyboardHookService>();
         s.AddSingleton<IaService>();
-        s.AddSingleton<BackupService>();
-        s.AddSingleton<SyncService>();
         s.AddSingleton<VoiceDictationService>();
         s.AddSingleton<GrupoService>();
         s.AddSingleton<HealthService>();

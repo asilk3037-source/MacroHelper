@@ -2,29 +2,19 @@ using MacroHelper.Core.Entities;
 using MacroHelper.Data.Context;
 using MacroHelper.Data.Repositories;
 using MacroHelper.Services;
-using System.IO;
 
 namespace MacroHelper.Tests;
 
 public class MacroServiceFixture : IDisposable
 {
-    public DatabaseContext Ctx { get; }
     public SupabaseContext SupabaseCtx { get; }
     public MacroRepository MacroRepo { get; }
     public UsuarioRepository UsuarioRepo { get; }
     public UsuarioService UsuarioSvc { get; }
     public MacroService MacroSvc { get; }
 
-    private readonly string _dbPath;
-
-    // TRANSITÓRIO: enquanto MacroRepository ainda não migrou para Supabase (Grupo B do plano),
-    // este fixture usa DatabaseContext (SQLite) para macros e SupabaseContext para usuários.
     public MacroServiceFixture()
     {
-        _dbPath = Path.Combine(Path.GetTempPath(), $"macrohelper_tests_{Guid.NewGuid():N}.db");
-        Ctx = new DatabaseContext();
-        Ctx.TrocarCaminho(_dbPath);
-
         SupabaseCtx = new SupabaseContext();
         SupabaseCtx.InitializeAsync().GetAwaiter().GetResult();
 
@@ -42,10 +32,7 @@ public class MacroServiceFixture : IDisposable
         UsuarioSvc.LoginAsync(email, senha).GetAwaiter().GetResult();
     }
 
-    public void Dispose()
-    {
-        try { if (File.Exists(_dbPath)) File.Delete(_dbPath); } catch { }
-    }
+    public void Dispose() { }
 }
 
 public class MacroServiceTests : IClassFixture<MacroServiceFixture>

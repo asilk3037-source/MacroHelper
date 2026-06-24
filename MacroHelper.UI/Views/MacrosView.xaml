@@ -91,7 +91,7 @@
                         <!-- Histórico de versões -->
                         <Border Background="{DynamicResource SurfaceElevatedBrush}"
                                 BorderBrush="{DynamicResource BorderBrush}"
-                                BorderThickness="1" CornerRadius="8"
+                                BorderThickness="1" CornerRadius="10"
                                 Padding="14,12" Margin="0,0,0,18">
                             <Border.Style>
                                 <Style TargetType="Border">
@@ -156,7 +156,7 @@
                         <!-- Erro -->
                         <Border Background="{DynamicResource DangerBgBrush}"
                                 BorderBrush="{DynamicResource DangerBrush}"
-                                BorderThickness="1" CornerRadius="8"
+                                BorderThickness="1" CornerRadius="10"
                                 Padding="14,10" Margin="0,0,0,18"
                                 Visibility="{Binding ErroMensagem, Converter={StaticResource NullToVis}}">
                             <TextBlock Text="{Binding ErroMensagem}"
@@ -167,7 +167,7 @@
                         <!-- Aviso de possível duplicata -->
                         <Border Background="{DynamicResource WarningBgBrush}"
                                 BorderBrush="{DynamicResource WarningBrush}"
-                                BorderThickness="1" CornerRadius="8"
+                                BorderThickness="1" CornerRadius="10"
                                 Padding="14,10" Margin="0,0,0,18"
                                 Visibility="{Binding AvisoDuplicata, Converter={StaticResource NullToVis}}">
                             <TextBlock Text="{Binding AvisoDuplicata}"
@@ -227,7 +227,7 @@
                         <Border x:Name="PainelBuscaSubstituicao" Visibility="Collapsed"
                                 Background="{DynamicResource SurfaceElevatedBrush}"
                                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                                CornerRadius="7" Padding="10,8" Margin="0,0,0,6">
+                                CornerRadius="10" Padding="10,8" Margin="0,0,0,6">
                             <StackPanel>
                                 <Grid Margin="0,0,0,6">
                                     <Grid.ColumnDefinitions>
@@ -267,7 +267,7 @@
 
                         <Border BorderBrush="{DynamicResource InputBorderBrush}"
                                 Background="{DynamicResource InputBgBrush}"
-                                BorderThickness="1" CornerRadius="8">
+                                BorderThickness="1" CornerRadius="10">
                             <Grid Height="200">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="30"/>
@@ -296,7 +296,7 @@
                         <Border Background="{DynamicResource SurfaceElevatedBrush}"
                                 BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="1"
-                                CornerRadius="7" Padding="12,8" Margin="0,6,0,18">
+                                CornerRadius="10" Padding="12,8" Margin="0,6,0,18">
                             <WrapPanel>
                                 <TextBlock Text="Variáveis: " FontSize="11"
                                            Foreground="{DynamicResource TextMutedBrush}"/>
@@ -359,7 +359,7 @@
                         <!-- Grupos com acesso (restrição por departamento) -->
                         <Border Background="{DynamicResource SurfaceElevatedBrush}"
                                 BorderBrush="{DynamicResource BorderBrush}"
-                                BorderThickness="1" CornerRadius="8"
+                                BorderThickness="1" CornerRadius="10"
                                 Padding="14,12" Margin="0,0,0,18">
                             <Border.Style>
                                 <Style TargetType="Border">
@@ -390,7 +390,7 @@
                         <!-- Ativo -->
                         <Border Background="{DynamicResource SurfaceElevatedBrush}"
                                 BorderBrush="{DynamicResource BorderBrush}"
-                                BorderThickness="1" CornerRadius="8"
+                                BorderThickness="1" CornerRadius="10"
                                 Padding="14,12" Margin="0,0,0,16">
                             <Grid>
                                 <StackPanel>
@@ -406,7 +406,7 @@
                         </Border>
 
                         <!-- Painel de geração por texto (discreto, não "IA-first") -->
-                        <Border CornerRadius="8"
+                        <Border CornerRadius="10"
                                 BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="1" Padding="14,12"
                                 Margin="0,0,0,16"
@@ -442,7 +442,7 @@
                                            Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
                                 <Border BorderBrush="{DynamicResource InputBorderBrush}"
                                         Background="{DynamicResource InputBgBrush}"
-                                        BorderThickness="1" CornerRadius="8"
+                                        BorderThickness="1" CornerRadius="10"
                                         Margin="0,0,0,10">
                                     <TextBox BorderThickness="0" Background="Transparent"
                                              Height="70" TextWrapping="Wrap"
@@ -543,24 +543,27 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="Macros" FontSize="20" FontWeight="Bold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
-                        <TextBlock FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0">
-                            <Run Text="{Binding Macros.Count, Mode=OneWay}"/>
-                            <Run Text=" registros"/>
+                        <TextBlock Text="Macros" Style="{StaticResource PageTitleText}"/>
+                        <TextBlock Style="{StaticResource PageSubtitleText}">
+                            <Run Text="{Binding Macros.Count, Mode=OneWay}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <Run Text=" registros · organize, dispare e versione"/>
                         </TextBlock>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <Button Style="{StaticResource ButtonIconOnly}"
+                    <Border CornerRadius="10" BorderThickness="1" Padding="3"
+                            BorderBrush="{DynamicResource BorderLightBrush}"
+                            Background="{DynamicResource SurfaceBrush}" Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource ToolbarIconButton}"
                                 ToolTip="Aprovações pendentes"
                                 Command="{Binding TogglePendentesCommand}"
-                                Width="38" Height="38" Margin="0,0,8,0">
+                                Width="34" Height="34" Margin="0,0,2,0">
                             <Grid>
                                 <TextBlock Text="&#xE73E;" FontFamily="Segoe MDL2 Assets" FontSize="14"
                                            Foreground="{DynamicResource TextSecondaryBrush}"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 <Border Background="{DynamicResource DangerBrush}"
-                                        CornerRadius="7" Width="14" Height="14"
+                                        CornerRadius="10" Width="14" Height="14"
                                         HorizontalAlignment="Right" VerticalAlignment="Top"
                                         Margin="0,-4,-4,0">
                                     <Border.Style>
@@ -578,10 +581,10 @@
                                 </Border>
                             </Grid>
                         </Button>
-                        <Button Style="{StaticResource ButtonIconOnly}"
+                        <Button Style="{StaticResource ToolbarIconButton}"
                                 Command="{Binding ToggleSomenteFavoritosCommand}"
                                 ToolTip="Somente favoritos"
-                                Width="38" Height="38" Margin="0,0,8,0">
+                                Width="34" Height="34" Margin="0,0,2,0">
                             <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="14"
                                        HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <TextBlock.Style>
@@ -598,30 +601,32 @@
                                 </TextBlock.Style>
                             </TextBlock>
                         </Button>
-                        <Button Style="{StaticResource ButtonIconOnly}"
+                        <Button Style="{StaticResource ToolbarIconButton}"
                                 ToolTip="Importar macros (JSON)"
                                 Command="{Binding ImportarJsonCommand}"
-                                Width="38" Height="38" Margin="0,0,8,0">
+                                Width="34" Height="34" Margin="0,0,2,0">
                             <TextBlock Text="&#xE8B5;" FontFamily="Segoe MDL2 Assets" FontSize="14"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Button>
-                        <Button Style="{StaticResource ButtonIconOnly}"
+                        <Button Style="{StaticResource ToolbarIconButton}"
                                 ToolTip="Importar macros (CSV/Excel exportado como CSV)"
                                 Command="{Binding ImportarCsvCommand}"
-                                Width="38" Height="38" Margin="0,0,8,0">
+                                Width="34" Height="34" Margin="0,0,2,0">
                             <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="14"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Button>
-                        <Button Style="{StaticResource ButtonIconOnly}"
+                        <Button Style="{StaticResource ToolbarIconButton}"
                                 ToolTip="Exportar macros (JSON)"
                                 Command="{Binding ExportarJsonCommand}"
-                                Width="38" Height="38" Margin="0,0,8,0">
+                                Width="34" Height="34">
                             <TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" FontSize="14"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Button>
+                    </StackPanel>
+                    </Border>
                         <Button Style="{StaticResource ButtonPrimary}"
                                 Command="{Binding NovaMacroCommand}"
                                 Height="38" Padding="16,0">
@@ -699,9 +704,9 @@
                     </Grid.ColumnDefinitions>
 
                     <Border BorderBrush="{DynamicResource InputBorderBrush}"
-                            BorderThickness="1" CornerRadius="8"
+                            BorderThickness="1" CornerRadius="10"
                             Background="{DynamicResource InputBgBrush}"
-                            Margin="0,0,10,0" Height="38">
+                            Margin="0,0,10,0" Height="40">
                         <Grid>
                             <TextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets"
                                        FontSize="13" Margin="12,0,0,0"
@@ -744,7 +749,7 @@
 
             <!-- Toast -->
             <Border DockPanel.Dock="Top" Margin="28,0,28,8"
-                    CornerRadius="8" Padding="14,10">
+                    CornerRadius="10" Padding="14,10">
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -816,10 +821,10 @@
                 <ItemsControl ItemsSource="{Binding Macros}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Margin="0,0,0,6"
+                            <Border Margin="0,0,0,8"
                                     Background="{DynamicResource SurfaceBrush}"
-                                    BorderBrush="{DynamicResource BorderBrush}"
-                                    BorderThickness="1" CornerRadius="10">
+                                    BorderBrush="{DynamicResource BorderLightBrush}"
+                                    BorderThickness="1" CornerRadius="16">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Style.Triggers>
@@ -838,9 +843,9 @@
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Barra lateral colorida -->
-                                    <Border Grid.Column="0" CornerRadius="10,0,0,10"
-                                            Background="{DynamicResource AccentBrush}"
-                                            Opacity="0.6"/>
+                                    <Border Grid.Column="0" CornerRadius="16,0,0,16"
+                                            Background="{DynamicResource AccentGradientBrush}"
+                                            Opacity="0.8"/>
 
                                     <!-- Conteúdo -->
                                     <StackPanel Grid.Column="1" Margin="16,14,0,14">

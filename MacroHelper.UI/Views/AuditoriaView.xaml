@@ -23,11 +23,10 @@
                     <ColumnDefinition Width="280"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="Auditoria" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                    <TextBlock Text="Registro de ações de todos os usuários da equipe"
-                               FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
+                    <TextBlock Text="Auditoria" Style="{StaticResource PageTitleText}"/>
+                    <TextBlock Text="Registro de ações de todos os usuários da equipe." Style="{StaticResource PageSubtitleText}"/>
                 </StackPanel>
-                <TextBox Grid.Column="1" Style="{StaticResource InputStyle}" Height="38"
+                <TextBox Grid.Column="1" Style="{StaticResource InputStyle}" Height="40" VerticalAlignment="Center"
                          Text="{Binding Busca, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
         </Border>
@@ -36,8 +35,7 @@
             <ItemsControl ItemsSource="{Binding Registros}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
-                                BorderThickness="1" CornerRadius="10" Padding="16,12" Margin="0,0,0,6">
+                        <Border Style="{StaticResource CardStyle}" Padding="18,13" Margin="0,0,0,6">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>

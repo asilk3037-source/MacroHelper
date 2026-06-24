@@ -29,7 +29,7 @@
             <Border Background="#80000000"/>
             <Border HorizontalAlignment="Center" VerticalAlignment="Center"
                     Width="440" Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="14">
+                    BorderBrush="{DynamicResource BorderLightBrush}" BorderThickness="1" CornerRadius="20">
                 <StackPanel Margin="28,24">
                     <Grid Margin="0,0,0,20">
                         <TextBlock Text="Webhook" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
@@ -76,9 +76,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock Text="Integrações" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                        <TextBlock Text="Webhooks disparados em eventos do sistema"
-                                   FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
+                        <TextBlock Text="Integrações" Style="{StaticResource PageTitleText}"/>
+                        <TextBlock Text="Webhooks disparados em eventos do sistema." Style="{StaticResource PageSubtitleText}"/>
                     </StackPanel>
                     <Button Grid.Column="1" Style="{StaticResource ButtonPrimary}" Command="{Binding NovoWebhookCommand}" Height="38" Padding="16,0">
                         <StackPanel Orientation="Horizontal">
@@ -105,8 +104,7 @@
                 <ItemsControl ItemsSource="{Binding Webhooks}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
-                                    BorderThickness="1" CornerRadius="10" Padding="16,14" Margin="0,0,0,8">
+                            <Border Style="{StaticResource CardStyle}" Padding="18,15" Margin="0,0,0,8">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>

@@ -29,7 +29,7 @@
             <Border Background="#80000000"/>
             <Border HorizontalAlignment="Center" VerticalAlignment="Center"
                     Width="400" Background="{DynamicResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="14">
+                    BorderBrush="{DynamicResource BorderLightBrush}" BorderThickness="1" CornerRadius="20">
                 <StackPanel Margin="28,24">
                     <Grid Margin="0,0,0,20">
                         <TextBlock Text="{Binding FormTitulo}" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
@@ -68,9 +68,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock Text="Grupos / Equipes" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                        <TextBlock Text="Organize a equipe em grupos e restrinja macros por grupo"
-                                   FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
+                        <TextBlock Text="Grupos / Equipes" Style="{StaticResource PageTitleText}"/>
+                        <TextBlock Text="Organize a equipe em grupos e restrinja macros por grupo." Style="{StaticResource PageSubtitleText}"/>
                     </StackPanel>
                     <Button Grid.Column="1" Style="{StaticResource ButtonPrimary}" Command="{Binding NovoGrupoCommand}" Height="38" Padding="16,0">
                         <StackPanel Orientation="Horizontal">
