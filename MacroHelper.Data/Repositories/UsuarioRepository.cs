@@ -96,6 +96,49 @@ public class UsuarioRepository
         await _ctx.Client.From<UsuariosModel>().Update(m);
     }
 
+    public async Task DeleteAsync(int id)
+    {
+        await _ctx.Client.From<UsuariosModel>().Filter("id", Operator.Equals, id.ToString()).Delete();
+    }
+
+    /// <summary>
+    /// Cria um usuário a partir da tela de administração (admin já está logado).
+    /// SignUp troca a sessão ativa do cliente Supabase para o usuário recém-criado — por isso
+    /// a sessão do admin é capturada antes e restaurada depois, evitando deslogar quem está criando.
+    /// O refresh token é rotativo (uso único): <paramref name="onSessaoRestaurada"/> recebe o par
+    /// (access, refresh) já renovado para a camada de UI persistir em session.dat.
+    /// </summary>
+    public async Task<int> InsertComoAdminAsync(Usuario u, string senha, Action<string, string>? onSessaoRestaurada = null)
+    {
+        u.Email = u.Email.Trim().ToLower();
+        var sessaoAdmin = _ctx.Auth.CurrentSession;
+
+        var signUp = await _ctx.Auth.SignUp(u.Email, senha);
+        if (signUp?.User?.Id == null)
+            throw new InvalidOperationException("Falha ao criar usuário no Supabase Auth.");
+
+        var model = new UsuariosModel
+        {
+            AuthUserId  = Guid.Parse(signUp.User.Id),
+            Nome        = u.Nome,
+            Email       = u.Email,
+            Perfil      = u.Perfil,
+            Ativo       = u.Ativo,
+            DataCriacao = DateTime.Now
+        };
+        var inserted = await _ctx.Client.From<UsuariosModel>().Insert(model);
+
+        if (sessaoAdmin != null)
+        {
+            await _ctx.Auth.SetSession(sessaoAdmin.AccessToken!, sessaoAdmin.RefreshToken!);
+            var renovada = _ctx.Auth.CurrentSession;
+            if (renovada?.AccessToken != null && renovada.RefreshToken != null)
+                onSessaoRestaurada?.Invoke(renovada.AccessToken, renovada.RefreshToken);
+        }
+
+        return inserted.Models.First().Id;
+    }
+
     public async Task AtualizarPermissoesAsync(int id, string? categoriasPermitidas)
     {
         var m = await _ctx.Client.From<UsuariosModel>().Filter("id", Operator.Equals, id.ToString()).Single();

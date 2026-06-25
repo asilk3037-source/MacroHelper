@@ -71,7 +71,8 @@
                         <TextBlock Text="Grupos / Equipes" Style="{StaticResource PageTitleText}"/>
                         <TextBlock Text="Organize a equipe em grupos e restrinja macros por grupo." Style="{StaticResource PageSubtitleText}"/>
                     </StackPanel>
-                    <Button Grid.Column="1" Style="{StaticResource ButtonPrimary}" Command="{Binding NovoGrupoCommand}" Height="38" Padding="16,0">
+                    <Button Grid.Column="1" Style="{StaticResource ButtonPrimary}" Command="{Binding NovoGrupoCommand}" Height="38" Padding="16,0"
+                            IsEnabled="{Binding PodeEditarTela}" ToolTip="Sem permissão para criar/editar grupos">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="13" VerticalAlignment="Center" Margin="0,0,7,0"/>
                             <TextBlock Text="Novo Grupo" VerticalAlignment="Center"/>
@@ -109,12 +110,14 @@
                                         <StackPanel Grid.Column="1" Orientation="Horizontal">
                                             <Button Style="{StaticResource ButtonIconOnly}" CommandParameter="{Binding}"
                                                     Command="{Binding DataContext.EditarGrupoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    IsEnabled="{Binding DataContext.PodeEditarTela, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     Width="30" Height="30" Margin="0,0,2,0">
                                                 <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
                                             </Button>
                                             <Button Width="30" Height="30" BorderThickness="0" Background="Transparent" Cursor="Hand"
                                                     CommandParameter="{Binding}"
-                                                    Command="{Binding DataContext.ExcluirGrupoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                                    Command="{Binding DataContext.ExcluirGrupoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    IsEnabled="{Binding DataContext.PodeExcluirTela, RelativeSource={RelativeSource AncestorType=UserControl}}">
                                                 <Button.Template>
                                                     <ControlTemplate TargetType="Button">
                                                         <Border x:Name="bg" CornerRadius="6" Background="{TemplateBinding Background}">

@@ -1,8 +1,66 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace MacroHelper.UI.Converters;
+
+/// <summary>Visível quando o objeto é não-nulo (qualquer referência, não só string). ConverterParameter="invert" inverte.</summary>
+public class ObjectNullToVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        bool ehNulo = value == null;
+        bool inverter = parameter as string == "invert";
+        return (inverter ? !ehNulo : ehNulo) ? Visibility.Collapsed : Visibility.Visible;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+/// <summary>Visível quando o valor (string) é igual ao ConverterParameter. Ex: ConverterParameter="Admin".</summary>
+public class StringEqualsToVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        => string.Equals(value as string, parameter as string, StringComparison.OrdinalIgnoreCase)
+            ? Visibility.Visible : Visibility.Collapsed;
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+/// <summary>Compara dois valores (ex: int? selecionado vs Id do item) e devolve Visibility.
+/// ConverterParameter="invert" inverte o resultado (visível quando DIFERENTE).</summary>
+public class EqualsToVisibilityConverter : IMultiValueConverter
+{
+    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (values.Length < 2) return Visibility.Collapsed;
+        bool iguais = Equals(values[0], values[1]);
+        bool inverter = parameter as string == "invert";
+        return (inverter ? !iguais : iguais) ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+/// <summary>Converte um hex (#RRGGBB) em SolidColorBrush. ConverterParameter="soft" devolve a mesma cor em baixa opacidade (uso como fundo de tile).</summary>
+public class HexToBrushConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        var hex = value as string;
+        System.Windows.Media.Color color;
+        try { color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(string.IsNullOrWhiteSpace(hex) ? "#818CF8" : hex); }
+        catch { color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#818CF8"); }
+        return new SolidColorBrush(color) { Opacity = parameter as string == "soft" ? 0.16 : 1.0 };
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
 
 public class StringNullToVisibilityConverter : IValueConverter
 {

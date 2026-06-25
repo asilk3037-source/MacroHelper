@@ -14,8 +14,12 @@ public partial class MacrosViewModel : ObservableObject
     private readonly IaService?       _iaService;
     private readonly GrupoService?    _grupoService;
     private readonly UsuarioService?  _usuarioService;
+    private readonly PermissaoTelaService? _permissaoTelaService;
 
     public bool IsAdmin => _usuarioService?.UsuarioAtual?.Perfil == "Admin";
+
+    [ObservableProperty] private bool _podeEditarTela  = true;
+    [ObservableProperty] private bool _podeExcluirTela = true;
 
     [ObservableProperty] private ObservableCollection<Macro> _macros = new();
     [ObservableProperty] private ObservableCollection<string> _categorias = new();
@@ -31,13 +35,24 @@ public partial class MacrosViewModel : ObservableObject
     [ObservableProperty] private bool    _somenteFavoritos = false;
 
     public MacrosViewModel(MacroService macroService, CategoriaService catService,
-        IaService iaService, GrupoService? grupoService = null, UsuarioService? usuarioService = null)
+        IaService iaService, GrupoService? grupoService = null, UsuarioService? usuarioService = null,
+        PermissaoTelaService? permissaoTelaService = null)
     {
         _macroService   = macroService;
         _catService     = catService;
         _iaService      = iaService;
         _grupoService   = grupoService;
         _usuarioService = usuarioService;
+        _permissaoTelaService = permissaoTelaService;
+    }
+
+    private async Task AtualizarNivelTelaAsync()
+    {
+        var usuario = _usuarioService?.UsuarioAtual;
+        if (usuario == null || _permissaoTelaService == null) return;
+        var nivel = await _permissaoTelaService.ObterNivelEfetivoAsync(usuario, "macros");
+        PodeEditarTela  = NiveisPermissaoTela.Atende(nivel, NiveisPermissaoTela.Editar);
+        PodeExcluirTela = NiveisPermissaoTela.Atende(nivel, NiveisPermissaoTela.Excluir);
     }
 
     public async Task CarregarAsync()
@@ -45,6 +60,7 @@ public partial class MacrosViewModel : ObservableObject
         IsLoading = true;
         try
         {
+            await AtualizarNivelTelaAsync();
             IEnumerable<Macro> resultado;
             if (!string.IsNullOrWhiteSpace(TermoBusca))
                 resultado = await _macroService.PesquisarAsync(TermoBusca);

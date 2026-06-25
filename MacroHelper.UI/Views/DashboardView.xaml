@@ -22,21 +22,59 @@
             <StackPanel MaxWidth="1100" HorizontalAlignment="Stretch">
 
                 <!-- Hero de boas-vindas -->
-                <Border Style="{StaticResource SectionPanel}" Margin="0,0,0,20" Padding="32,28">
-                    <StackPanel>
-                        <Border Style="{StaticResource BadgePill}" HorizontalAlignment="Left" Margin="0,0,0,12">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE945;" FontFamily="Segoe MDL2 Assets" FontSize="10"
-                                           Foreground="{DynamicResource AccentBrush}" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Hook ativo" Style="{StaticResource BadgePillText}"/>
+                <Border Style="{StaticResource SectionPanel}" Margin="0,0,0,20" Padding="32,28" ClipToBounds="True">
+                    <Grid>
+                        <!-- Glow iridescente decorativo -->
+                        <Ellipse Width="260" Height="260" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                 Margin="0,-100,-100,0" Opacity="0.30">
+                            <Ellipse.Effect>
+                                <BlurEffect Radius="40"/>
+                            </Ellipse.Effect>
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="{DynamicResource SecondaryColor}" Offset="0"/>
+                                    <GradientStop Color="{DynamicResource CyanColor}" Offset="0.55"/>
+                                    <GradientStop Color="Transparent" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" VerticalAlignment="Bottom">
+                                <Border Style="{StaticResource BadgePill}" HorizontalAlignment="Left" Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE945;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                                   Foreground="{DynamicResource AccentBrush}" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding HookStatusTexto, Mode=OneWay}" Style="{StaticResource BadgePillText}"/>
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock FontSize="30" FontFamily="Segoe UI Semibold" Foreground="{DynamicResource TextPrimaryBrush}">
+                                    <Run Text="Olá, "/><Run Text="{Binding NomeUsuario, Mode=OneWay}" Foreground="{DynamicResource AccentBrush}"/>
+                                </TextBlock>
+                                <TextBlock FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,6,0,0"
+                                           TextWrapping="Wrap" MaxWidth="480">
+                                    <Run Text="Aqui está um resumo da sua atividade no SK MacroHelper. Pressione "/>
+                                    <InlineUIContainer BaselineAlignment="Center">
+                                        <Border Style="{StaticResource KbdChip}" Margin="0,-2,0,0">
+                                            <TextBlock Text="Ctrl+Espaço" Style="{StaticResource KbdChipText}"/>
+                                        </Border>
+                                    </InlineUIContainer>
+                                    <Run Text=" para disparar uma macro."/>
+                                </TextBlock>
                             </StackPanel>
-                        </Border>
-                        <TextBlock FontSize="30" FontFamily="Segoe UI Semibold" Foreground="{DynamicResource TextPrimaryBrush}">
-                            <Run Text="Olá, "/><Run Text="{Binding NomeUsuario, Mode=OneWay}" Foreground="{DynamicResource AccentBrush}"/>
-                        </TextBlock>
-                        <TextBlock Text="Aqui está um resumo da sua atividade no SK MacroHelper."
-                                   FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,6,0,0"/>
-                    </StackPanel>
+                            <Button Grid.Column="1" Style="{StaticResource ButtonPrimary}" VerticalAlignment="Bottom"
+                                    Command="{Binding NovaMacroCommand}" Height="40" Padding="18,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Nova macro" VerticalAlignment="Center" Margin="0,0,7,0"/>
+                                    <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="12" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </Grid>
                 </Border>
 
                 <!-- Cards de estatística -->
@@ -47,45 +85,80 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Border Grid.Column="0" Margin="0,0,8,0" Style="{StaticResource CardStyle}" Padding="22,20">
-                        <StackPanel>
-                            <Border Style="{StaticResource IconTile}" HorizontalAlignment="Left" Margin="0,0,0,16">
-                                <TextBlock Text="&#xE8F4;" FontFamily="Segoe MDL2 Assets" FontSize="16"
-                                           Foreground="{DynamicResource AccentTextBrush}"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <TextBlock Text="{Binding TotalMacros, Mode=OneWay}" FontSize="30" FontFamily="Segoe UI Semibold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,2"/>
-                            <TextBlock Text="macros cadastradas" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
-                        </StackPanel>
+                    <Border Grid.Column="0" Margin="0,0,8,0" Style="{StaticResource CardStyle}" Padding="22,20" ClipToBounds="True">
+                        <Grid>
+                            <Ellipse Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     Margin="0,-50,-50,0" Opacity="0.35" Fill="{DynamicResource AccentLightBrush}">
+                                <Ellipse.Effect><BlurEffect Radius="22"/></Ellipse.Effect>
+                            </Ellipse>
+                            <StackPanel>
+                                <Grid Margin="0,0,0,16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Style="{StaticResource IconTile}" HorizontalAlignment="Left">
+                                        <TextBlock Text="&#xE8F4;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                                   Foreground="{DynamicResource AccentTextBrush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                            Background="{DynamicResource SurfaceElevatedBrush}" CornerRadius="100" Padding="8,3"
+                                            Visibility="{Binding MacrosNovasSemana, Converter={StaticResource IntToVis}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE74A;" FontFamily="Segoe MDL2 Assets" FontSize="8"
+                                                       Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" Margin="0,0,3,0"/>
+                                            <TextBlock FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource TextSecondaryBrush}">
+                                                <Run Text="+"/><Run Text="{Binding MacrosNovasSemana}"/><Run Text=" esta semana"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                                <TextBlock Text="{Binding TotalMacros, Mode=OneWay}" FontSize="34" FontFamily="Segoe UI Semibold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,2"/>
+                                <TextBlock Text="macros cadastradas" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                        </Grid>
                     </Border>
 
-                    <Border Grid.Column="1" Margin="4,0" Style="{StaticResource CardStyle}" Padding="22,20">
-                        <StackPanel>
-                            <Border Style="{StaticResource IconTile}" Background="{DynamicResource CyanSoftBrush}"
-                                    HorizontalAlignment="Left" Margin="0,0,0,16">
-                                <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" FontSize="16"
-                                           Foreground="{DynamicResource CyanForegroundBrush}"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <TextBlock Text="{Binding UsadasHoje, Mode=OneWay}" FontSize="30" FontFamily="Segoe UI Semibold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,2"/>
-                            <TextBlock Text="usos hoje" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
-                        </StackPanel>
+                    <Border Grid.Column="1" Margin="4,0" Style="{StaticResource CardStyle}" Padding="22,20" ClipToBounds="True">
+                        <Grid>
+                            <Ellipse Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     Margin="0,-50,-50,0" Opacity="0.35" Fill="{DynamicResource CyanSoftBrush}">
+                                <Ellipse.Effect><BlurEffect Radius="22"/></Ellipse.Effect>
+                            </Ellipse>
+                            <StackPanel>
+                                <Border Style="{StaticResource IconTile}" Background="{DynamicResource CyanSoftBrush}"
+                                        HorizontalAlignment="Left" Margin="0,0,0,16">
+                                    <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                               Foreground="{DynamicResource CyanForegroundBrush}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="{Binding UsadasHoje, Mode=OneWay}" FontSize="34" FontFamily="Segoe UI Semibold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,2"/>
+                                <TextBlock Text="usos hoje" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                        </Grid>
                     </Border>
 
-                    <Border Grid.Column="2" Margin="8,0,0,0" Style="{StaticResource CardStyle}" Padding="22,20">
-                        <StackPanel>
-                            <Border Style="{StaticResource IconTile}" Background="{DynamicResource SecondaryBrush}"
-                                    HorizontalAlignment="Left" Margin="0,0,0,16">
-                                <TextBlock Text="&#xE823;" FontFamily="Segoe MDL2 Assets" FontSize="16"
-                                           Foreground="{DynamicResource SecondaryForegroundBrush}"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <TextBlock Text="{Binding MinutosEconomizados, Mode=OneWay}" FontSize="30" FontFamily="Segoe UI Semibold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,2"/>
-                            <TextBlock Text="economizados este mês" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
-                        </StackPanel>
+                    <Border Grid.Column="2" Margin="8,0,0,0" Style="{StaticResource CardStyle}" Padding="22,20" ClipToBounds="True">
+                        <Grid>
+                            <Ellipse Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     Margin="0,-50,-50,0" Opacity="0.35" Fill="{DynamicResource SecondaryBrush}">
+                                <Ellipse.Effect><BlurEffect Radius="22"/></Ellipse.Effect>
+                            </Ellipse>
+                            <StackPanel>
+                                <Border Style="{StaticResource IconTile}" Background="{DynamicResource SecondaryBrush}"
+                                        HorizontalAlignment="Left" Margin="0,0,0,16">
+                                    <TextBlock Text="&#xE823;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                               Foreground="{DynamicResource SecondaryForegroundBrush}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="{Binding MinutosEconomizados, Mode=OneWay}" FontSize="34" FontFamily="Segoe UI Semibold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,2"/>
+                                <TextBlock Text="economizados este mês" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                        </Grid>
                     </Border>
                 </Grid>
 
@@ -125,11 +198,23 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <StackPanel Visibility="{Binding MaisUsadas.Count, Converter={StaticResource IntZeroToVis}}">
-                                <TextBlock Text="Nenhuma macro usada ainda este mês" FontSize="12"
-                                           Foreground="{DynamicResource TextMutedBrush}"
-                                           HorizontalAlignment="Center" Margin="0,16,0,0"/>
-                            </StackPanel>
+                            <Border Margin="0,8,0,0" Padding="24,28" BorderThickness="1.5" CornerRadius="14"
+                                    BorderBrush="{DynamicResource BorderLightBrush}" Background="{DynamicResource SurfaceElevatedBrush}"
+                                    Visibility="{Binding MaisUsadas.Count, Converter={StaticResource IntZeroToVis}}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <Border Style="{StaticResource IconTile}" Background="{DynamicResource AccentLightBrush}">
+                                        <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                                   Foreground="{DynamicResource AccentBrush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Text="Nenhuma macro usada ainda este mês" FontSize="13" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimaryBrush}"
+                                               HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                                    <TextBlock Text="Quando você disparar uma macro, ela aparecerá aqui." FontSize="11"
+                                               Foreground="{DynamicResource TextMutedBrush}"
+                                               HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </Border>
 
@@ -156,11 +241,20 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <StackPanel Visibility="{Binding AtividadeRecente.Count, Converter={StaticResource IntZeroToVis}}">
-                                <TextBlock Text="Nenhuma atividade registrada ainda" FontSize="12"
-                                           Foreground="{DynamicResource TextMutedBrush}"
-                                           HorizontalAlignment="Center" Margin="0,16,0,0"/>
-                            </StackPanel>
+                            <Border Margin="0,8,0,0" Padding="24,28" BorderThickness="1.5" CornerRadius="14"
+                                    BorderBrush="{DynamicResource BorderLightBrush}" Background="{DynamicResource SurfaceElevatedBrush}"
+                                    Visibility="{Binding AtividadeRecente.Count, Converter={StaticResource IntZeroToVis}}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <Border Style="{StaticResource IconTile}" Background="{DynamicResource CyanSoftBrush}">
+                                        <TextBlock Text="&#xE81C;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                                   Foreground="{DynamicResource CyanForegroundBrush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Text="Nenhuma atividade registrada ainda" FontSize="13" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimaryBrush}"
+                                               HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </Border>
                 </Grid>

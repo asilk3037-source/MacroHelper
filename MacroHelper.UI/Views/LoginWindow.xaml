@@ -4,6 +4,7 @@
         Title="SK MacroHelper" Height="580" Width="430" xml:lang="pt-BR"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None" AllowsTransparency="True"
+        Icon="/Resources/app.ico"
         Background="Transparent" ResizeMode="NoResize">
 
     <Border CornerRadius="20" ClipToBounds="True">

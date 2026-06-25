@@ -10,6 +10,10 @@ public partial class GruposViewModel : ObservableObject
 {
     private readonly GrupoService   _svc;
     private readonly UsuarioService _usuarioService;
+    private readonly PermissaoTelaService? _permissaoTelaService;
+
+    [ObservableProperty] private bool _podeEditarTela  = true;
+    [ObservableProperty] private bool _podeExcluirTela = true;
 
     [ObservableProperty] private ObservableCollection<Grupo> _grupos = new();
     [ObservableProperty] private ObservableCollection<Usuario> _todosUsuarios = new();
@@ -23,10 +27,20 @@ public partial class GruposViewModel : ObservableObject
     [ObservableProperty] private string  _formTitulo = "Novo Grupo";
     [ObservableProperty] private string? _formErro;
 
-    public GruposViewModel(GrupoService svc, UsuarioService usuarioService)
+    public GruposViewModel(GrupoService svc, UsuarioService usuarioService, PermissaoTelaService? permissaoTelaService = null)
     {
         _svc = svc;
         _usuarioService = usuarioService;
+        _permissaoTelaService = permissaoTelaService;
+    }
+
+    private async Task AtualizarNivelTelaAsync()
+    {
+        var usuario = _usuarioService.UsuarioAtual;
+        if (usuario == null || _permissaoTelaService == null) return;
+        var nivel = await _permissaoTelaService.ObterNivelEfetivoAsync(usuario, "grupos");
+        PodeEditarTela  = NiveisPermissaoTela.Atende(nivel, NiveisPermissaoTela.Editar);
+        PodeExcluirTela = NiveisPermissaoTela.Atende(nivel, NiveisPermissaoTela.Excluir);
     }
 
     public async Task CarregarAsync()
@@ -34,6 +48,7 @@ public partial class GruposViewModel : ObservableObject
         IsLoading = true;
         try
         {
+            await AtualizarNivelTelaAsync();
             TodosUsuarios = new ObservableCollection<Usuario>(await _usuarioService.ListarAsync());
             Grupos = new ObservableCollection<Grupo>(await _svc.ObterTodosAsync());
         }

@@ -28,6 +28,7 @@ public partial class MainViewModel : ObservableObject
     private readonly AjudaViewModel            _ajudaVM;
     private readonly KioskModeService    _kioskService;
     private readonly NotificacaoService  _notificacaoService;
+    private readonly PermissaoTelaService _permissaoTelaService;
 
     [ObservableProperty] private ObservableObject? _currentView;
     [ObservableProperty] private string _paginaAtiva    = "macros";
@@ -54,7 +55,7 @@ public partial class MainViewModel : ObservableObject
         ComunidadeViewModel comunidadeVM, PermissoesViewModel permissoesVM,
         IntegracoesViewModel integracoesVM, NotificacoesViewModel notificacoesVM,
         PerfilViewModel perfilVM, AjudaViewModel ajudaVM, NotificacaoService notificacaoService,
-        AgendamentoService agendamentoService)
+        AgendamentoService agendamentoService, PermissaoTelaService permissaoTelaService)
     {
         _macroService   = macroService;
         _usuarioService = usuarioService;
@@ -77,6 +78,7 @@ public partial class MainViewModel : ObservableObject
         _perfilVM        = perfilVM;
         _ajudaVM         = ajudaVM;
         _notificacaoService = notificacaoService;
+        _permissaoTelaService = permissaoTelaService;
 
         var u = usuarioService.UsuarioAtual;
         NomeUsuario = u?.Nome ?? "Usuário";
@@ -89,6 +91,12 @@ public partial class MainViewModel : ObservableObject
             ModoKioskAlterado?.Invoke(this, ativo);
         };
 
+        _dashboardVM.NovaMacroSolicitada += (_, _) =>
+        {
+            NavigarParaMacros();
+            _macrosVM.NovaMacro();
+        };
+
         notificacaoService.NotificacaoRecebida += (_, _) => _ = AtualizarNotificacoesNaoLidasAsync();
         _ = AtualizarNotificacoesNaoLidasAsync();
         agendamentoService.Iniciar();
@@ -96,6 +104,21 @@ public partial class MainViewModel : ObservableObject
         ConstruirNav();
         NavigarParaMacros();
         _ = AtualizarTotalAsync();
+        _ = AplicarPermissoesTelaAsync();
+    }
+
+    /// <summary>Esconde/mostra itens do menu conforme o nível de permissão de tela configurado para o usuário atual.</summary>
+    private async Task AplicarPermissoesTelaAsync()
+    {
+        var usuario = _usuarioService.UsuarioAtual;
+        if (usuario == null) return;
+
+        foreach (var item in NavGeral.Concat(NavEquipe).Concat(NavSistema))
+        {
+            if (string.IsNullOrEmpty(item.Chave)) continue;
+            var nivel = await _permissaoTelaService.ObterNivelEfetivoAsync(usuario, item.Chave);
+            item.Visivel = nivel != NiveisPermissaoTela.Nenhum;
+        }
     }
 
     private void ConstruirNav()

@@ -72,6 +72,67 @@ public class UsuarioService
         if (UsuarioAtual?.Id == usuarioId) UsuarioAtual.PermissoesCustom = valor;
     }
 
+    /// <summary>Criação de usuário pela tela de administração (Usuários), com senha definida pelo admin.</summary>
+    public async Task<(bool Ok, string Msg)> CriarComoAdminAsync(string nome, string email, string senha, string perfil,
+        Action<string, string>? onSessaoRestaurada = null)
+    {
+        if (string.IsNullOrWhiteSpace(nome))  return (false, "Nome é obrigatório.");
+        if (string.IsNullOrWhiteSpace(email)) return (false, "E-mail é obrigatório.");
+        if (string.IsNullOrWhiteSpace(senha) || senha.Length < 6) return (false, "Senha deve ter pelo menos 6 caracteres.");
+        if (await _repo.EmailExisteAsync(email)) return (false, "Este e-mail já está cadastrado.");
+
+        var u = new Usuario { Nome = nome.Trim(), Email = email.Trim(), Perfil = perfil, Ativo = true };
+        await _repo.InsertComoAdminAsync(u, senha, onSessaoRestaurada);
+
+        if (_webhookService != null)
+            await _webhookService.DispararAsync(EventosWebhook.UsuarioCriado, new { u.Nome, u.Email, u.Perfil });
+        if (_notificacaoService != null)
+            await _notificacaoService.RegistrarAsync("Novo usuário", $"{u.Nome} ({u.Email}) entrou na equipe.", "Sucesso");
+
+        return (true, "Usuário criado com sucesso!");
+    }
+
+    /// <summary>Edição completa (nome, e-mail, perfil, ativo) pela tela de administração.</summary>
+    public async Task<(bool Ok, string Msg)> AtualizarComoAdminAsync(int usuarioId, string nome, string email, string perfil, bool ativo)
+    {
+        if (string.IsNullOrWhiteSpace(nome))  return (false, "Nome é obrigatório.");
+        if (string.IsNullOrWhiteSpace(email)) return (false, "E-mail é obrigatório.");
+
+        var usuario = await _repo.GetByIdAsync(usuarioId);
+        if (usuario == null) return (false, "Usuário não encontrado.");
+
+        if (usuario.Perfil == "Admin" && (perfil != "Admin" || !ativo))
+        {
+            var todos = await _repo.GetAllAsync();
+            if (todos.Count(u => u.Perfil == "Admin" && u.Ativo) <= 1)
+                return (false, "Não é possível remover o último administrador ativo.");
+        }
+
+        usuario.Nome = nome.Trim(); usuario.Email = email.Trim(); usuario.Perfil = perfil; usuario.Ativo = ativo;
+        await _repo.UpdateAsync(usuario);
+        if (UsuarioAtual?.Id == usuarioId) { UsuarioAtual.Nome = usuario.Nome; UsuarioAtual.Email = usuario.Email; UsuarioAtual.Perfil = perfil; UsuarioAtual.Ativo = ativo; }
+        return (true, "Usuário atualizado!");
+    }
+
+    /// <summary>Remove o perfil do usuário (a conta no Supabase Auth fica órfã e não consegue mais logar).</summary>
+    public async Task<(bool Ok, string Msg)> ExcluirAsync(int usuarioId)
+    {
+        if (UsuarioAtual?.Id == usuarioId) return (false, "Você não pode excluir o próprio usuário.");
+
+        var usuario = await _repo.GetByIdAsync(usuarioId);
+        if (usuario == null) return (false, "Usuário não encontrado.");
+
+        if (usuario.Perfil == "Admin")
+        {
+            var todos = await _repo.GetAllAsync();
+            if (todos.Count(u => u.Perfil == "Admin" && u.Ativo) <= 1)
+                return (false, "Não é possível excluir o último administrador ativo.");
+        }
+
+        await _repo.DeleteAsync(usuarioId);
+        return (true, "Usuário excluído.");
+    }
+
     public async Task<(bool Ok, string Msg)> AtualizarPerfilAsync(int usuarioId, string nome, string email)
     {
         if (string.IsNullOrWhiteSpace(nome))  return (false, "Nome é obrigatório.");

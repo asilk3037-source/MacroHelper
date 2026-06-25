@@ -22,15 +22,31 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel>
-                    <TextBlock Text="Notificações" Style="{StaticResource PageTitleText}"/>
-                    <TextBlock Text="Eventos do sistema: backups, novos usuários e mais." Style="{StaticResource PageSubtitleText}"/>
+                <StackPanel Orientation="Horizontal">
+                    <Border Style="{StaticResource IconTile}" Margin="0,0,14,0" Background="{DynamicResource AccentGradientBrush}">
+                        <TextBlock Text="&#xEA8F;" FontFamily="Segoe MDL2 Assets" FontSize="17"
+                                   Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Notificações" Style="{StaticResource PageTitleText}"/>
+                        <TextBlock Text="Eventos do sistema: backups, novos usuários e mais." Style="{StaticResource PageSubtitleText}"/>
+                    </StackPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button Content="Marcar todas como lidas" Style="{StaticResource ButtonSecondary}"
-                            Command="{Binding MarcarTodasComoLidasCommand}" Height="36" Padding="12,0" Margin="0,0,8,0"/>
-                    <Button Content="Limpar" Style="{StaticResource ButtonSecondary}"
-                            Command="{Binding LimparCommand}" Height="36" Padding="12,0"/>
+                    <Button Style="{StaticResource ButtonSecondary}"
+                            Command="{Binding MarcarTodasComoLidasCommand}" Height="36" Padding="12,0" Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE73E;" FontFamily="Segoe MDL2 Assets" FontSize="11" Margin="0,0,7,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Marcar todas como lidas" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource ButtonSecondary}"
+                            Command="{Binding LimparCommand}" Height="36" Padding="12,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="11" Margin="0,0,7,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Limpar" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>
@@ -54,32 +70,53 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" Width="8" Height="8" Margin="0,4,12,0" VerticalAlignment="Top">
-                                    <Ellipse.Style>
-                                        <Style TargetType="Ellipse">
-                                            <Setter Property="Fill" Value="{DynamicResource AccentBrush}"/>
+                                <Border Grid.Column="0" Margin="0,0,12,0" VerticalAlignment="Top">
+                                    <Border.Style>
+                                        <Style TargetType="Border" BasedOn="{StaticResource IconTileSmall}">
+                                            <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding Tipo}" Value="Sucesso">
-                                                    <Setter Property="Fill" Value="{DynamicResource SuccessBrush}"/>
+                                                    <Setter Property="Background" Value="{DynamicResource SuccessBgBrush}"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding Tipo}" Value="Erro">
-                                                    <Setter Property="Fill" Value="{DynamicResource DangerBrush}"/>
+                                                    <Setter Property="Background" Value="{DynamicResource DangerBgBrush}"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding Tipo}" Value="Aviso">
-                                                    <Setter Property="Fill" Value="#E0A030"/>
+                                                    <Setter Property="Background" Value="{DynamicResource WarningBgBrush}"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </Ellipse.Style>
-                                </Ellipse>
+                                    </Border.Style>
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                               Foreground="{DynamicResource AccentTextBrush}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="&#xEA8F;"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Tipo}" Value="Sucesso">
+                                                        <Setter Property="Text" Value="&#xE73E;"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Tipo}" Value="Erro">
+                                                        <Setter Property="Text" Value="&#xE783;"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Tipo}" Value="Aviso">
+                                                        <Setter Property="Text" Value="&#xE7BA;"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Border>
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="{Binding Titulo}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
                                     <TextBlock Text="{Binding Mensagem}" FontSize="11" TextWrapping="Wrap"
                                                Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,2,0,0"/>
-                                    <TextBlock Text="{Binding Data, StringFormat='dd/MM/yyyy HH:mm'}" FontSize="10"
-                                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,4,0,0"/>
                                 </StackPanel>
+                                <TextBlock Grid.Column="2" Text="{Binding Data, StringFormat='dd/MM HH:mm'}" FontSize="10"
+                                           Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Top" Margin="10,2,0,0"/>
                             </Grid>
                         </Border>
                     </DataTemplate>

@@ -124,6 +124,7 @@ public partial class App : Application
         s.AddSingleton<AgendamentoRepository>();
         s.AddSingleton<WebhookRepository>();
         s.AddSingleton<NotificacaoRepository>();
+        s.AddSingleton<PermissaoTelaRepository>();
 
         // Services
         s.AddSingleton<WebhookService>();
@@ -143,6 +144,7 @@ public partial class App : Application
         s.AddSingleton<KioskModeService>();
         s.AddSingleton<VariavelGlobalService>();
         s.AddSingleton<AgendamentoService>();
+        s.AddSingleton<PermissaoTelaService>();
 
         // ViewModels
         s.AddTransient<ViewModels.MainViewModel>();

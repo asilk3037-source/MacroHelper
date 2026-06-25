@@ -174,7 +174,9 @@
                                    Style="{StaticResource PageSubtitleText}"/>
                     </StackPanel>
                     <Button Grid.Column="1" Style="{StaticResource ButtonPrimary}"
-                            Command="{Binding NovaCategoriaCommand}" Height="38" Padding="16,0">
+                            Command="{Binding NovaCategoriaCommand}" Height="38" Padding="16,0"
+                            IsEnabled="{Binding PodeEditarTela}"
+                            ToolTip="Sem permissão para criar/editar categorias">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="13"
                                        VerticalAlignment="Center" Margin="0,0,7,0"/>
@@ -197,6 +199,37 @@
                            Foreground="{DynamicResource SuccessBrush}"/>
             </Border>
 
+            <!-- Estado vazio -->
+            <Border DockPanel.Dock="Top" Padding="28,60">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Categorias.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <StackPanel HorizontalAlignment="Center">
+                    <Border Width="64" Height="64" CornerRadius="16"
+                            Background="{DynamicResource SurfaceBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            HorizontalAlignment="Center" Margin="0,0,0,16">
+                        <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets" FontSize="28"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Nenhuma categoria criada" FontSize="16" FontWeight="SemiBold"
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8"/>
+                    <TextBlock Text='Clique em "Nova Categoria" para começar.'
+                               FontSize="13" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource TextMutedBrush}"/>
+                </StackPanel>
+            </Border>
+
             <ScrollViewer Padding="28,14,28,28">
                 <ItemsControl ItemsSource="{Binding Categorias}">
                     <ItemsControl.ItemTemplate>
@@ -211,9 +244,10 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" Style="{StaticResource IconTile}" Margin="0,0,14,0">
+                                        <Border Grid.Column="0" Style="{StaticResource IconTile}" Margin="0,0,14,0"
+                                                Background="{Binding Cor, Converter={StaticResource HexToBrush}, ConverterParameter=soft}">
                                             <TextBlock Text="{Binding Icone}" FontFamily="Segoe MDL2 Assets" FontSize="16"
-                                                       Foreground="{DynamicResource AccentTextBrush}"
+                                                       Foreground="{Binding Cor, Converter={StaticResource HexToBrush}}"
                                                        HorizontalAlignment="Center"
                                                        VerticalAlignment="Center"/>
                                         </Border>
@@ -233,6 +267,8 @@
                                                     CommandParameter="{Binding}"
                                                     Command="{Binding DataContext.NovaCategoriaCommand,
                                                               RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    IsEnabled="{Binding DataContext.PodeEditarTela,
+                                                                RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     Width="30" Height="30" Margin="0,0,2,0">
                                                 <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="12"
                                                            Foreground="{DynamicResource AccentBrush}"/>
@@ -242,6 +278,8 @@
                                                     CommandParameter="{Binding}"
                                                     Command="{Binding DataContext.EditarCategoriaCommand,
                                                               RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    IsEnabled="{Binding DataContext.PodeEditarTela,
+                                                                RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     Width="30" Height="30" Margin="0,0,2,0">
                                                 <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="12"
                                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
@@ -251,7 +289,9 @@
                                                     Background="Transparent"
                                                     CommandParameter="{Binding}"
                                                     Command="{Binding DataContext.ExcluirCategoriaCommand,
-                                                              RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    IsEnabled="{Binding DataContext.PodeExcluirTela,
+                                                                RelativeSource={RelativeSource AncestorType=UserControl}}">
                                                 <Button.Template>
                                                     <ControlTemplate TargetType="Button">
                                                         <Border x:Name="bg" CornerRadius="6"
@@ -280,10 +320,19 @@
                                               Margin="28,4,0,0">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Border Background="{DynamicResource SurfaceElevatedBrush}"
-                                                    BorderBrush="{DynamicResource BorderLightBrush}"
-                                                    BorderThickness="1" CornerRadius="12"
+                                            <Border BorderThickness="1" CornerRadius="12"
                                                     Padding="14,10" Margin="0,0,0,4">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}"/>
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource BorderLightBrush}"/>
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="Auto"/>
@@ -298,7 +347,7 @@
                                                     <StackPanel Grid.Column="1" Orientation="Horizontal"
                                                                 VerticalAlignment="Center">
                                                         <TextBlock Text="{Binding Icone}" FontFamily="Segoe MDL2 Assets" FontSize="13"
-                                                                   Foreground="{DynamicResource AccentTextBrush}"
+                                                                   Foreground="{Binding Cor, Converter={StaticResource HexToBrush}}"
                                                                    Margin="0,0,8,0"/>
                                                         <TextBlock Text="{Binding Nome}" FontSize="13"
                                                                    FontWeight="SemiBold"
@@ -309,7 +358,9 @@
                                                                 Width="28" Height="28"
                                                                 CommandParameter="{Binding}"
                                                                 Command="{Binding DataContext.EditarCategoriaCommand,
-                                                                          RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                IsEnabled="{Binding DataContext.PodeEditarTela,
+                                                                            RelativeSource={RelativeSource AncestorType=UserControl}}">
                                                             <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets"
                                                                        FontSize="11"
                                                                        Foreground="{DynamicResource TextSecondaryBrush}"/>
@@ -318,7 +369,9 @@
                                                                 Background="Transparent" Cursor="Hand"
                                                                 CommandParameter="{Binding}"
                                                                 Command="{Binding DataContext.ExcluirCategoriaCommand,
-                                                                          RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                IsEnabled="{Binding DataContext.PodeExcluirTela,
+                                                                            RelativeSource={RelativeSource AncestorType=UserControl}}">
                                                             <Button.Template>
                                                                 <ControlTemplate TargetType="Button">
                                                                     <Border x:Name="bg" CornerRadius="6"

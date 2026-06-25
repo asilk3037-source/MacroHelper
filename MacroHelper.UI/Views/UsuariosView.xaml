@@ -80,6 +80,46 @@
                                 Command="{Binding AdicionarGrupoCommand}" Height="36" Padding="12,0"/>
                     </Grid>
 
+                    <!-- Permissões por tela -->
+                    <Border BorderThickness="0,1,0,0" BorderBrush="{DynamicResource BorderLightBrush}" Margin="0,8,0,16" Padding="0,16,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Permissões por tela" FontSize="13" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,4"/>
+
+                            <Border Padding="10,8" CornerRadius="8" Margin="0,0,0,10"
+                                    Background="{DynamicResource SuccessBgBrush}"
+                                    Visibility="{Binding UsuarioPermissoes.Perfil, Converter={StaticResource StringEqualsToVis}, ConverterParameter=Admin}">
+                                <TextBlock Text="Administradores têm acesso total a todas as telas." FontSize="11"
+                                           Foreground="{DynamicResource SuccessBrush}" TextWrapping="Wrap"/>
+                            </Border>
+
+                            <ItemsControl ItemsSource="{Binding PermissoesTela}"
+                                          Visibility="{Binding UsuarioPermissoes.Perfil, Converter={StaticResource StringEqualsToVis}, ConverterParameter=Usuario}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="130"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Label}" FontSize="12"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       VerticalAlignment="Center"/>
+                                            <ComboBox Grid.Column="1"
+                                                      ItemsSource="{Binding DataContext.NiveisDisponiveis,
+                                                                RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                      SelectedItem="{Binding Nivel}"
+                                                      Height="30" FontSize="11"
+                                                      Background="{DynamicResource InputBgBrush}"
+                                                      Foreground="{DynamicResource TextPrimaryBrush}"
+                                                      BorderBrush="{DynamicResource InputBorderBrush}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
                     <Grid Margin="0,20,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -97,6 +137,107 @@
                     </Grid>
                 </StackPanel>
             </ScrollViewer>
+        </Border>
+    </Grid>
+
+    <!-- Modal criar/editar usuário -->
+    <Grid Panel.ZIndex="11">
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding MostrarFormUsuario}" Value="True">
+                        <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+        <Border Background="#80000000"/>
+        <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+                Width="420" Background="{DynamicResource SurfaceBrush}"
+                BorderBrush="{DynamicResource BorderLightBrush}"
+                BorderThickness="1" CornerRadius="20">
+            <StackPanel Margin="28,24">
+                <Grid Margin="0,0,0,20">
+                    <TextBlock FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="Editar usuário"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding UsuarioEditando}" Value="{x:Null}">
+                                        <Setter Property="Text" Value="Novo usuário"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <Button HorizontalAlignment="Right" Style="{StaticResource ButtonIconOnly}"
+                            Command="{Binding CancelarFormUsuarioCommand}" Width="28" Height="28">
+                        <TextBlock Text="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                </Grid>
+
+                <Border Background="{DynamicResource DangerBgBrush}"
+                        BorderBrush="{DynamicResource DangerBrush}"
+                        BorderThickness="1" CornerRadius="8"
+                        Padding="12,9" Margin="0,0,0,14"
+                        Visibility="{Binding FormErro, Converter={StaticResource NullToVis}}">
+                    <TextBlock Text="{Binding FormErro}"
+                               Foreground="{DynamicResource DangerBrush}" FontSize="12" TextWrapping="Wrap"/>
+                </Border>
+
+                <TextBlock Text="NOME *" FontSize="10" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                <TextBox Style="{StaticResource InputStyle}" Height="42"
+                         Text="{Binding FormNome, UpdateSourceTrigger=PropertyChanged}"
+                         AutomationProperties.AutomationId="FormNomeTextBox"
+                         Margin="0,0,0,14"/>
+
+                <TextBlock Text="E-MAIL *" FontSize="10" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                <TextBox Style="{StaticResource InputStyle}" Height="42"
+                         Text="{Binding FormEmail, UpdateSourceTrigger=PropertyChanged}"
+                         AutomationProperties.AutomationId="FormEmailTextBox"
+                         Margin="0,0,0,14"/>
+
+                <StackPanel Visibility="{Binding UsuarioEditando, Converter={StaticResource ObjNullToVis}, ConverterParameter=invert}">
+                    <TextBlock Text="SENHA INICIAL *" FontSize="10" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                    <TextBox Style="{StaticResource InputStyle}" Height="42"
+                             Text="{Binding FormSenha, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.AutomationId="FormSenhaTextBox"
+                             Margin="0,0,0,14"/>
+                </StackPanel>
+
+                <CheckBox Content="Conta ativa" IsChecked="{Binding FormAtivo}"
+                          FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,10"/>
+                <CheckBox Content="Administrador (acesso total a todas as telas)" IsChecked="{Binding FormAdmin}"
+                          FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,20"/>
+
+                <Border Padding="10,8" CornerRadius="8" Margin="0,0,0,16"
+                        Background="{DynamicResource SurfaceElevatedBrush}"
+                        Visibility="{Binding UsuarioEditando, Converter={StaticResource ObjNullToVis}, ConverterParameter=invert}">
+                    <TextBlock Text="Categorias, grupo e permissões por tela podem ser configurados depois, pelo ícone de engrenagem na lista."
+                               FontSize="11" TextWrapping="Wrap" Foreground="{DynamicResource TextMutedBrush}"/>
+                </Border>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Cancelar" Style="{StaticResource ButtonSecondary}"
+                            Command="{Binding CancelarFormUsuarioCommand}"
+                            Margin="0,0,10,0" Width="100"/>
+                    <Button Style="{StaticResource ButtonPrimary}"
+                            Command="{Binding SalvarUsuarioCommand}" Width="130"
+                            AutomationProperties.AutomationId="SalvarUsuarioButton">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                       VerticalAlignment="Center" Margin="0,0,7,0"/>
+                            <TextBlock Text="Salvar" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
         </Border>
     </Grid>
 
@@ -120,6 +261,16 @@
                     <TextBlock Text="Gerencie os usuários com acesso ao MacroHelper."
                                Style="{StaticResource PageSubtitleText}"/>
                 </StackPanel>
+                <Button Grid.Column="1" Style="{StaticResource ButtonPrimary}"
+                        Command="{Binding NovoUsuarioCommand}" Height="38" Padding="16,0"
+                        IsEnabled="{Binding PodeEditarTela}" ToolTip="Sem permissão para criar/editar usuários"
+                        AutomationProperties.AutomationId="NovoUsuarioButton">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                   VerticalAlignment="Center" Margin="0,0,7,0"/>
+                        <TextBlock Text="Novo Usuário" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </Grid>
         </Border>
 
@@ -189,7 +340,7 @@
                                             </TextBlock>
                                         </Border>
                                         <Button Style="{StaticResource ButtonIconOnly}"
-                                                ToolTip="Permissões por categoria"
+                                                ToolTip="Permissões por categoria e por tela"
                                                 CommandParameter="{Binding}"
                                                 Command="{Binding DataContext.AbrirPermissoesCommand,
                                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -198,6 +349,70 @@
                                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Button>
+                                        <Button Style="{StaticResource ButtonIconOnly}"
+                                                ToolTip="Editar usuário"
+                                                CommandParameter="{Binding}"
+                                                Command="{Binding DataContext.EditarUsuarioCommand,
+                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                IsEnabled="{Binding DataContext.PodeEditarTela,
+                                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                Margin="2,0,0,0" Width="32" Height="32">
+                                            <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Button>
+                                        <!-- Lixeira (1º clique arma a confirmação) -->
+                                        <Button ToolTip="Excluir usuário" Cursor="Hand"
+                                                Width="32" Height="32" BorderThickness="0"
+                                                Background="Transparent" Margin="2,0,0,0"
+                                                CommandParameter="{Binding}"
+                                                IsEnabled="{Binding DataContext.PodeExcluirTela,
+                                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                Command="{Binding DataContext.ExcluirUsuarioCommand,
+                                                          RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                            <Button.Visibility>
+                                                <MultiBinding Converter="{StaticResource EqualsToVis}" ConverterParameter="invert">
+                                                    <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                    <Binding Path="Id"/>
+                                                </MultiBinding>
+                                            </Button.Visibility>
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="bg" CornerRadius="6" Background="{TemplateBinding Background}">
+                                                        <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="bg" Property="Background" Value="{DynamicResource DangerBgBrush}"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                        <!-- Confirmar / cancelar (aparece após o 1º clique, só nesta linha) -->
+                                        <StackPanel Orientation="Horizontal" Margin="2,0,0,0">
+                                            <StackPanel.Visibility>
+                                                <MultiBinding Converter="{StaticResource EqualsToVis}">
+                                                    <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                    <Binding Path="Id"/>
+                                                </MultiBinding>
+                                            </StackPanel.Visibility>
+                                            <Button Content="Confirmar" Style="{StaticResource ButtonSecondary}"
+                                                    Foreground="{DynamicResource DangerBrush}"
+                                                    CommandParameter="{Binding}"
+                                                    Command="{Binding DataContext.ExcluirUsuarioCommand,
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    Height="28" Padding="10,0" FontSize="11" Margin="0,0,4,0"/>
+                                            <Button Style="{StaticResource ButtonIconOnly}"
+                                                    Command="{Binding DataContext.CancelarExclusaoCommand,
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    Width="28" Height="28">
+                                                <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                            </Button>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Grid>
                             </Border>

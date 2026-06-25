@@ -15,7 +15,11 @@
     <!-- Self-contained para o instalador -->
     <SelfContained>false</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ApplicationIcon>Resources\app.ico</ApplicationIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="Resources\app.ico"/>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm"                      Version="8.2.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection"   Version="8.0.1" />

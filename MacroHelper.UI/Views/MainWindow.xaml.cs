@@ -394,6 +394,11 @@ public partial class MainWindow : Window
     {
         if (e.ClickCount == 2) ToggleMax(); else DragMove();
     }
+    private void SearchButton_Click(object s, RoutedEventArgs e)
+    {
+        if (_buscador?.IsVisible == true) _buscador.Hide();
+        else                              AbrirBuscadorRapido();
+    }
     private void MinimizeButton_Click(object s, RoutedEventArgs e) => WindowState = WindowState.Minimized;
     private void MaximizeButton_Click(object s, RoutedEventArgs e) => ToggleMax();
     private void ToggleMax() => WindowState = WindowState == WindowState.Maximized

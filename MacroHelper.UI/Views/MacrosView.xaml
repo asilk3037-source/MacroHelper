@@ -629,6 +629,8 @@
                     </Border>
                         <Button Style="{StaticResource ButtonPrimary}"
                                 Command="{Binding NovaMacroCommand}"
+                                IsEnabled="{Binding PodeEditarTela}"
+                                ToolTip="Sem permissão para criar/editar macros"
                                 Height="38" Padding="16,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets"
@@ -824,9 +826,18 @@
                             <Border Margin="0,0,0,8"
                                     Background="{DynamicResource SurfaceBrush}"
                                     BorderBrush="{DynamicResource BorderLightBrush}"
-                                    BorderThickness="1" CornerRadius="16">
+                                    BorderThickness="1" CornerRadius="16"
+                                    RenderTransformOrigin="0.5,0.5">
+                                <Border.RenderTransform>
+                                    <TranslateTransform x:Name="rowLift" Y="0"/>
+                                </Border.RenderTransform>
                                 <Border.Style>
                                     <Style TargetType="Border">
+                                        <Setter Property="Effect">
+                                            <Setter.Value>
+                                                <DropShadowEffect x:Name="rowShadow" Color="#221F30" ShadowDepth="2" BlurRadius="0" Opacity="0"/>
+                                            </Setter.Value>
+                                        </Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
                                                 <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
@@ -834,6 +845,22 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
+                                <Border.Triggers>
+                                    <EventTrigger RoutedEvent="MouseEnter">
+                                        <BeginStoryboard><Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="rowLift" Storyboard.TargetProperty="Y" To="-2" Duration="0:0:0.15"/>
+                                            <DoubleAnimation Storyboard.TargetName="rowShadow" Storyboard.TargetProperty="BlurRadius" To="14" Duration="0:0:0.15"/>
+                                            <DoubleAnimation Storyboard.TargetName="rowShadow" Storyboard.TargetProperty="Opacity" To="0.10" Duration="0:0:0.15"/>
+                                        </Storyboard></BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="MouseLeave">
+                                        <BeginStoryboard><Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="rowLift" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.15"/>
+                                            <DoubleAnimation Storyboard.TargetName="rowShadow" Storyboard.TargetProperty="BlurRadius" To="0" Duration="0:0:0.15"/>
+                                            <DoubleAnimation Storyboard.TargetName="rowShadow" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+                                        </Storyboard></BeginStoryboard>
+                                    </EventTrigger>
+                                </Border.Triggers>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <!-- Barra accent lateral -->
@@ -991,6 +1018,8 @@
                                                 CommandParameter="{Binding}"
                                                 Command="{Binding DataContext.EditarMacroCommand,
                                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                IsEnabled="{Binding DataContext.PodeEditarTela,
+                                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 Margin="0,0,2,0" Width="32" Height="32">
                                             <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets"
                                                        FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"
@@ -1003,7 +1032,9 @@
                                                 Background="Transparent"
                                                 CommandParameter="{Binding}"
                                                 Command="{Binding DataContext.ExcluirMacroCommand,
-                                                          RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                IsEnabled="{Binding DataContext.PodeExcluirTela,
+                                                            RelativeSource={RelativeSource AncestorType=UserControl}}">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
                                                     <Border x:Name="bg" CornerRadius="6"

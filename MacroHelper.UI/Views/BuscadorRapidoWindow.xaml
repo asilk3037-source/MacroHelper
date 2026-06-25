@@ -178,23 +178,34 @@
             <!-- Footer -->
             <Border Padding="14,8" BorderThickness="0,1,0,0"
                     BorderBrush="{DynamicResource BorderBrush}">
-                <StackPanel Orientation="Horizontal">
-                    <Border Style="{StaticResource KbdChip}" Margin="0,0,4,0">
-                        <TextBlock Text="↑↓" Style="{StaticResource KbdChipText}"/>
-                    </Border>
-                    <TextBlock Text="navegar  " FontSize="9" Foreground="{DynamicResource TextMutedBrush}"
-                               VerticalAlignment="Center"/>
-                    <Border Style="{StaticResource KbdChip}" Margin="0,0,4,0">
-                        <TextBlock Text="Enter" Style="{StaticResource KbdChipText}"/>
-                    </Border>
-                    <TextBlock Text="inserir  " FontSize="9" Foreground="{DynamicResource TextMutedBrush}"
-                               VerticalAlignment="Center"/>
-                    <Border Style="{StaticResource KbdChip}" Margin="0,0,4,0">
-                        <TextBlock Text="Ctrl+Espaço" Style="{StaticResource KbdChipText}"/>
-                    </Border>
-                    <TextBlock Text="abrir/fechar" FontSize="9" Foreground="{DynamicResource TextMutedBrush}"
-                               VerticalAlignment="Center"/>
-                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Border Style="{StaticResource KbdChip}" Margin="0,0,4,0">
+                            <TextBlock Text="↑↓" Style="{StaticResource KbdChipText}"/>
+                        </Border>
+                        <TextBlock Text="navegar  " FontSize="9" Foreground="{DynamicResource TextMutedBrush}"
+                                   VerticalAlignment="Center"/>
+                        <Border Style="{StaticResource KbdChip}" Margin="0,0,4,0">
+                            <TextBlock Text="Enter" Style="{StaticResource KbdChipText}"/>
+                        </Border>
+                        <TextBlock Text="inserir  " FontSize="9" Foreground="{DynamicResource TextMutedBrush}"
+                                   VerticalAlignment="Center"/>
+                        <Border Style="{StaticResource KbdChip}" Margin="0,0,4,0">
+                            <TextBlock Text="Ctrl+Espaço" Style="{StaticResource KbdChipText}"/>
+                        </Border>
+                        <TextBlock Text="abrir/fechar" FontSize="9" Foreground="{DynamicResource TextMutedBrush}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" FontFamily="Consolas" FontSize="9.5"
+                               Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center">
+                        <Run Text="{Binding Items.Count, ElementName=ListResultados, Mode=OneWay}"/>
+                        <Run Text=" resultados"/>
+                    </TextBlock>
+                </Grid>
             </Border>
         </StackPanel>
     </Border>

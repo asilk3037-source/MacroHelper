@@ -17,6 +17,10 @@
             <conv:IntGreaterThanZeroToVisibilityConverter x:Key="IntToVis"/>
             <conv:IntZeroToVisibilityConverter x:Key="IntZeroToVis"/>
             <conv:NameInitialsConverter x:Key="NameInitials"/>
+            <conv:HexToBrushConverter x:Key="HexToBrush"/>
+            <conv:EqualsToVisibilityConverter x:Key="EqualsToVis"/>
+            <conv:StringEqualsToVisibilityConverter x:Key="StringEqualsToVis"/>
+            <conv:ObjectNullToVisibilityConverter x:Key="ObjNullToVis"/>
 
             <!-- ── ACCENT GRADIENT (usado em tiles de logo/badges "iridescentes" — primary → ciano) ── -->
             <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="1,1">
@@ -417,7 +421,7 @@
             <!-- ── TIPOGRAFIA DE PÁGINA ── -->
             <Style x:Key="PageTitleText" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="Segoe UI Semibold"/>
-                <Setter Property="FontSize" Value="26"/>
+                <Setter Property="FontSize" Value="28"/>
                 <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
             </Style>
             <Style x:Key="PageSubtitleText" TargetType="TextBlock">

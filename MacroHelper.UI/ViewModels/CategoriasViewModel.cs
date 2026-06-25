@@ -9,6 +9,11 @@ namespace MacroHelper.UI.ViewModels;
 public partial class CategoriasViewModel : ObservableObject
 {
     private readonly CategoriaService _svc;
+    private readonly UsuarioService? _usuarioService;
+    private readonly PermissaoTelaService? _permissaoTelaService;
+
+    [ObservableProperty] private bool _podeEditarTela  = true;
+    [ObservableProperty] private bool _podeExcluirTela = true;
 
     [ObservableProperty] private ObservableCollection<Categoria> _categorias = new();
     [ObservableProperty] private ObservableCollection<Categoria> _categoriasRaiz = new();
@@ -30,13 +35,29 @@ public partial class CategoriasViewModel : ObservableObject
     [ObservableProperty] private string  _formTitulo = "Nova Categoria";
     [ObservableProperty] private string? _formErro;
 
-    public CategoriasViewModel(CategoriaService svc) => _svc = svc;
+    public CategoriasViewModel(CategoriaService svc, UsuarioService? usuarioService = null,
+        PermissaoTelaService? permissaoTelaService = null)
+    {
+        _svc = svc;
+        _usuarioService = usuarioService;
+        _permissaoTelaService = permissaoTelaService;
+    }
+
+    private async Task AtualizarNivelTelaAsync()
+    {
+        var usuario = _usuarioService?.UsuarioAtual;
+        if (usuario == null || _permissaoTelaService == null) return;
+        var nivel = await _permissaoTelaService.ObterNivelEfetivoAsync(usuario, "categorias");
+        PodeEditarTela  = NiveisPermissaoTela.Atende(nivel, NiveisPermissaoTela.Editar);
+        PodeExcluirTela = NiveisPermissaoTela.Atende(nivel, NiveisPermissaoTela.Excluir);
+    }
 
     public async Task CarregarAsync()
     {
         IsLoading = true;
         try
         {
+            await AtualizarNivelTelaAsync();
             var arvore = (await _svc.ObterArvoreAsync()).ToList();
             Categorias = new ObservableCollection<Categoria>(arvore);
 
