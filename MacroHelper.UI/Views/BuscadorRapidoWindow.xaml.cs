@@ -1,6 +1,7 @@
 using MacroHelper.Core.Entities;
 using MacroHelper.Services;
 using MacroHelper.UI.Helpers;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -37,10 +38,66 @@ public partial class BuscadorRapidoWindow : Window
     {
         TxtBusca.Text = string.Empty;
         CarregarTodos();
+        PosicionarNaTelaDoCursor();
         Show();
         Activate();
         TxtBusca.Focus();
     }
+
+    /// <summary>
+    /// Centraliza a janela no monitor onde está o cursor do mouse — em vez do monitor
+    /// primário (comportamento padrão de WindowStartupLocation="CenterScreen"), que ignora
+    /// em qual tela o usuário está trabalhando num setup com múltiplos monitores.
+    /// </summary>
+    private void PosicionarNaTelaDoCursor()
+    {
+        if (!GetCursorPos(out var pt)) return;
+        var hMonitor = MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
+        if (hMonitor == IntPtr.Zero) return;
+
+        var info = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
+        if (!GetMonitorInfo(hMonitor, ref info)) return;
+
+        var dpiX = 96.0;
+        var dpiY = 96.0;
+        if (GetDpiForMonitor(hMonitor, MDT_EFFECTIVE_DPI, out var rawDpiX, out var rawDpiY) == 0)
+        {
+            dpiX = rawDpiX;
+            dpiY = rawDpiY;
+        }
+
+        var monitorLeft   = info.rcWork.Left   * 96.0 / dpiX;
+        var monitorTop    = info.rcWork.Top    * 96.0 / dpiY;
+        var monitorWidth  = (info.rcWork.Right  - info.rcWork.Left) * 96.0 / dpiX;
+        var monitorHeight = (info.rcWork.Bottom - info.rcWork.Top)  * 96.0 / dpiY;
+
+        var altura = ActualHeight > 0 ? ActualHeight : Height;
+        Left = monitorLeft + (monitorWidth - Width) / 2;
+        Top  = monitorTop  + (monitorHeight - altura) / 2;
+    }
+
+    private const uint MONITOR_DEFAULTTONEAREST = 2;
+    private const int  MDT_EFFECTIVE_DPI        = 0;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct POINT { public int X; public int Y; }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct RECT { public int Left, Top, Right, Bottom; }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MONITORINFO
+    {
+        public int cbSize;
+        public RECT rcMonitor;
+        public RECT rcWork;
+        public uint dwFlags;
+    }
+
+    [DllImport("user32.dll")] private static extern bool GetCursorPos(out POINT lpPoint);
+    [DllImport("user32.dll")] private static extern IntPtr MonitorFromPoint(POINT pt, uint dwFlags);
+    [DllImport("user32.dll", CharSet = CharSet.Auto)] private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
+    [DllImport("shcore.dll")] private static extern int GetDpiForMonitor(IntPtr hmonitor, int dpiType, out uint dpiX, out uint dpiY);
 
     private async void CarregarTodos()
     {
