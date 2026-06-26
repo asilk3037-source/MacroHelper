@@ -292,6 +292,12 @@
                                                               RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     IsEnabled="{Binding DataContext.PodeExcluirTela,
                                                                 RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                                <Button.Visibility>
+                                                    <MultiBinding Converter="{StaticResource EqualsToVis}" ConverterParameter="invert">
+                                                        <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                        <Binding Path="Id"/>
+                                                    </MultiBinding>
+                                                </Button.Visibility>
                                                 <Button.Template>
                                                     <ControlTemplate TargetType="Button">
                                                         <Border x:Name="bg" CornerRadius="6"
@@ -311,6 +317,34 @@
                                                     </ControlTemplate>
                                                 </Button.Template>
                                             </Button>
+                                            <StackPanel Orientation="Horizontal" Margin="2,0,0,0">
+                                                <StackPanel.Visibility>
+                                                    <MultiBinding Converter="{StaticResource EqualsToVis}">
+                                                        <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                        <Binding Path="Id"/>
+                                                    </MultiBinding>
+                                                </StackPanel.Visibility>
+                                                <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0,0,4,0"
+                                                           Foreground="{DynamicResource TextMutedBrush}"
+                                                           Visibility="{Binding DataContext.UsoCategoriaConfirmacao, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IntToVis}}">
+                                                    <Run Text="Usada em "/>
+                                                    <Run Text="{Binding DataContext.UsoCategoriaConfirmacao, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=OneWay}"/>
+                                                    <Run Text=" macro(s)."/>
+                                                </TextBlock>
+                                                <Button Content="Confirmar" Style="{StaticResource ButtonSecondary}"
+                                                        Foreground="{DynamicResource DangerBrush}"
+                                                        CommandParameter="{Binding}"
+                                                        Command="{Binding DataContext.ExcluirCategoriaCommand,
+                                                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        Height="28" Padding="10,0" FontSize="11" Margin="0,0,4,0"/>
+                                                <Button Style="{StaticResource ButtonIconOnly}"
+                                                        Command="{Binding DataContext.CancelarExclusaoCommand,
+                                                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        Width="28" Height="28">
+                                                    <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                                </Button>
+                                            </StackPanel>
                                         </StackPanel>
                                     </Grid>
                                 </Border>
@@ -372,6 +406,12 @@
                                                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                                 IsEnabled="{Binding DataContext.PodeExcluirTela,
                                                                             RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                                            <Button.Visibility>
+                                                                <MultiBinding Converter="{StaticResource EqualsToVis}" ConverterParameter="invert">
+                                                                    <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                                    <Binding Path="Id"/>
+                                                                </MultiBinding>
+                                                            </Button.Visibility>
                                                             <Button.Template>
                                                                 <ControlTemplate TargetType="Button">
                                                                     <Border x:Name="bg" CornerRadius="6"
@@ -391,6 +431,27 @@
                                                                 </ControlTemplate>
                                                             </Button.Template>
                                                         </Button>
+                                                        <StackPanel Orientation="Horizontal" Margin="2,0,0,0">
+                                                            <StackPanel.Visibility>
+                                                                <MultiBinding Converter="{StaticResource EqualsToVis}">
+                                                                    <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                                    <Binding Path="Id"/>
+                                                                </MultiBinding>
+                                                            </StackPanel.Visibility>
+                                                            <Button Content="Confirmar" Style="{StaticResource ButtonSecondary}"
+                                                                    Foreground="{DynamicResource DangerBrush}"
+                                                                    CommandParameter="{Binding}"
+                                                                    Command="{Binding DataContext.ExcluirCategoriaCommand,
+                                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                    Height="26" Padding="8,0" FontSize="10" Margin="0,0,4,0"/>
+                                                            <Button Style="{StaticResource ButtonIconOnly}"
+                                                                    Command="{Binding DataContext.CancelarExclusaoCommand,
+                                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                    Width="26" Height="26">
+                                                                <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                                            </Button>
+                                                        </StackPanel>
                                                     </StackPanel>
                                                 </Grid>
                                             </Border>

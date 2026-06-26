@@ -118,6 +118,12 @@
                                                     CommandParameter="{Binding}"
                                                     Command="{Binding DataContext.ExcluirGrupoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     IsEnabled="{Binding DataContext.PodeExcluirTela, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                                <Button.Visibility>
+                                                    <MultiBinding Converter="{StaticResource EqualsToVis}" ConverterParameter="invert">
+                                                        <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                        <Binding Path="Id"/>
+                                                    </MultiBinding>
+                                                </Button.Visibility>
                                                 <Button.Template>
                                                     <ControlTemplate TargetType="Button">
                                                         <Border x:Name="bg" CornerRadius="6" Background="{TemplateBinding Background}">
@@ -133,12 +139,51 @@
                                                     </ControlTemplate>
                                                 </Button.Template>
                                             </Button>
+                                            <StackPanel Orientation="Horizontal" Margin="2,0,0,0">
+                                                <StackPanel.Visibility>
+                                                    <MultiBinding Converter="{StaticResource EqualsToVis}">
+                                                        <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                        <Binding Path="Id"/>
+                                                    </MultiBinding>
+                                                </StackPanel.Visibility>
+                                                <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0,0,4,0"
+                                                           Foreground="{DynamicResource TextMutedBrush}"
+                                                           Visibility="{Binding DataContext.UsoGrupoConfirmacao, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IntToVis}}">
+                                                    <Run Text="Possui "/>
+                                                    <Run Text="{Binding DataContext.UsoGrupoConfirmacao, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=OneWay}"/>
+                                                    <Run Text=" membro(s)."/>
+                                                </TextBlock>
+                                                <Button Content="Confirmar" Style="{StaticResource ButtonSecondary}"
+                                                        Foreground="{DynamicResource DangerBrush}"
+                                                        CommandParameter="{Binding}"
+                                                        Command="{Binding DataContext.ExcluirGrupoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        Height="28" Padding="10,0" FontSize="11" Margin="0,0,4,0"/>
+                                                <Button Style="{StaticResource ButtonIconOnly}"
+                                                        Command="{Binding DataContext.CancelarExclusaoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        Width="28" Height="28">
+                                                    <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                                </Button>
+                                            </StackPanel>
                                         </StackPanel>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+
+                    <!-- Estado vazio -->
+                    <Border Padding="40,24" Margin="0,0,0,16"
+                            Visibility="{Binding Grupos.Count, Converter={StaticResource IntZeroToVis}}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="&#xE716;" FontFamily="Segoe MDL2 Assets" FontSize="28"
+                                       Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBlock Text="Nenhum grupo criado ainda." FontSize="13"
+                                       Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Crie grupos para restringir o acesso a macros por equipe." FontSize="11"
+                                       Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
 
                     <TextBlock Text="Membros da equipe" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,10"/>
                     <ItemsControl ItemsSource="{Binding TodosUsuarios}">

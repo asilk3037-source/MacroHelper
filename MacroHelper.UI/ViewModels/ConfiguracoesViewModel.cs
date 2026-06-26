@@ -2,10 +2,42 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MacroHelper.Services;
 using MacroHelper.UI.Properties;
+using Microsoft.Win32;
 using System.Windows.Input;
 using HotkeyService = MacroHelper.UI.HotkeyService;
 
 namespace MacroHelper.UI.ViewModels;
+
+/// <summary>Registra (ou remove) o app na chave Run do registro do usuário, para iniciar junto com o Windows.</summary>
+public static class IniciarComWindowsHelper
+{
+    private const string ChaveRegistro = @"Software\Microsoft\Windows\CurrentVersion\Run";
+    private const string NomeValor     = "SK MacroHelper";
+
+    public static bool EstaAtivo()
+    {
+        using var chave = Registry.CurrentUser.OpenSubKey(ChaveRegistro, writable: false);
+        return chave?.GetValue(NomeValor) != null;
+    }
+
+    public static void Definir(bool ativo)
+    {
+        using var chave = Registry.CurrentUser.OpenSubKey(ChaveRegistro, writable: true);
+        if (chave == null) return;
+
+        if (ativo)
+        {
+            var caminhoExe = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+            if (!string.IsNullOrWhiteSpace(caminhoExe))
+                chave.SetValue(NomeValor, $"\"{caminhoExe}\"");
+        }
+        else
+        {
+            if (chave.GetValue(NomeValor) != null)
+                chave.DeleteValue(NomeValor);
+        }
+    }
+}
 
 public partial class ConfiguracoesViewModel : ObservableObject
 {
@@ -82,7 +114,7 @@ public partial class ConfiguracoesViewModel : ObservableObject
 
         try
         {
-            IniciarComWindows    = Settings.Default.IniciarComWindows;
+            IniciarComWindows    = IniciarComWindowsHelper.EstaAtivo();
             MinimizarParaBandeja = Settings.Default.MinimizarParaBandeja;
             ChaveIA              = Settings.Default.ChaveIA ?? string.Empty;
             IaConfigurada        = !string.IsNullOrEmpty(ChaveIA);
@@ -285,6 +317,7 @@ public partial class ConfiguracoesViewModel : ObservableObject
     {
         try
         {
+            IniciarComWindowsHelper.Definir(IniciarComWindows);
             Settings.Default.IniciarComWindows    = IniciarComWindows;
             Settings.Default.MinimizarParaBandeja = MinimizarParaBandeja;
             Settings.Default.Save();

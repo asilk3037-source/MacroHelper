@@ -15,6 +15,7 @@ public partial class MacrosViewModel : ObservableObject
     private readonly GrupoService?    _grupoService;
     private readonly UsuarioService?  _usuarioService;
     private readonly PermissaoTelaService? _permissaoTelaService;
+    private CancellationTokenSource? _buscaDebounceCts;
 
     public bool IsAdmin => _usuarioService?.UsuarioAtual?.Perfil == "Admin";
 
@@ -33,6 +34,10 @@ public partial class MacrosViewModel : ObservableObject
     [ObservableProperty] private ObservableCollection<Macro> _pendentes = new();
     [ObservableProperty] private bool    _mostrarPendentes = false;
     [ObservableProperty] private bool    _somenteFavoritos = false;
+    [ObservableProperty] private Macro?  _macroRejeitando;
+    [ObservableProperty] private string  _motivoRejeicao = string.Empty;
+    [ObservableProperty] private bool    _mostrarRejeicao = false;
+    [ObservableProperty] private bool    _mostrarArquivadas = false;
 
     public MacrosViewModel(MacroService macroService, CategoriaService catService,
         IaService iaService, GrupoService? grupoService = null, UsuarioService? usuarioService = null,
@@ -72,6 +77,8 @@ public partial class MacrosViewModel : ObservableObject
             if (SomenteFavoritos)
                 resultado = resultado.Where(m => m.FavoritoPessoal);
 
+            resultado = MostrarArquivadas ? resultado.Where(m => !m.Ativo) : resultado.Where(m => m.Ativo);
+
             Macros = new ObservableCollection<Macro>(resultado);
 
             var cats = await _macroService.ObterCategoriasAsync();
@@ -84,9 +91,29 @@ public partial class MacrosViewModel : ObservableObject
     }
 
     partial void OnSomenteFavoritosChanged(bool _) { var __ = CarregarAsync(); }
+    partial void OnMostrarArquivadasChanged(bool _) { var __ = CarregarAsync(); }
 
     [RelayCommand]
     public void ToggleSomenteFavoritos() => SomenteFavoritos = !SomenteFavoritos;
+
+    [RelayCommand]
+    public void ToggleMostrarArquivadas() => MostrarArquivadas = !MostrarArquivadas;
+
+    [RelayCommand]
+    public async Task ArquivarMacro(Macro macro)
+    {
+        var (ok, msg) = await _macroService.ArquivarAsync(macro.Id, arquivar: true);
+        MostrarMsg(msg, ok);
+        if (ok) await CarregarAsync();
+    }
+
+    [RelayCommand]
+    public async Task DesarquivarMacro(Macro macro)
+    {
+        var (ok, msg) = await _macroService.ArquivarAsync(macro.Id, arquivar: false);
+        MostrarMsg(msg, ok);
+        if (ok) await CarregarAsync();
+    }
 
     /// <summary>Favorito pessoal (meu) — não afeta outros usuários.</summary>
     [RelayCommand]
@@ -113,9 +140,22 @@ public partial class MacrosViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task RejeitarMacro(Macro macro)
+    public void AbrirRejeicao(Macro macro)
     {
-        var (ok, msg) = await _macroService.RejeitarAsync(macro.Id);
+        MacroRejeitando = macro;
+        MotivoRejeicao  = string.Empty;
+        MostrarRejeicao = true;
+    }
+
+    [RelayCommand]
+    public void CancelarRejeicao() => MostrarRejeicao = false;
+
+    [RelayCommand]
+    public async Task ConfirmarRejeicaoAsync()
+    {
+        if (MacroRejeitando == null) return;
+        var (ok, msg) = await _macroService.RejeitarAsync(MacroRejeitando.Id, MotivoRejeicao);
+        MostrarRejeicao = false;
         MostrarMsg(msg, ok);
         if (ok) await CarregarAsync();
     }
@@ -174,8 +214,20 @@ public partial class MacrosViewModel : ObservableObject
         catch (Exception ex) { MostrarMsg($"Erro ao importar CSV: {ex.Message}", false); }
     }
 
-    partial void OnTermoBuscaChanged(string _)      { var __ = CarregarAsync(); }
+    partial void OnTermoBuscaChanged(string _)      { var __ = DebounceCarregarAsync(); }
     partial void OnCategoriaFiltroChanged(string _) { var __ = CarregarAsync(); }
+
+    /// <summary>Espera o usuário parar de digitar (300ms) antes de buscar — evita uma chamada ao banco por tecla.</summary>
+    private async Task DebounceCarregarAsync()
+    {
+        _buscaDebounceCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _buscaDebounceCts = cts;
+        try { await Task.Delay(300, cts.Token); }
+        catch (TaskCanceledException) { return; }
+        if (cts.IsCancellationRequested) return;
+        await CarregarAsync();
+    }
 
     [RelayCommand]
     public void NovaMacro()
@@ -187,9 +239,17 @@ public partial class MacrosViewModel : ObservableObject
         MostrarFormulario = true;
     }
 
+    private bool EhPropria(Macro macro) => macro.CriadoPorId == _usuarioService?.UsuarioAtual?.Id;
+
     [RelayCommand]
     public void EditarMacro(Macro macro)
     {
+        if (!IsAdmin && !EhPropria(macro) && !Permissoes.Tem(_usuarioService?.UsuarioAtual, Permissoes.EditarMacrosDeOutros))
+        {
+            MostrarMsg("Você não tem permissão para editar macros de outros usuários.", false);
+            return;
+        }
+
         var vm = new MacroFormViewModel(_macroService, _catService, _iaService, macro, _grupoService);
         vm.Salvo     += async () => { MostrarFormulario = false; await CarregarAsync(); MostrarMsg("Macro atualizada!", true); };
         vm.Cancelado += () => MostrarFormulario = false;
@@ -200,6 +260,12 @@ public partial class MacrosViewModel : ObservableObject
     [RelayCommand]
     public async Task ExcluirMacro(Macro macro)
     {
+        if (!IsAdmin && !EhPropria(macro) && !Permissoes.Tem(_usuarioService?.UsuarioAtual, Permissoes.ExcluirMacros))
+        {
+            MostrarMsg("Você não tem permissão para excluir macros de outros usuários.", false);
+            return;
+        }
+
         var (ok, msg) = await _macroService.ExcluirAsync(macro.Id);
         MostrarMsg(msg, ok);
         if (ok) await CarregarAsync();
@@ -210,6 +276,27 @@ public partial class MacrosViewModel : ObservableObject
     {
         System.Windows.Clipboard.SetText(macro.Conteudo);
         MostrarMsg("Conteúdo copiado!", true);
+    }
+
+    /// <summary>
+    /// Abre um novo e-mail com o conteúdo da macro, usando o cliente de e-mail padrão do Windows
+    /// (Outlook desktop, ou o app web configurado como padrão — incluindo Gmail). Não exige
+    /// nenhuma integração de API/OAuth: usa o protocolo "mailto:" do próprio sistema operacional.
+    /// </summary>
+    [RelayCommand]
+    public void EnviarPorEmail(Macro macro)
+    {
+        try
+        {
+            var assunto = Uri.EscapeDataString(macro.Titulo);
+            var corpo   = Uri.EscapeDataString(macro.Conteudo);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(
+                $"mailto:?subject={assunto}&body={corpo}") { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            MostrarMsg($"Não foi possível abrir o cliente de e-mail: {ex.Message}", false);
+        }
     }
 
     private void MostrarMsg(string msg, bool ok)

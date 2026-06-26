@@ -15,12 +15,16 @@ public partial class CategoriasViewModel : ObservableObject
     [ObservableProperty] private bool _podeEditarTela  = true;
     [ObservableProperty] private bool _podeExcluirTela = true;
 
+    private bool PodeGerenciar => Permissoes.Tem(_usuarioService?.UsuarioAtual, Permissoes.GerenciarCategorias);
+
     [ObservableProperty] private ObservableCollection<Categoria> _categorias = new();
     [ObservableProperty] private ObservableCollection<Categoria> _categoriasRaiz = new();
     [ObservableProperty] private bool    _mostrarFormulario = false;
     [ObservableProperty] private bool    _isLoading = false;
     [ObservableProperty] private string? _mensagem;
     [ObservableProperty] private bool    _mensagemSucesso = true;
+    [ObservableProperty] private int?    _confirmandoExclusaoId;
+    [ObservableProperty] private int     _usoCategoriaConfirmacao;
 
     // Form
     [ObservableProperty] private int     _formId    = 0;
@@ -96,6 +100,7 @@ public partial class CategoriasViewModel : ObservableObject
     public async Task SalvarCategoriaAsync()
     {
         FormErro = null;
+        if (!PodeGerenciar) { FormErro = "Você não tem permissão para gerenciar categorias."; return; }
         var cat = new Categoria
         {
             Id    = FormId,
@@ -114,10 +119,23 @@ public partial class CategoriasViewModel : ObservableObject
     [RelayCommand]
     public async Task ExcluirCategoriaAsync(Categoria cat)
     {
+        if (!PodeGerenciar) { MostrarMensagem("Você não tem permissão para gerenciar categorias.", false); return; }
+
+        if (ConfirmandoExclusaoId != cat.Id)
+        {
+            UsoCategoriaConfirmacao = await _svc.ContarUsoAsync(cat.Id);
+            ConfirmandoExclusaoId = cat.Id;
+            return;
+        }
+
+        ConfirmandoExclusaoId = null;
         var (ok, msg) = await _svc.ExcluirAsync(cat.Id);
         MostrarMensagem(msg, ok);
         if (ok) await CarregarAsync();
     }
+
+    [RelayCommand]
+    public void CancelarExclusao() => ConfirmandoExclusaoId = null;
 
     private void MostrarMensagem(string msg, bool ok)
     {

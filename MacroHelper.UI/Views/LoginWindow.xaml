@@ -112,6 +112,34 @@
                             </TextBlock>
                         </Button>
 
+                        <!-- Divisor -->
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Height="1" Background="{DynamicResource BorderLightBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Grid.Column="1" Text="ou" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
+                            <Border Grid.Column="2" Height="1" Background="{DynamicResource BorderLightBrush}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                        </Grid>
+
+                        <!-- Login social -->
+                        <Button Style="{StaticResource ButtonSecondary}" Command="{Binding EntrarComGoogleCommand}"
+                                Height="40" FontSize="13" Margin="0,0,0,10">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE128;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Continuar com Google" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource ButtonSecondary}" Command="{Binding EntrarComMicrosoftCommand}"
+                                Height="40" FontSize="13" Margin="0,0,0,16">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE128;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Continuar com Microsoft" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
                         <!-- Link criar conta -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock Text="Não tem conta? "

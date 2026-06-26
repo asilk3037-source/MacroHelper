@@ -45,6 +45,25 @@ public partial class LoginViewModel : ObservableObject
     }
 
     [RelayCommand]
+    public async Task EntrarComGoogleAsync() => await EntrarComProvedorAsync("Google");
+
+    [RelayCommand]
+    public async Task EntrarComMicrosoftAsync() => await EntrarComProvedorAsync("Microsoft");
+
+    private async Task EntrarComProvedorAsync(string provedor)
+    {
+        Erro = string.Empty;
+        Carregando = true;
+        try
+        {
+            var (ok, msg, _) = await _usuarioService.LoginComProvedorAsync(provedor);
+            if (!ok) { Erro = msg; return; }
+            LoginSucesso?.Invoke();
+        }
+        finally { Carregando = false; }
+    }
+
+    [RelayCommand]
     public void AbrirCriarConta()
     {
         MostrarCriar = true;

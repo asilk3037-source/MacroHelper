@@ -51,9 +51,17 @@ public static class TelasApp
 public class PermissaoTelaService
 {
     private readonly PermissaoTelaRepository _repo;
+    private readonly UsuarioService? _usuarioService;
+    private readonly LogAuditoriaRepository? _auditoriaRepo;
     private readonly Dictionary<int, Dictionary<string, string>> _cache = new();
 
-    public PermissaoTelaService(PermissaoTelaRepository repo) => _repo = repo;
+    public PermissaoTelaService(PermissaoTelaRepository repo, UsuarioService? usuarioService = null,
+        LogAuditoriaRepository? auditoriaRepo = null)
+    {
+        _repo = repo;
+        _usuarioService = usuarioService;
+        _auditoriaRepo = auditoriaRepo;
+    }
 
     public async Task<Dictionary<string, string>> ObterMapaAsync(int usuarioId)
     {
@@ -67,6 +75,8 @@ public class PermissaoTelaService
     {
         await _repo.DefinirAsync(usuarioId, tela, nivel);
         _cache.Remove(usuarioId);
+        if (_auditoriaRepo != null)
+            await _auditoriaRepo.RegistrarAsync(_usuarioService?.UsuarioAtual?.Id, "AlterarPermissaoTela", "Usuario", usuarioId, $"{tela} = {nivel}");
     }
 
     /// <summary>Nível efetivo de acesso de um usuário a uma tela, já considerando perfil Admin
@@ -81,6 +91,21 @@ public class PermissaoTelaService
     {
         if (usuario.Perfil == "Admin") return NiveisPermissaoTela.Excluir;
         if (tela == "perfil") return NiveisPermissaoTela.Editar;
+
+        if (usuario.Perfil == "Auditor")
+        {
+            // Somente leitura sempre — mesmo que um admin tente conceder Editar/Excluir por engano,
+            // o nível fica limitado a Visualizar. Auditor e relatório (telas de análise) ficam
+            // visíveis por padrão; as demais telas de equipe seguem ocultas como para um usuário comum.
+            var nivelBase = mapa != null && mapa.TryGetValue(tela, out var n) ? n
+                : tela is "auditoria" or "relatorio" ? NiveisPermissaoTela.Visualizar
+                : TelasApp.EquipeAdminPorPadrao.Contains(tela) ? NiveisPermissaoTela.Nenhum
+                : NiveisPermissaoTela.Visualizar;
+
+            return NiveisPermissaoTela.Ordinal(nivelBase) > NiveisPermissaoTela.Ordinal(NiveisPermissaoTela.Visualizar)
+                ? NiveisPermissaoTela.Visualizar
+                : nivelBase;
+        }
 
         if (mapa != null && mapa.TryGetValue(tela, out var nivel)) return nivel;
 

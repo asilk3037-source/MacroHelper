@@ -4,6 +4,7 @@ using MacroHelper.Core.Entities;
 using MacroHelper.Services;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace MacroHelper.UI.ViewModels;
 
@@ -35,6 +36,28 @@ public partial class MacroFormViewModel : ObservableObject
     [ObservableProperty] private ObservableCollection<Categoria> _categorias = new();
     [ObservableProperty] private ObservableCollection<GrupoCheckItem> _grupos = new();
 
+    // Realce de sintaxe (variáveis {nome} e condicionais {se campo=valor}...{fim}) detectados ao digitar
+    [ObservableProperty] private ObservableCollection<string> _variaveisNoConteudo = new();
+    [ObservableProperty] private ObservableCollection<string> _condicionaisNoConteudo = new();
+    public bool HaTokensDetectados => VariaveisNoConteudo.Count > 0 || CondicionaisNoConteudo.Count > 0;
+    private static readonly Regex _variavelRegex = new(@"\{(\w+)\}", RegexOptions.Compiled);
+    private static readonly Regex _condicionalRegex = new(@"\{se\s+\w+=[^}]+\}", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    partial void OnConteudoChanged(string value)
+    {
+        var condicionais = _condicionalRegex.Matches(value).Select(m => m.Value).Distinct().ToList();
+        // Remove os trechos de condicionais antes de extrair variáveis simples, para não listar "{se...}" como variável.
+        var semCondicionais = _condicionalRegex.Replace(value, " ");
+        var variaveis = _variavelRegex.Matches(semCondicionais)
+            .Select(m => "{" + m.Groups[1].Value + "}")
+            .Where(v => !v.Equals("{fim}", StringComparison.OrdinalIgnoreCase))
+            .Distinct().ToList();
+
+        VariaveisNoConteudo    = new ObservableCollection<string>(variaveis);
+        CondicionaisNoConteudo = new ObservableCollection<string>(condicionais);
+        OnPropertyChanged(nameof(HaTokensDetectados));
+    }
+
     // Anexo de imagem (ex: assinatura)
     [ObservableProperty] private string? _imagemBase64;
     [ObservableProperty] private bool    _temImagem;
@@ -53,6 +76,26 @@ public partial class MacroFormViewModel : ObservableObject
     public bool   IsEdicao         => _original != null;
     public string TituloFormulario => IsEdicao ? "Editar Macro" : "Nova Macro";
     public bool   IaDisponivel     => _iaService != null && !string.IsNullOrEmpty(_iaService.ApiKey);
+
+    // Templates prontos por setor — só fazem sentido ao criar uma macro nova
+    public bool MostrarTemplates => !IsEdicao;
+    public MacroTemplate[] TemplatesDisponiveis => MacroTemplates.Todos;
+
+    [RelayCommand]
+    public void AplicarTemplate(MacroTemplate template)
+    {
+        if (!string.IsNullOrWhiteSpace(Conteudo) || !string.IsNullOrWhiteSpace(Titulo))
+        {
+            var resposta = System.Windows.MessageBox.Show(
+                "Isso vai substituir o título, atalho e conteúdo já preenchidos. Continuar?",
+                "Aplicar template", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Question);
+            if (resposta != System.Windows.MessageBoxResult.Yes) return;
+        }
+
+        Titulo   = template.Titulo;
+        Atalho   = template.Atalho;
+        Conteudo = template.Conteudo;
+    }
 
     public event Func<Task>? Salvo;
     public event Action?     Cancelado;

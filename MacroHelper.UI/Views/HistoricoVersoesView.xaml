@@ -80,36 +80,82 @@
                 <Border DockPanel.Dock="Top" Padding="20,14" BorderThickness="0,0,0,1"
                         BorderBrush="{DynamicResource BorderLightBrush}"
                         Visibility="{Binding MacroSelecionada, Converter={StaticResource NullToVis}}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="VERSÃO ANTIGA" FontSize="9" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
-                            <ComboBox ItemsSource="{Binding Versoes}" SelectedItem="{Binding VersaoEsquerda}"
-                                      Height="36" FontSize="12">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding DataModificacao, StringFormat=dd/MM/yyyy HH:mm}"/>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1" Margin="14,0,0,0">
-                            <TextBlock Text="VERSÃO NOVA" FontSize="9" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
-                            <ComboBox ItemsSource="{Binding Versoes}" SelectedItem="{Binding VersaoDireita}"
-                                      Height="36" FontSize="12">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding DataModificacao, StringFormat=dd/MM/yyyy HH:mm}"/>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-                        </StackPanel>
-                    </Grid>
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="VERSÃO ANTIGA" FontSize="9" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                                <ComboBox ItemsSource="{Binding Versoes}" SelectedItem="{Binding VersaoEsquerda}"
+                                          Height="36" FontSize="12">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DataModificacao, StringFormat=dd/MM/yyyy HH:mm}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="14,0,0,0">
+                                <TextBlock Text="VERSÃO NOVA" FontSize="9" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                                <ComboBox ItemsSource="{Binding Versoes}" SelectedItem="{Binding VersaoDireita}"
+                                          Height="36" FontSize="12">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DataModificacao, StringFormat=dd/MM/yyyy HH:mm}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="14,0,0,0">
+                                <Button Content="Restaurar versão antiga"
+                                        Command="{Binding RestaurarVersaoCommand}"
+                                        Height="36" Padding="12,0" FontSize="12">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource ButtonSecondary}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ConfirmandoRestaurar}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ConfirmandoRestaurar}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <Button Content="Confirmar restauração" Style="{StaticResource ButtonSecondary}"
+                                            Foreground="{DynamicResource DangerBrush}"
+                                            Command="{Binding RestaurarVersaoCommand}"
+                                            Height="36" Padding="12,0" FontSize="12" Margin="0,0,6,0"/>
+                                    <Button Style="{StaticResource ButtonIconOnly}"
+                                            Command="{Binding CancelarRestaurarCommand}" Width="36" Height="36">
+                                        <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                        <Border CornerRadius="8" Padding="10,7" Margin="0,10,0,0"
+                                Background="{DynamicResource SuccessBgBrush}"
+                                BorderBrush="{DynamicResource SuccessBrush}" BorderThickness="1"
+                                Visibility="{Binding Mensagem, Converter={StaticResource NullToVis}}">
+                            <TextBlock Text="{Binding Mensagem}" FontSize="11" Foreground="{DynamicResource SuccessBrush}"/>
+                        </Border>
+                    </StackPanel>
                 </Border>
 
                 <ScrollViewer Padding="20,14">

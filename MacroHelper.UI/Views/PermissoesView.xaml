@@ -19,8 +19,20 @@
                 BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}" Padding="28,18">
             <StackPanel>
                 <TextBlock Text="Permissões granulares" Style="{StaticResource PageTitleText}"/>
-                <TextBlock Text="Configure permissões extras para usuários comuns." Style="{StaticResource PageSubtitleText}"/>
+                <TextBlock Text="Conceda ações extras (além do perfil padrão) a usuários comuns específicos." Style="{StaticResource PageSubtitleText}"/>
             </StackPanel>
+        </Border>
+
+        <Border DockPanel.Dock="Top" Margin="28,14,28,0" CornerRadius="10" Padding="12,10"
+                Background="{DynamicResource SurfaceElevatedBrush}"
+                BorderBrush="{DynamicResource BorderLightBrush}" BorderThickness="1">
+            <TextBlock FontSize="11" TextWrapping="Wrap" Foreground="{DynamicResource TextMutedBrush}">
+                <Run Text="Esta tela controla "/><Run Text="ações específicas" FontWeight="SemiBold"/>
+                <Run Text=" (ex: excluir macros de outros). Para controlar "/>
+                <Run Text="quais telas" FontWeight="SemiBold"/>
+                <Run Text=" o usuário vê e "/><Run Text="quais categorias" FontWeight="SemiBold"/>
+                <Run Text=" ele acessa, use Usuários → ícone de permissões (⚙) ao lado de cada usuário."/>
+            </TextBlock>
         </Border>
 
         <Grid Margin="28,20">

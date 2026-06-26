@@ -24,6 +24,7 @@ public static class Permissoes
     public static bool Tem(Usuario? usuario, string chave)
     {
         if (usuario == null) return false;
+        if (usuario.Perfil == "Auditor") return false; // somente leitura, sempre
         if (usuario.Perfil == "Admin") return true;
 
         if (usuario.PermissoesCustom == null) return _padraoUsuario.Contains(chave);

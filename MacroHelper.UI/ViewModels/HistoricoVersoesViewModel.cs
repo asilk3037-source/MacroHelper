@@ -17,6 +17,9 @@ public partial class HistoricoVersoesViewModel : ObservableObject
     [ObservableProperty] private MacroVersao? _versaoDireita;
     [ObservableProperty] private ObservableCollection<LinhaDiff> _diff = new();
     [ObservableProperty] private bool _isLoading = false;
+    [ObservableProperty] private string? _mensagem;
+    [ObservableProperty] private bool   _mensagemSucesso = true;
+    [ObservableProperty] private bool   _confirmandoRestaurar;
 
     public HistoricoVersoesViewModel(MacroService macroService) => _macroService = macroService;
 
@@ -42,6 +45,29 @@ public partial class HistoricoVersoesViewModel : ObservableObject
 
     [RelayCommand]
     public void SelecionarDireita(MacroVersao v) { VersaoDireita = v; AtualizarDiff(); }
+
+    /// <summary>Restaura a macro selecionada para o conteúdo da versão à esquerda (cria uma nova versão a partir do estado atual antes de sobrescrever).</summary>
+    [RelayCommand]
+    public async Task RestaurarVersaoAsync()
+    {
+        if (!ConfirmandoRestaurar) { ConfirmandoRestaurar = true; return; }
+        ConfirmandoRestaurar = false;
+
+        if (MacroSelecionada == null || VersaoEsquerda == null) return;
+
+        MacroSelecionada.Titulo   = VersaoEsquerda.Titulo;
+        MacroSelecionada.Conteudo = VersaoEsquerda.Conteudo;
+        var (ok, msg, _) = await _macroService.SalvarAsync(MacroSelecionada);
+        Mensagem = ok ? "Versão restaurada com sucesso!" : msg;
+        MensagemSucesso = ok;
+        if (System.Threading.SynchronizationContext.Current != null)
+            Task.Delay(3500).ContinueWith(_ => Mensagem = null, TaskScheduler.FromCurrentSynchronizationContext());
+
+        if (ok) await SelecionarMacroAsync(MacroSelecionada);
+    }
+
+    [RelayCommand]
+    public void CancelarRestaurar() => ConfirmandoRestaurar = false;
 
     private void AtualizarDiff()
     {

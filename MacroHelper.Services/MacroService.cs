@@ -14,6 +14,8 @@ public class MacroService
     private readonly LogAuditoriaRepository? _auditoriaRepo;
     private readonly FavoritoUsuarioRepository? _favoritoUsuarioRepo;
     private readonly VariavelGlobalService? _variavelGlobalService;
+    private readonly WebhookService? _webhookService;
+    private readonly NotificacaoService? _notificacaoService;
     private static readonly Regex _macroRefRegex = new(@"\{macro:([\w-]+)\}", RegexOptions.Compiled);
     private static readonly Regex _condicionalRegex = new(@"\{se\s+(\w+)=([^}]+)\}(.*?)\{fim\}",
         RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -23,7 +25,8 @@ public class MacroService
 
     public MacroService(IMacroRepository repository, UsuarioService usuarioService,
         MacroVersaoRepository? versaoRepo = null, LogAuditoriaRepository? auditoriaRepo = null,
-        FavoritoUsuarioRepository? favoritoUsuarioRepo = null, VariavelGlobalService? variavelGlobalService = null)
+        FavoritoUsuarioRepository? favoritoUsuarioRepo = null, VariavelGlobalService? variavelGlobalService = null,
+        WebhookService? webhookService = null, NotificacaoService? notificacaoService = null)
     {
         _repository           = repository;
         _usuarioService       = usuarioService;
@@ -31,6 +34,8 @@ public class MacroService
         _auditoriaRepo        = auditoriaRepo;
         _favoritoUsuarioRepo  = favoritoUsuarioRepo;
         _variavelGlobalService = variavelGlobalService;
+        _webhookService       = webhookService;
+        _notificacaoService   = notificacaoService;
     }
 
     private bool EhAdmin => _usuarioService.UsuarioAtual?.Perfil == "Admin";
@@ -116,18 +121,39 @@ public class MacroService
 
     public async Task<(bool Sucesso, string Mensagem)> AprovarAsync(int id)
     {
+        var macro = await _repository.GetByIdAsync(id);
         await _repository.AtualizarStatusAsync(id, "Aprovada");
         if (_auditoriaRepo != null)
             await _auditoriaRepo.RegistrarAsync(_usuarioService.UsuarioAtual?.Id, "Aprovar", "Macro", id, null);
+        await NotificarAutorAsync(macro, aprovada: true, motivo: null);
         return (true, "Macro aprovada e publicada.");
     }
 
-    public async Task<(bool Sucesso, string Mensagem)> RejeitarAsync(int id)
+    public async Task<(bool Sucesso, string Mensagem)> RejeitarAsync(int id, string? motivo = null)
     {
+        var macro = await _repository.GetByIdAsync(id);
         await _repository.DeleteAsync(id);
         if (_auditoriaRepo != null)
-            await _auditoriaRepo.RegistrarAsync(_usuarioService.UsuarioAtual?.Id, "Rejeitar", "Macro", id, null);
+            await _auditoriaRepo.RegistrarAsync(_usuarioService.UsuarioAtual?.Id, "Rejeitar", "Macro", id, motivo);
+        await NotificarAutorAsync(macro, aprovada: false, motivo);
         return (true, "Macro rejeitada e removida.");
+    }
+
+    /// <summary>Notifica o autor da macro (via central de notificações) sobre a decisão de aprovação/rejeição.</summary>
+    private async Task NotificarAutorAsync(Macro? macro, bool aprovada, string? motivo)
+    {
+        if (_notificacaoService == null || macro?.CriadoPorId == null) return;
+
+        var autor = await _usuarioService.ObterPorIdAsync(macro.CriadoPorId.Value);
+        if (autor == null) return;
+
+        var titulo = aprovada ? "Macro aprovada" : "Macro rejeitada";
+        var mensagem = aprovada
+            ? $"{autor.Nome}, sua macro \"{macro.Titulo}\" foi aprovada e já está disponível para a equipe."
+            : $"{autor.Nome}, sua macro \"{macro.Titulo}\" foi rejeitada." +
+              (string.IsNullOrWhiteSpace(motivo) ? "" : $" Motivo: {motivo}");
+
+        await _notificacaoService.RegistrarAsync(titulo, mensagem, aprovada ? "Sucesso" : "Aviso");
     }
 
     /// <summary>Procura uma macro existente com conteúdo muito parecido (Jaccard sobre palavras), para alertar antes de salvar.</summary>
@@ -183,6 +209,10 @@ public class MacroService
         {
             var id = await _repository.InsertAsync(macro);
             macro.Id = id;
+            if (_auditoriaRepo != null)
+                await _auditoriaRepo.RegistrarAsync(_usuarioService.UsuarioAtual?.Id, "Criar", "Macro", macro.Id, $"Atalho: {macro.Atalho}");
+            if (_webhookService != null)
+                await _webhookService.DispararAsync(EventosWebhook.MacroCriada, new { macro.Titulo, macro.Atalho, macro.Categoria });
             var msg = macro.Status == "Pendente" ? "Macro enviada para aprovação!" : "Macro criada com sucesso!";
             return (true, msg, macro);
         }
@@ -203,6 +233,17 @@ public class MacroService
     public async Task<IEnumerable<MacroVersao>> ObterVersoesAsync(int macroId) =>
         _versaoRepo == null ? [] : await _versaoRepo.GetByMacroAsync(macroId);
 
+    /// <summary>Arquivamento reversível (soft-archive): a macro deixa de aparecer em buscas, atalhos,
+    /// favoritos e comunidade, mas continua existindo e pode ser restaurada — diferente de ExcluirAsync.</summary>
+    public async Task<(bool Sucesso, string Mensagem)> ArquivarAsync(int id, bool arquivar)
+    {
+        await _repository.ToggleAtivoAsync(id, !arquivar);
+        if (_auditoriaRepo != null)
+            await _auditoriaRepo.RegistrarAsync(_usuarioService.UsuarioAtual?.Id,
+                arquivar ? "Arquivar" : "Desarquivar", "Macro", id, null);
+        return (true, arquivar ? "Macro arquivada." : "Macro restaurada.");
+    }
+
     public async Task<(bool Sucesso, string Mensagem)> ExcluirAsync(int id)
     {
         var macro = await _repository.GetByIdAsync(id);
@@ -210,6 +251,10 @@ public class MacroService
             return (false, "Macro não encontrada.");
 
         await _repository.DeleteAsync(id);
+        if (_auditoriaRepo != null)
+            await _auditoriaRepo.RegistrarAsync(_usuarioService.UsuarioAtual?.Id, "Excluir", "Macro", id, $"Atalho: {macro.Atalho}");
+        if (_webhookService != null)
+            await _webhookService.DispararAsync(EventosWebhook.MacroExcluida, new { macro.Titulo, macro.Atalho });
         return (true, $"Macro \"{macro.Titulo}\" excluída com sucesso.");
     }
 

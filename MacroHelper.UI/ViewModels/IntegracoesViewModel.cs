@@ -9,12 +9,14 @@ namespace MacroHelper.UI.ViewModels;
 public partial class IntegracoesViewModel : ObservableObject
 {
     private readonly WebhookService _svc;
+    private readonly UsuarioService? _usuarioService;
 
     [ObservableProperty] private ObservableCollection<Webhook> _webhooks = new();
     [ObservableProperty] private bool    _mostrarFormulario = false;
     [ObservableProperty] private bool    _isLoading = false;
     [ObservableProperty] private string? _mensagem;
     [ObservableProperty] private bool    _mensagemSucesso = true;
+    [ObservableProperty] private int?    _confirmandoExclusaoId;
 
     [ObservableProperty] private int     _formId = 0;
     [ObservableProperty] private string  _formNome = string.Empty;
@@ -24,8 +26,13 @@ public partial class IntegracoesViewModel : ObservableObject
     [ObservableProperty] private string? _formErro;
 
     public string[] EventosDisponiveis => EventosWebhook.Todos;
+    public string RotuloEvento(string evento) => EventosWebhook.Rotulo(evento);
 
-    public IntegracoesViewModel(WebhookService svc) => _svc = svc;
+    public IntegracoesViewModel(WebhookService svc, UsuarioService? usuarioService = null)
+    {
+        _svc = svc;
+        _usuarioService = usuarioService;
+    }
 
     public async Task CarregarAsync()
     {
@@ -57,7 +64,7 @@ public partial class IntegracoesViewModel : ObservableObject
     {
         FormErro = null;
         var w = new Webhook { Id = FormId, Nome = FormNome, Url = FormUrl, Evento = FormEvento, Ativo = FormAtivo };
-        var (ok, msg) = await _svc.SalvarAsync(w);
+        var (ok, msg) = await _svc.SalvarAsync(w, _usuarioService?.UsuarioAtual?.Id);
         if (!ok) { FormErro = msg; return; }
         MostrarFormulario = false;
         await CarregarAsync();
@@ -67,10 +74,16 @@ public partial class IntegracoesViewModel : ObservableObject
     [RelayCommand]
     public async Task ExcluirWebhookAsync(Webhook w)
     {
-        await _svc.ExcluirAsync(w.Id);
+        if (ConfirmandoExclusaoId != w.Id) { ConfirmandoExclusaoId = w.Id; return; }
+
+        ConfirmandoExclusaoId = null;
+        await _svc.ExcluirAsync(w.Id, _usuarioService?.UsuarioAtual?.Id);
         await CarregarAsync();
         MostrarMensagem("Webhook excluído.", true);
     }
+
+    [RelayCommand]
+    public void CancelarExclusao() => ConfirmandoExclusaoId = null;
 
     [RelayCommand]
     public async Task TestarWebhookAsync(Webhook w)

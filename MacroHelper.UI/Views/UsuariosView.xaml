@@ -36,13 +36,21 @@
                 BorderBrush="{DynamicResource BorderBrush}">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="28,26">
-                    <TextBlock Text="Permissões por categoria" FontSize="18" FontWeight="Bold"
+                    <TextBlock Text="Acesso e permissões" FontSize="18" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,4"/>
                     <TextBlock Text="{Binding UsuarioPermissoes.Nome}" FontSize="12"
-                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,18"/>
+                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,8"/>
+                    <TextBlock FontSize="11" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,16">
+                        <Run Text="Para ações extras específicas (ex: excluir macros de outros, gerenciar categorias), use a tela "/>
+                        <Run Text="Permissões" FontWeight="SemiBold"/><Run Text=" no menu."/>
+                    </TextBlock>
+
+                    <TextBlock Text="Categorias visíveis" FontSize="13" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,4"/>
                     <TextBlock Text="Nenhuma categoria marcada = acesso a todas as categorias."
                                FontSize="11" TextWrapping="Wrap"
-                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,16"/>
+                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,10"/>
 
                     <ItemsControl ItemsSource="{Binding CategoriasPermissao}">
                         <ItemsControl.ItemTemplate>
@@ -212,9 +220,22 @@
                 </StackPanel>
 
                 <CheckBox Content="Conta ativa" IsChecked="{Binding FormAtivo}"
-                          FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,10"/>
-                <CheckBox Content="Administrador (acesso total a todas as telas)" IsChecked="{Binding FormAdmin}"
-                          FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,20"/>
+                          FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,14"/>
+
+                <TextBlock Text="PERFIL" FontSize="10" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,8"/>
+                <RadioButton GroupName="Perfil" Content="Usuário comum"
+                             IsChecked="{Binding FormPerfil, Converter={StaticResource StringEqualsToBool}, ConverterParameter=Usuario, Mode=OneWay}"
+                             Checked="RadioPerfilUsuario_Checked"
+                             FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8"/>
+                <RadioButton GroupName="Perfil" Content="Administrador (acesso total a todas as telas)"
+                             IsChecked="{Binding FormPerfil, Converter={StaticResource StringEqualsToBool}, ConverterParameter=Admin, Mode=OneWay}"
+                             Checked="RadioPerfilAdmin_Checked"
+                             FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8"/>
+                <RadioButton GroupName="Perfil" Content="Auditor (somente leitura — vê tudo, não pode editar/excluir)"
+                             IsChecked="{Binding FormPerfil, Converter={StaticResource StringEqualsToBool}, ConverterParameter=Auditor, Mode=OneWay}"
+                             Checked="RadioPerfilAuditor_Checked"
+                             FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,20"/>
 
                 <Border Padding="10,8" CornerRadius="8" Margin="0,0,0,16"
                         Background="{DynamicResource SurfaceElevatedBrush}"

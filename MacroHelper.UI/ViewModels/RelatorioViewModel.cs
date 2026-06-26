@@ -15,6 +15,7 @@ public partial class RelatorioViewModel : ObservableObject
     private readonly LogUsoService         _logSvc;
     private readonly UsuarioService        _usuarioService;
     private readonly LogAuditoriaRepository _auditoriaRepo;
+    private CancellationTokenSource? _filtroDebounceCts;
 
     [ObservableProperty] private ObservableCollection<LogUso> _registros = new();
     [ObservableProperty] private bool     _isLoading  = false;
@@ -32,6 +33,8 @@ public partial class RelatorioViewModel : ObservableObject
     [ObservableProperty] private ObservableCollection<RankingUsuarioItem> _rankingUsuarios = new();
     [ObservableProperty] private ObservableCollection<AuditoriaItem>      _auditoria = new();
     public bool IsAdmin => _usuarioService.UsuarioAtual?.Perfil == "Admin";
+    public bool PodeVerRelatorioEquipe => IsAdmin || _usuarioService.UsuarioAtual?.Perfil == "Auditor"
+        || Permissoes.Tem(_usuarioService.UsuarioAtual, Permissoes.VerRelatorios);
 
     public RelatorioViewModel(LogUsoService logSvc, UsuarioService usuarioService, LogAuditoriaRepository auditoriaRepo)
     {
@@ -69,7 +72,7 @@ public partial class RelatorioViewModel : ObservableObject
                 ? $"{minutos / 60:0.#}h"
                 : $"{minutos:0}min";
 
-            if (IsAdmin)
+            if (PodeVerRelatorioEquipe)
             {
                 var topUsuarios = await _logSvc.ObterTopUsuariosAsync(DataInicio, DataFim.AddDays(1));
                 RankingUsuarios = new ObservableCollection<RankingUsuarioItem>(
@@ -83,9 +86,21 @@ public partial class RelatorioViewModel : ObservableObject
         finally { IsLoading = false; }
     }
 
-    partial void OnBuscaChanged(string _)        { var __ = CarregarAsync(); }
-    partial void OnDataInicioChanged(DateTime _) { var __ = CarregarAsync(); }
-    partial void OnDataFimChanged(DateTime _)    { var __ = CarregarAsync(); }
+    partial void OnBuscaChanged(string _)        { var __ = DebounceCarregarAsync(); }
+    partial void OnDataInicioChanged(DateTime _) { var __ = DebounceCarregarAsync(); }
+    partial void OnDataFimChanged(DateTime _)    { var __ = DebounceCarregarAsync(); }
+
+    /// <summary>Espera o usuário parar de digitar/ajustar datas (300ms) antes de recarregar — evita uma chamada ao banco por tecla.</summary>
+    private async Task DebounceCarregarAsync()
+    {
+        _filtroDebounceCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _filtroDebounceCts = cts;
+        try { await Task.Delay(300, cts.Token); }
+        catch (TaskCanceledException) { return; }
+        if (cts.IsCancellationRequested) return;
+        await CarregarAsync();
+    }
 
     [RelayCommand]
     public async Task ExportarCsvAsync()
@@ -107,6 +122,48 @@ public partial class RelatorioViewModel : ObservableObject
             if (System.Threading.SynchronizationContext.Current != null)
                 Task.Delay(4000).ContinueWith(_ => Mensagem = null,
                     TaskScheduler.FromCurrentSynchronizationContext());
+        }
+        catch (Exception ex) { Mensagem = $"Erro: {ex.Message}"; }
+    }
+
+    [RelayCommand]
+    public async Task ExportarExcelAsync()
+    {
+        try
+        {
+            var path = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                $"MacroHelper_Relatorio_{DateTime.Now:yyyyMMdd_HHmm}.xlsx");
+
+            await Task.Run(() =>
+            {
+                using var workbook = new ClosedXML.Excel.XLWorkbook();
+                var sheet = workbook.Worksheets.Add("Uso de Macros");
+                sheet.Cell(1, 1).Value = "Data";
+                sheet.Cell(1, 2).Value = "Hora";
+                sheet.Cell(1, 3).Value = "Macro";
+                sheet.Cell(1, 4).Value = "Atalho";
+                sheet.Cell(1, 5).Value = "Aplicativo";
+                sheet.Row(1).Style.Font.Bold = true;
+
+                var linha = 2;
+                foreach (var r in Registros)
+                {
+                    sheet.Cell(linha, 1).Value = r.DataUso.Date;
+                    sheet.Cell(linha, 1).Style.DateFormat.Format = "dd/MM/yyyy";
+                    sheet.Cell(linha, 2).Value = r.DataUso.ToString("HH:mm:ss");
+                    sheet.Cell(linha, 3).Value = r.MacroTitulo;
+                    sheet.Cell(linha, 4).Value = r.MacroAtalho;
+                    sheet.Cell(linha, 5).Value = r.Aplicativo ?? "";
+                    linha++;
+                }
+                sheet.Columns().AdjustToContents();
+                workbook.SaveAs(path);
+            });
+
+            Mensagem = "Exportado para a Área de Trabalho!";
+            if (System.Threading.SynchronizationContext.Current != null)
+                Task.Delay(4000).ContinueWith(_ => Mensagem = null, TaskScheduler.FromCurrentSynchronizationContext());
         }
         catch (Exception ex) { Mensagem = $"Erro: {ex.Message}"; }
     }
@@ -150,7 +207,8 @@ public partial class RelatorioViewModel : ObservableObject
             sb.Append($"<h2>Relatório de Uso — SK MacroHelper</h2><p>Período: {DataInicio:dd/MM/yyyy} a {DataFim:dd/MM/yyyy}</p>");
             sb.Append("<table><tr><th>Data</th><th>Macro</th><th>Atalho</th><th>Aplicativo</th></tr>");
             foreach (var r in Registros)
-                sb.Append($"<tr><td>{r.DataUso:dd/MM/yyyy HH:mm}</td><td>{r.MacroTitulo}</td><td>/{r.MacroAtalho}</td><td>{r.Aplicativo}</td></tr>");
+                sb.Append($"<tr><td>{r.DataUso:dd/MM/yyyy HH:mm}</td><td>{System.Net.WebUtility.HtmlEncode(r.MacroTitulo)}</td>" +
+                          $"<td>/{System.Net.WebUtility.HtmlEncode(r.MacroAtalho)}</td><td>{System.Net.WebUtility.HtmlEncode(r.Aplicativo)}</td></tr>");
             sb.Append("</table></body></html>");
 
             await File.WriteAllTextAsync(path, sb.ToString());

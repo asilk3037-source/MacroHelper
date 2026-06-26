@@ -10,7 +10,7 @@ public partial class TourWindow : Window
         ("", "Gatilho por texto", "Digite \"/\" seguido do atalho da macro (ex: /chamado-recebido) em qualquer campo de texto para ver as sugestões."),
         ("", "Busca rápida", "Pressione Ctrl+Espaço em qualquer lugar do Windows para abrir o buscador rápido de macros, mesmo com o app minimizado."),
         ("", "Organize por categoria", "Use a aba Categorias para agrupar suas macros e a aba Relatório para acompanhar o uso ao longo do tempo."),
-        ("", "Personalize em Configurações", "Ajuste tema, cor de destaque, prefixo do gatilho, backup automático e sincronização — tudo em Configurações.")
+        ("", "Personalize em Configurações", "Ajuste tema, cor de destaque, prefixo do gatilho e se o app inicia com o Windows — tudo em Configurações.")
     ];
 
     private int _indice;

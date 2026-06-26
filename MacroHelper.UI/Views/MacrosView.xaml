@@ -175,6 +175,44 @@
                                        FontSize="12" TextWrapping="Wrap"/>
                         </Border>
 
+                        <!-- Templates prontos por setor (só ao criar uma macro nova) -->
+                        <Border Background="{DynamicResource SurfaceElevatedBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1" CornerRadius="10" Padding="12,10" Margin="0,0,0,18"
+                                Visibility="{Binding MostrarTemplates, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <TextBlock Text="COMEÇAR DE UM TEMPLATE (OPCIONAL)" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,8"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ComboBox x:Name="CmbTemplate" Grid.Column="0"
+                                              ItemsSource="{Binding TemplatesDisponiveis}"
+                                              Height="38" FontSize="12" Margin="0,0,8,0"
+                                              Background="{DynamicResource InputBgBrush}"
+                                              Foreground="{DynamicResource TextPrimaryBrush}"
+                                              BorderBrush="{DynamicResource InputBorderBrush}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Setor}" FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource AccentTextBrush}" Margin="0,0,6,0"/>
+                                                    <TextBlock Text="—" Margin="0,0,6,0"/>
+                                                    <TextBlock Text="{Binding Titulo}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <Button Grid.Column="1" Content="Usar" Style="{StaticResource ButtonSecondary}"
+                                            Command="{Binding AplicarTemplateCommand}"
+                                            CommandParameter="{Binding SelectedItem, ElementName=CmbTemplate}"
+                                            Height="38" Padding="14,0"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
                         <!-- Atalho -->
                         <TextBlock Text="ATALHO *" FontSize="10" FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
@@ -309,6 +347,53 @@
                                 <TextBlock Text="{}{usuario}" FontFamily="Consolas" FontSize="11"
                                            Foreground="{DynamicResource AccentTextBrush}"/>
                             </WrapPanel>
+                        </Border>
+
+                        <!-- Realce: variáveis e condicionais detectados no texto digitado -->
+                        <Border Background="{DynamicResource SurfaceElevatedBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="10" Padding="12,8" Margin="0,-12,0,18"
+                                Visibility="{Binding HaTokensDetectados, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <WrapPanel Margin="0,0,0,4"
+                                           Visibility="{Binding VariaveisNoConteudo.Count, Converter={StaticResource IntToVis}}">
+                                    <TextBlock Text="Detectadas nesta macro: " FontSize="11"
+                                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,4,2"/>
+                                    <ItemsControl ItemsSource="{Binding VariaveisNoConteudo}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{DynamicResource AccentLightBrush}" CornerRadius="6"
+                                                        Padding="6,2" Margin="0,0,4,2">
+                                                    <TextBlock Text="{Binding}" FontFamily="Consolas" FontSize="10"
+                                                               FontWeight="Bold" Foreground="{DynamicResource AccentTextBrush}"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </WrapPanel>
+                                <WrapPanel Visibility="{Binding CondicionaisNoConteudo.Count, Converter={StaticResource IntToVis}}">
+                                    <TextBlock Text="Condicionais: " FontSize="11"
+                                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,4,2"/>
+                                    <ItemsControl ItemsSource="{Binding CondicionaisNoConteudo}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{DynamicResource WarningBgBrush}" CornerRadius="6"
+                                                        Padding="6,2" Margin="0,0,4,2">
+                                                    <TextBlock Text="{Binding}" FontFamily="Consolas" FontSize="10"
+                                                               FontWeight="Bold" Foreground="{DynamicResource WarningBrush}"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </WrapPanel>
+                            </StackPanel>
                         </Border>
 
         <!-- Atalho de teclado -->
@@ -529,6 +614,42 @@
             </Border>
         </Grid>
 
+        <!-- MODAL REJEIÇÃO (motivo) -->
+        <Grid Panel.ZIndex="15">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding MostrarRejeicao}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <Border Background="#80000000"/>
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Width="420" Background="{DynamicResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderLightBrush}" BorderThickness="1" CornerRadius="20">
+                <StackPanel Margin="28,24">
+                    <TextBlock Text="Rejeitar macro" FontSize="16" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding MacroRejeitando.Titulo}" FontSize="12"
+                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,14"/>
+                    <TextBlock Text="MOTIVO (opcional, o autor verá esta mensagem)" FontSize="10" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                    <TextBox Style="{StaticResource InputStyle}" Height="70" TextWrapping="Wrap" AcceptsReturn="True"
+                             Text="{Binding MotivoRejeicao, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,18"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Cancelar" Style="{StaticResource ButtonSecondary}"
+                                Command="{Binding CancelarRejeicaoCommand}" Margin="0,0,10,0" Width="100"/>
+                        <Button Content="Rejeitar" Style="{StaticResource ButtonPrimary}"
+                                Foreground="{DynamicResource DangerBrush}"
+                                Command="{Binding ConfirmarRejeicaoCommand}" Width="120"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+
         <!-- CONTEÚDO PRINCIPAL -->
         <DockPanel>
             <!-- Cabeçalho -->
@@ -595,6 +716,25 @@
                                             <DataTrigger Binding="{Binding SomenteFavoritos}" Value="True">
                                                 <Setter Property="Text" Value="&#xE735;"/>
                                                 <Setter Property="Foreground" Value="#F2C94C"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Button>
+                        <Button Style="{StaticResource ToolbarIconButton}"
+                                Command="{Binding ToggleMostrarArquivadasCommand}"
+                                ToolTip="Mostrar macros arquivadas"
+                                Width="34" Height="34" Margin="0,0,2,0">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="&#xE7B8;"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding MostrarArquivadas}" Value="True">
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -684,7 +824,7 @@
                                                 Width="90" Height="32" Margin="0,0,8,0"/>
                                         <Button Content="Rejeitar" Style="{StaticResource ButtonSecondary}"
                                                 CommandParameter="{Binding}"
-                                                Command="{Binding DataContext.RejeitarMacroCommand,
+                                                Command="{Binding DataContext.AbrirRejeicaoCommand,
                                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 Width="90" Height="32"/>
                                     </StackPanel>
@@ -902,7 +1042,7 @@
                                                         </Style.Triggers>
                                                     </Style>
                                                 </Border.Style>
-                                                <TextBlock Text="Inativo"
+                                                <TextBlock Text="Arquivada"
                                                            Foreground="{DynamicResource WarningBrush}"
                                                            FontSize="11"/>
                                             </Border>
@@ -1010,6 +1150,18 @@
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Button>
 
+                                        <!-- Enviar por e-mail (Outlook/Gmail — via cliente padrão do Windows) -->
+                                        <Button Style="{StaticResource ButtonIconOnly}"
+                                                ToolTip="Enviar por e-mail"
+                                                CommandParameter="{Binding}"
+                                                Command="{Binding DataContext.EnviarPorEmailCommand,
+                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                Margin="0,0,2,0" Width="32" Height="32">
+                                            <TextBlock Text="&#xE715;" FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Button>
+
                                         <!-- Editar -->
                                         <Button Style="{StaticResource ButtonIconOnly}"
                                                 ToolTip="Editar macro"
@@ -1021,6 +1173,42 @@
                                                 Margin="0,0,2,0" Width="32" Height="32">
                                             <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets"
                                                        FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Button>
+
+                                        <!-- Arquivar / Desarquivar -->
+                                        <Button Style="{StaticResource ButtonIconOnly}"
+                                                ToolTip="Arquivar macro (some das buscas e atalhos, mas pode ser restaurada)"
+                                                CommandParameter="{Binding}"
+                                                Command="{Binding DataContext.ArquivarMacroCommand,
+                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                IsEnabled="{Binding DataContext.PodeEditarTela,
+                                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                Visibility="{Binding Ativo, Converter={StaticResource BoolToVis}}"
+                                                Margin="0,0,2,0" Width="32" Height="32">
+                                            <TextBlock Text="&#xE7B8;" FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Button>
+                                        <Button ToolTip="Restaurar macro arquivada"
+                                                CommandParameter="{Binding}"
+                                                Command="{Binding DataContext.DesarquivarMacroCommand,
+                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                IsEnabled="{Binding DataContext.PodeEditarTela,
+                                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                Margin="0,0,2,0" Width="32" Height="32">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource ButtonIconOnly}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Ativo}" Value="False">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                            <TextBlock Text="&#xE777;" FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="13" Foreground="{DynamicResource AccentTextBrush}"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Button>
 

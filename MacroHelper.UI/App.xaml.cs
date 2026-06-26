@@ -5,9 +5,12 @@ using MacroHelper.Services;
 using MacroHelper.UI.Properties;
 using MacroHelper.UI.Views;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Threading;
 using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace MacroHelper.UI;
 
@@ -35,6 +38,14 @@ public partial class App : Application
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        DispatcherUnhandledException += OnDispatcherUnhandledException;
+        AppDomain.CurrentDomain.UnhandledException += (_, args) => LogErroFatal(args.ExceptionObject as Exception);
+        TaskScheduler.UnobservedTaskException += (_, args) =>
+        {
+            LogErroFatal(args.Exception);
+            args.SetObserved();
+        };
 
         // Carrega o layout PT-BR pelo LANGID fixo — independente do que o Windows
         // associou ao app (per-app language). "00000416" = Portuguese (Brazil).
@@ -71,6 +82,33 @@ public partial class App : Application
         // Abre login
         var login = Services.GetRequiredService<LoginWindow>();
         login.Show();
+    }
+
+    private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+    {
+        LogErroFatal(e.Exception);
+        MessageBox.Show(
+            "Ocorreu um erro inesperado e a operação foi cancelada.\n\n" +
+            "O MacroHelper continuará aberto — tente novamente. Se o problema persistir, reinicie o aplicativo.\n\n" +
+            "Os detalhes técnicos foram salvos em um log para análise.",
+            "SK MacroHelper",
+            MessageBoxButton.OK, MessageBoxImage.Warning);
+        e.Handled = true;
+    }
+
+    private static void LogErroFatal(Exception? ex)
+    {
+        try
+        {
+            var pasta = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MacroHelper");
+            Directory.CreateDirectory(pasta);
+            File.AppendAllText(Path.Combine(pasta, "erros.log"),
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}]{Environment.NewLine}{ex}{Environment.NewLine}{Environment.NewLine}");
+        }
+        catch
+        {
+            // Se nem o log puder ser escrito, não há nada mais a fazer aqui.
+        }
     }
 
     /// <summary>Tenta logar automaticamente com a sessão do Supabase Auth salva de um login anterior.</summary>

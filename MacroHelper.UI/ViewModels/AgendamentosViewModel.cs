@@ -17,6 +17,7 @@ public partial class AgendamentosViewModel : ObservableObject
     [ObservableProperty] private bool    _isLoading = false;
     [ObservableProperty] private string? _mensagem;
     [ObservableProperty] private bool    _mensagemSucesso = true;
+    [ObservableProperty] private int?    _confirmandoExclusaoId;
 
     [ObservableProperty] private int     _formId = 0;
     [ObservableProperty] private Macro?  _formMacro;
@@ -86,10 +87,16 @@ public partial class AgendamentosViewModel : ObservableObject
     [RelayCommand]
     public async Task ExcluirAgendamentoAsync(MacroAgendamento a)
     {
+        if (ConfirmandoExclusaoId != a.Id) { ConfirmandoExclusaoId = a.Id; return; }
+
+        ConfirmandoExclusaoId = null;
         await _svc.ExcluirAsync(a.Id);
         await CarregarAsync();
         MostrarMensagem("Agendamento excluído.", true);
     }
+
+    [RelayCommand]
+    public void CancelarExclusao() => ConfirmandoExclusaoId = null;
 
     private void MostrarMensagem(string msg, bool ok)
     {

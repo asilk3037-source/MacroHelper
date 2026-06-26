@@ -20,7 +20,9 @@
             <conv:HexToBrushConverter x:Key="HexToBrush"/>
             <conv:EqualsToVisibilityConverter x:Key="EqualsToVis"/>
             <conv:StringEqualsToVisibilityConverter x:Key="StringEqualsToVis"/>
+            <conv:StringEqualsToBoolConverter x:Key="StringEqualsToBool"/>
             <conv:ObjectNullToVisibilityConverter x:Key="ObjNullToVis"/>
+            <conv:EventoWebhookRotuloConverter x:Key="EventoRotulo"/>
 
             <!-- ── ACCENT GRADIENT (usado em tiles de logo/badges "iridescentes" — primary → ciano) ── -->
             <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="1,1">

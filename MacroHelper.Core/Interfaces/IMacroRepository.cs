@@ -17,6 +17,7 @@ public interface IMacroRepository
     Task<IEnumerable<Macro>> GetFavoritosAsync();
     Task<IEnumerable<Macro>> GetPendentesAsync();
     Task ToggleFavoritoAsync(int id, bool favorito);
+    Task ToggleAtivoAsync(int id, bool ativo);
     Task AtualizarStatusAsync(int id, string status);
 
     // Comunidade interna

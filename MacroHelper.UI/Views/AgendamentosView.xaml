@@ -158,6 +158,7 @@
             </Border>
 
             <ScrollViewer Padding="28,14,28,28">
+                <StackPanel>
                 <ItemsControl ItemsSource="{Binding Agendamentos}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -183,6 +184,12 @@
                                         <Button Width="30" Height="30" BorderThickness="0" Background="Transparent" Cursor="Hand"
                                                 CommandParameter="{Binding}"
                                                 Command="{Binding DataContext.ExcluirAgendamentoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                            <Button.Visibility>
+                                                <MultiBinding Converter="{StaticResource EqualsToVis}" ConverterParameter="invert">
+                                                    <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                    <Binding Path="Id"/>
+                                                </MultiBinding>
+                                            </Button.Visibility>
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
                                                     <Border x:Name="bg" CornerRadius="6" Background="{TemplateBinding Background}">
@@ -198,12 +205,45 @@
                                                 </ControlTemplate>
                                             </Button.Template>
                                         </Button>
+                                        <StackPanel Orientation="Horizontal" Margin="2,0,0,0">
+                                            <StackPanel.Visibility>
+                                                <MultiBinding Converter="{StaticResource EqualsToVis}">
+                                                    <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                    <Binding Path="Id"/>
+                                                </MultiBinding>
+                                            </StackPanel.Visibility>
+                                            <Button Content="Confirmar" Style="{StaticResource ButtonSecondary}"
+                                                    Foreground="{DynamicResource DangerBrush}"
+                                                    CommandParameter="{Binding}"
+                                                    Command="{Binding DataContext.ExcluirAgendamentoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    Height="28" Padding="10,0" FontSize="11" Margin="0,0,4,0"/>
+                                            <Button Style="{StaticResource ButtonIconOnly}"
+                                                    Command="{Binding DataContext.CancelarExclusaoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    Width="28" Height="28">
+                                                <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                            </Button>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+
+                <!-- Estado vazio -->
+                <Border Padding="60,40"
+                        Visibility="{Binding Agendamentos.Count, Converter={StaticResource IntZeroToVis}}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                                   Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                        <TextBlock Text="Nenhum agendamento criado ainda." FontSize="13"
+                                   Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Clique em &quot;Novo Agendamento&quot; para copiar uma macro automaticamente em dias e horários fixos." FontSize="11"
+                                   Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0,4,0,0" TextWrapping="Wrap" MaxWidth="320" TextAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+                </StackPanel>
             </ScrollViewer>
         </DockPanel>
     </Grid>

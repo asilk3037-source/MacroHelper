@@ -63,7 +63,7 @@ public partial class UsuariosViewModel : ObservableObject
     [ObservableProperty] private string   _formNome = string.Empty;
     [ObservableProperty] private string   _formEmail = string.Empty;
     [ObservableProperty] private string   _formSenha = string.Empty;
-    [ObservableProperty] private bool     _formAdmin = false;
+    [ObservableProperty] private string   _formPerfil = "Usuario";
     [ObservableProperty] private bool     _formAtivo = true;
     [ObservableProperty] private string?  _formErro;
     [ObservableProperty] private bool     _salvandoUsuario = false;
@@ -104,7 +104,7 @@ public partial class UsuariosViewModel : ObservableObject
     {
         UsuarioEditando = null;
         FormNome = string.Empty; FormEmail = string.Empty; FormSenha = string.Empty;
-        FormAdmin = false; FormAtivo = true; FormErro = null;
+        FormPerfil = "Usuario"; FormAtivo = true; FormErro = null;
         MostrarFormUsuario = true;
     }
 
@@ -113,7 +113,7 @@ public partial class UsuariosViewModel : ObservableObject
     {
         UsuarioEditando = usuario;
         FormNome = usuario.Nome; FormEmail = usuario.Email; FormSenha = string.Empty;
-        FormAdmin = usuario.Perfil == "Admin"; FormAtivo = usuario.Ativo; FormErro = null;
+        FormPerfil = usuario.Perfil; FormAtivo = usuario.Ativo; FormErro = null;
         MostrarFormUsuario = true;
     }
 
@@ -127,7 +127,7 @@ public partial class UsuariosViewModel : ObservableObject
         SalvandoUsuario = true;
         try
         {
-            var perfil = FormAdmin ? "Admin" : "Usuario";
+            var perfil = FormPerfil;
             if (UsuarioEditando == null)
             {
                 var (ok, msg) = await _svc.CriarComoAdminAsync(FormNome, FormEmail, FormSenha, perfil,

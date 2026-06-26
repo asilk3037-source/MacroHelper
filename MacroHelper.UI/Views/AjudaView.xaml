@@ -19,9 +19,7 @@
                 BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}" Padding="28,18">
             <StackPanel>
                 <TextBlock Text="Central de Ajuda" Style="{StaticResource PageTitleText}"/>
-                <TextBlock Style="{StaticResource PageSubtitleText}">
-                    <Run Text="Perguntas frequentes · SK MacroHelper v"/><Run Text="{Binding VersaoApp}"/>
-                </TextBlock>
+                <TextBlock Text="{Binding SubtituloComVersao}" Style="{StaticResource PageSubtitleText}"/>
             </StackPanel>
         </Border>
 

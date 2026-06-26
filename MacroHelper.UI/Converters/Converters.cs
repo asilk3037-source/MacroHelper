@@ -30,6 +30,16 @@ public class StringEqualsToVisibilityConverter : IValueConverter
         => throw new NotImplementedException();
 }
 
+/// <summary>Compara o valor (string) com o ConverterParameter e devolve bool — usado para pré-marcar RadioButtons a partir de uma propriedade string.</summary>
+public class StringEqualsToBoolConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        => string.Equals(value as string, parameter as string, StringComparison.OrdinalIgnoreCase);
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
 /// <summary>Compara dois valores (ex: int? selecionado vs Id do item) e devolve Visibility.
 /// ConverterParameter="invert" inverte o resultado (visível quando DIFERENTE).</summary>
 public class EqualsToVisibilityConverter : IMultiValueConverter
@@ -104,6 +114,16 @@ public class IntZeroToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         => value is int i && i == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+/// <summary>Converte a chave interna de um evento de webhook (ex: "MacroCriada") no rótulo amigável (ex: "Macro criada").</summary>
+public class EventoWebhookRotuloConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        => value is string chave ? MacroHelper.Services.EventosWebhook.Rotulo(chave) : value;
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();

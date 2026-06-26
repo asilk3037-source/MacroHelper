@@ -175,6 +175,43 @@ public class UsuarioRepository
         return m == null ? null : MapToUsuario(m);
     }
 
+    /// <summary>
+    /// Usado após login social (Google/Microsoft): vincula o auth_user_id a um perfil existente
+    /// pelo e-mail (caso já exista, ex: semeado por um admin) ou cria um novo perfil "Usuario".
+    /// </summary>
+    public async Task<(Usuario? Usuario, bool EhNovo)> ObterOuCriarViaOAuthAsync(Guid authUserId, string email, string nomeSugerido)
+    {
+        email = email.Trim().ToLower();
+
+        var porAuthId = await _ctx.Client.From<UsuariosModel>()
+            .Filter("auth_user_id", Operator.Equals, authUserId.ToString())
+            .Single();
+        if (porAuthId != null) return (porAuthId.Ativo ? MapToUsuario(porAuthId) : null, false);
+
+        var porEmail = await _ctx.Client.From<UsuariosModel>()
+            .Filter("email", Operator.Equals, email)
+            .Filter("auth_user_id", Operator.Is, "null")
+            .Single();
+        if (porEmail != null)
+        {
+            porEmail.AuthUserId = authUserId;
+            await _ctx.Client.From<UsuariosModel>().Update(porEmail);
+            return (porEmail.Ativo ? MapToUsuario(porEmail) : null, false);
+        }
+
+        var novo = new UsuariosModel
+        {
+            AuthUserId  = authUserId,
+            Nome        = string.IsNullOrWhiteSpace(nomeSugerido) ? email : nomeSugerido,
+            Email       = email,
+            Perfil      = "Usuario",
+            Ativo       = true,
+            DataCriacao = DateTime.Now
+        };
+        var inserted = await _ctx.Client.From<UsuariosModel>().Insert(novo);
+        return (MapToUsuario(inserted.Models.First()), true);
+    }
+
     private static Usuario MapToUsuario(UsuariosModel m) => new()
     {
         Id                   = m.Id,

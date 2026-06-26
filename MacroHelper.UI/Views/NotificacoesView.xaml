@@ -29,7 +29,7 @@
                     </Border>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="Notificações" Style="{StaticResource PageTitleText}"/>
-                        <TextBlock Text="Eventos do sistema: backups, novos usuários e mais." Style="{StaticResource PageSubtitleText}"/>
+                        <TextBlock Text="Eventos do sistema: novos usuários, macros pendentes e mais." Style="{StaticResource PageSubtitleText}"/>
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">

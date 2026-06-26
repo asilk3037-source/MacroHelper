@@ -52,7 +52,13 @@
                     <ComboBox ItemsSource="{Binding EventosDisponiveis}" SelectedItem="{Binding FormEvento}"
                               Height="42" Margin="0,0,0,14" FontSize="13"
                               Background="{DynamicResource InputBgBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
-                              BorderBrush="{DynamicResource InputBorderBrush}"/>
+                              BorderBrush="{DynamicResource InputBorderBrush}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={StaticResource EventoRotulo}}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                     <CheckBox Content="Ativo" IsChecked="{Binding FormAtivo}" Margin="0,0,0,20"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Content="Cancelar" Style="{StaticResource ButtonSecondary}" Command="{Binding CancelarFormCommand}" Margin="0,0,10,0" Width="100"/>
@@ -101,6 +107,7 @@
             </Border>
 
             <ScrollViewer Padding="28,14,28,28">
+                <StackPanel>
                 <ItemsControl ItemsSource="{Binding Webhooks}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -114,7 +121,7 @@
                                         <TextBlock Text="{Binding Nome}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
                                         <TextBlock Text="{Binding Url}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
                                         <TextBlock FontSize="10" Foreground="{DynamicResource TextMutedBrush}" Margin="0,4,0,0">
-                                            <Run Text="{Binding Evento}"/>
+                                            <Run Text="{Binding Evento, Converter={StaticResource EventoRotulo}}"/>
                                         </TextBlock>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal">
@@ -129,6 +136,12 @@
                                         <Button Width="30" Height="30" BorderThickness="0" Background="Transparent" Cursor="Hand"
                                                 CommandParameter="{Binding}"
                                                 Command="{Binding DataContext.ExcluirWebhookCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                            <Button.Visibility>
+                                                <MultiBinding Converter="{StaticResource EqualsToVis}" ConverterParameter="invert">
+                                                    <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                    <Binding Path="Id"/>
+                                                </MultiBinding>
+                                            </Button.Visibility>
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
                                                     <Border x:Name="bg" CornerRadius="6" Background="{TemplateBinding Background}">
@@ -144,12 +157,45 @@
                                                 </ControlTemplate>
                                             </Button.Template>
                                         </Button>
+                                        <StackPanel Orientation="Horizontal" Margin="2,0,0,0">
+                                            <StackPanel.Visibility>
+                                                <MultiBinding Converter="{StaticResource EqualsToVis}">
+                                                    <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                    <Binding Path="Id"/>
+                                                </MultiBinding>
+                                            </StackPanel.Visibility>
+                                            <Button Content="Confirmar" Style="{StaticResource ButtonSecondary}"
+                                                    Foreground="{DynamicResource DangerBrush}"
+                                                    CommandParameter="{Binding}"
+                                                    Command="{Binding DataContext.ExcluirWebhookCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    Height="28" Padding="10,0" FontSize="11" Margin="0,0,4,0"/>
+                                            <Button Style="{StaticResource ButtonIconOnly}"
+                                                    Command="{Binding DataContext.CancelarExclusaoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    Width="28" Height="28">
+                                                <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                            </Button>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+
+                <!-- Estado vazio -->
+                <Border Padding="60,40"
+                        Visibility="{Binding Webhooks.Count, Converter={StaticResource IntZeroToVis}}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="&#xE71B;" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                                   Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                        <TextBlock Text="Nenhum webhook cadastrado ainda." FontSize="13"
+                                   Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Clique em &quot;Novo Webhook&quot; para integrar com outro sistema." FontSize="11"
+                                   Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+                </StackPanel>
             </ScrollViewer>
         </DockPanel>
     </Grid>

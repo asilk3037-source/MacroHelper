@@ -15,6 +15,8 @@ public partial class VariaveisGlobaisViewModel : ObservableObject
     [ObservableProperty] private bool    _isLoading = false;
     [ObservableProperty] private string? _mensagem;
     [ObservableProperty] private bool    _mensagemSucesso = true;
+    [ObservableProperty] private int?    _confirmandoExclusaoId;
+    [ObservableProperty] private int     _usoVariavelConfirmacao;
 
     [ObservableProperty] private int     _formId = 0;
     [ObservableProperty] private string  _formNome = string.Empty;
@@ -64,10 +66,21 @@ public partial class VariaveisGlobaisViewModel : ObservableObject
     [RelayCommand]
     public async Task ExcluirVariavelAsync(VariavelGlobal v)
     {
+        if (ConfirmandoExclusaoId != v.Id)
+        {
+            UsoVariavelConfirmacao = await _svc.ContarUsoAsync(v.Nome);
+            ConfirmandoExclusaoId = v.Id;
+            return;
+        }
+
+        ConfirmandoExclusaoId = null;
         await _svc.ExcluirAsync(v.Id);
         await CarregarAsync();
         MostrarMensagem("Variável excluída.", true);
     }
+
+    [RelayCommand]
+    public void CancelarExclusao() => ConfirmandoExclusaoId = null;
 
     private void MostrarMensagem(string msg, bool ok)
     {

@@ -147,8 +147,22 @@
                                                     <Run Text="{}{"/><Run Text="{Binding Nome}"/><Run Text="}"/>
                                                 </TextBlock>
                                             </Border>
-                                            <TextBlock Text="{Binding ValorPadrao}" FontSize="13" FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                            <TextBlock FontSize="13" FontWeight="SemiBold">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="{Binding ValorPadrao}"/>
+                                                        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ValorPadrao}" Value="">
+                                                                <Setter Property="Text" Value="(sem valor padrão)"/>
+                                                                <Setter Property="FontStyle" Value="Italic"/>
+                                                                <Setter Property="FontWeight" Value="Normal"/>
+                                                                <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
                                         </StackPanel>
                                         <TextBlock Text="{Binding Descricao}" FontSize="11"
                                                    Foreground="{DynamicResource TextMutedBrush}" Margin="0,4,0,0"/>
@@ -167,6 +181,12 @@
                                                 CommandParameter="{Binding}"
                                                 Command="{Binding DataContext.ExcluirVariavelCommand,
                                                           RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                            <Button.Visibility>
+                                                <MultiBinding Converter="{StaticResource EqualsToVis}" ConverterParameter="invert">
+                                                    <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                    <Binding Path="Id"/>
+                                                </MultiBinding>
+                                            </Button.Visibility>
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
                                                     <Border x:Name="bg" CornerRadius="6" Background="{TemplateBinding Background}">
@@ -182,6 +202,34 @@
                                                 </ControlTemplate>
                                             </Button.Template>
                                         </Button>
+                                        <StackPanel Orientation="Horizontal" Margin="2,0,0,0">
+                                            <StackPanel.Visibility>
+                                                <MultiBinding Converter="{StaticResource EqualsToVis}">
+                                                    <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                    <Binding Path="Id"/>
+                                                </MultiBinding>
+                                            </StackPanel.Visibility>
+                                            <TextBlock VerticalAlignment="Center" FontSize="10" Margin="0,0,4,0"
+                                                       Foreground="{DynamicResource TextMutedBrush}"
+                                                       Visibility="{Binding DataContext.UsoVariavelConfirmacao, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IntToVis}}">
+                                                <Run Text="Usada em "/>
+                                                <Run Text="{Binding DataContext.UsoVariavelConfirmacao, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=OneWay}"/>
+                                                <Run Text=" macro(s)."/>
+                                            </TextBlock>
+                                            <Button Content="Confirmar" Style="{StaticResource ButtonSecondary}"
+                                                    Foreground="{DynamicResource DangerBrush}"
+                                                    CommandParameter="{Binding}"
+                                                    Command="{Binding DataContext.ExcluirVariavelCommand,
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    Height="28" Padding="10,0" FontSize="11" Margin="0,0,4,0"/>
+                                            <Button Style="{StaticResource ButtonIconOnly}"
+                                                    Command="{Binding DataContext.CancelarExclusaoCommand,
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    Width="28" Height="28">
+                                                <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                            </Button>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Grid>
                             </Border>

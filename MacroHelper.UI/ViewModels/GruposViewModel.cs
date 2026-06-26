@@ -21,6 +21,8 @@ public partial class GruposViewModel : ObservableObject
     [ObservableProperty] private bool    _isLoading = false;
     [ObservableProperty] private string? _mensagem;
     [ObservableProperty] private bool    _mensagemSucesso = true;
+    [ObservableProperty] private int?    _confirmandoExclusaoId;
+    [ObservableProperty] private int     _usoGrupoConfirmacao;
 
     [ObservableProperty] private int     _formId = 0;
     [ObservableProperty] private string  _formNome = string.Empty;
@@ -86,10 +88,21 @@ public partial class GruposViewModel : ObservableObject
     [RelayCommand]
     public async Task ExcluirGrupoAsync(Grupo g)
     {
+        if (ConfirmandoExclusaoId != g.Id)
+        {
+            UsoGrupoConfirmacao = TodosUsuarios.Count(u => u.GrupoId == g.Id);
+            ConfirmandoExclusaoId = g.Id;
+            return;
+        }
+
+        ConfirmandoExclusaoId = null;
         await _svc.ExcluirAsync(g.Id);
         await CarregarAsync();
         MostrarMensagem("Grupo excluído.", true);
     }
+
+    [RelayCommand]
+    public void CancelarExclusao() => ConfirmandoExclusaoId = null;
 
     [RelayCommand]
     public async Task AlterarGrupoUsuarioAsync(Usuario usuario)

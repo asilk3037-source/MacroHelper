@@ -8,16 +8,21 @@ public class AgendamentoService : IDisposable
 {
     private readonly AgendamentoRepository _repo;
     private readonly MacroService          _macroService;
+    private readonly UsuarioService?       _usuarioService;
+    private readonly LogAuditoriaRepository? _auditoriaRepo;
     private Timer?            _timer;
     private readonly HashSet<int> _executadosHoje = new();
     private DateTime _ultimoDia = DateTime.Today;
 
     public event EventHandler<(string Titulo, string Mensagem)>? AgendamentoExecutado;
 
-    public AgendamentoService(AgendamentoRepository repo, MacroService macroService)
+    public AgendamentoService(AgendamentoRepository repo, MacroService macroService,
+        UsuarioService? usuarioService = null, LogAuditoriaRepository? auditoriaRepo = null)
     {
         _repo         = repo;
         _macroService = macroService;
+        _usuarioService = usuarioService;
+        _auditoriaRepo = auditoriaRepo;
     }
 
     public async Task<IEnumerable<MacroAgendamento>> ObterTodosAsync() => await _repo.GetAllAsync();
@@ -28,12 +33,21 @@ public class AgendamentoService : IDisposable
         if (string.IsNullOrWhiteSpace(a.DiasSemana)) return (false, "Selecione ao menos um dia da semana.");
         if (!TimeSpan.TryParse(a.Horario, out _)) return (false, "Horário inválido. Use o formato HH:mm.");
 
-        if (a.Id == 0) await _repo.InsertAsync(a);
-        else           await _repo.UpdateAsync(a);
+        var ehNovo = a.Id == 0;
+        if (ehNovo) await _repo.InsertAsync(a);
+        else        await _repo.UpdateAsync(a);
+        if (_auditoriaRepo != null)
+            await _auditoriaRepo.RegistrarAsync(_usuarioService?.UsuarioAtual?.Id,
+                ehNovo ? "Criar" : "Editar", "Agendamento", a.Id, $"Macro {a.MacroId} às {a.Horario}");
         return (true, "Agendamento salvo!");
     }
 
-    public async Task ExcluirAsync(int id) => await _repo.DeleteAsync(id);
+    public async Task ExcluirAsync(int id)
+    {
+        await _repo.DeleteAsync(id);
+        if (_auditoriaRepo != null)
+            await _auditoriaRepo.RegistrarAsync(_usuarioService?.UsuarioAtual?.Id, "Excluir", "Agendamento", id, null);
+    }
 
     /// <summary>Inicia a verificação periódica (a cada minuto) das macros agendadas.</summary>
     public void Iniciar() => _timer ??= new Timer(async _ => await VerificarAsync(), null, TimeSpan.FromSeconds(20), TimeSpan.FromMinutes(1));

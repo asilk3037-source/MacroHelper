@@ -144,6 +144,14 @@ public class MacroRepository : IMacroRepository
         await _ctx.Client.From<MacrosModel>().Update(m);
     }
 
+    public async Task ToggleAtivoAsync(int id, bool ativo)
+    {
+        var m = await _ctx.Client.From<MacrosModel>().Filter("id", Operator.Equals, id.ToString()).Single();
+        if (m == null) return;
+        m.Ativo = ativo;
+        await _ctx.Client.From<MacrosModel>().Update(m);
+    }
+
     public async Task AtualizarStatusAsync(int id, string status)
     {
         var m = await _ctx.Client.From<MacrosModel>().Filter("id", Operator.Equals, id.ToString()).Single();

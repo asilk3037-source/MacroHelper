@@ -43,6 +43,15 @@
                         </StackPanel>
                     </Button>
                     <Button Style="{StaticResource ButtonSecondary}"
+                            Command="{Binding ExportarExcelCommand}"
+                            Height="38" Padding="14,0" Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                       VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="Excel" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource ButtonSecondary}"
                             Command="{Binding ExportarRtfCommand}"
                             Height="38" Padding="14,0" Margin="0,0,8,0">
                         <StackPanel Orientation="Horizontal">
@@ -298,7 +307,7 @@
                 <Style TargetType="Border">
                     <Setter Property="Visibility" Value="Collapsed"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsAdmin}" Value="True">
+                        <DataTrigger Binding="{Binding PodeVerRelatorioEquipe}" Value="True">
                             <Setter Property="Visibility" Value="Visible"/>
                         </DataTrigger>
                     </Style.Triggers>
