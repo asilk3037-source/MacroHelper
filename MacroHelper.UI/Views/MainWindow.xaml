@@ -86,7 +86,8 @@
         </DataTemplate>
     </Window.Resources>
 
-    <Border CornerRadius="16" ClipToBounds="True">
+    <Border CornerRadius="16" ClipToBounds="True"
+            BorderThickness="1" BorderBrush="{DynamicResource BorderLightBrush}">
         <Border.Effect>
             <DropShadowEffect BlurRadius="32" ShadowDepth="0" Opacity="0.4" Color="Black"/>
         </Border.Effect>
