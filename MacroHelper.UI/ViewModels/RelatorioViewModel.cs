@@ -32,6 +32,7 @@ public partial class RelatorioViewModel : ObservableObject
 
     [ObservableProperty] private ObservableCollection<RankingUsuarioItem> _rankingUsuarios = new();
     [ObservableProperty] private ObservableCollection<AuditoriaItem>      _auditoria = new();
+    [ObservableProperty] private ObservableCollection<AplicativoItem>     _topAplicativos = new();
     public bool IsAdmin => _usuarioService.UsuarioAtual?.Perfil == "Admin";
     public bool PodeVerRelatorioEquipe => IsAdmin || _usuarioService.UsuarioAtual?.Perfil == "Auditor"
         || Permissoes.Tem(_usuarioService.UsuarioAtual, Permissoes.VerRelatorios);
@@ -66,6 +67,14 @@ public partial class RelatorioViewModel : ObservableObject
             var maxDia = porDia.Count > 0 ? porDia.Max(d => d.Total) : 1;
             UsoPorDia = new ObservableCollection<BarraUso>(
                 porDia.Select(d => new BarraUso(d.Dia, d.Total, maxDia == 0 ? 0 : (double)d.Total / maxDia * 120)));
+
+            var topApps = lista
+                .Where(l => !string.IsNullOrWhiteSpace(l.Aplicativo))
+                .GroupBy(l => l.Aplicativo!)
+                .OrderByDescending(g => g.Count())
+                .Take(5)
+                .Select(g => new AplicativoItem(g.Key, g.Count()));
+            TopAplicativos = new ObservableCollection<AplicativoItem>(topApps);
 
             var minutos = await _logSvc.EstimarMinutosEconomizadosAsync(DataInicio, DataFim.AddDays(1));
             MinutosEconomizados = minutos >= 60
@@ -225,6 +234,7 @@ public partial class RelatorioViewModel : ObservableObject
 }
 
 public record RankingItem(string Titulo, string Atalho, int Total);
+public record AplicativoItem(string Nome, int Total);
 public record BarraUso(DateTime Dia, int Total, double AlturaBarra);
 public record RankingUsuarioItem(string UsuarioNome, int Total);
 public record AuditoriaItem(DateTime Data, string Acao, string Entidade, string? Detalhes, string UsuarioNome);

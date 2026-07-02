@@ -206,8 +206,53 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Coluna direita: apps + gráfico -->
+                <DockPanel Grid.Column="1" Margin="8,0,0,0" LastChildFill="True">
+
+                <!-- Top aplicativos -->
+                <Border DockPanel.Dock="Top" Style="{StaticResource CardStyle}" Padding="20,16" Margin="0,0,0,8">
+                    <StackPanel>
+                        <TextBlock Text="Top aplicativos" FontSize="13" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                        <ItemsControl ItemsSource="{Binding TopAplicativos}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Nome}" FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <Border Grid.Column="1" Background="{DynamicResource SurfaceElevatedBrush}"
+                                                CornerRadius="4" Padding="8,3" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Total}" FontSize="11" FontWeight="Bold"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="Nenhum dado no período." FontSize="12"
+                                   Foreground="{DynamicResource TextMutedBrush}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding TopAplicativos.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
                 <!-- Gráfico de barras por dia -->
-                <Border Grid.Column="1" Style="{StaticResource CardStyle}" Padding="20,16" Margin="8,0,0,0">
+                <Border Style="{StaticResource CardStyle}" Padding="20,16">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -253,6 +298,8 @@
                         </TextBlock>
                     </Grid>
                 </Border>
+
+                </DockPanel>
             </Grid>
         </Border>
 
