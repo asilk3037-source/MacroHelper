@@ -12,7 +12,11 @@ public partial class GruposView : UserControl
 
     private void ComboGrupo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (sender is ComboBox { Tag: Usuario usuario } && DataContext is GruposViewModel vm)
+        if (e.AddedItems.Count == 0 || e.RemovedItems.Count == 0) return;
+        if (sender is ComboBox cb && cb.Tag is Usuario usuario && DataContext is GruposViewModel vm)
+        {
+            usuario.GrupoId = cb.SelectedValue is int id ? id : (int?)null;
             _ = vm.AlterarGrupoUsuarioCommand.ExecuteAsync(usuario);
+        }
     }
 }

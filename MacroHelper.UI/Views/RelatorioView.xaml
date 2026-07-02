@@ -208,14 +208,19 @@
 
                 <!-- Gráfico de barras por dia -->
                 <Border Grid.Column="1" Style="{StaticResource CardStyle}" Padding="20,16" Margin="8,0,0,0">
-                    <StackPanel>
-                        <TextBlock Text="Uso por dia" FontSize="13" FontWeight="Bold"
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Uso por dia" FontSize="13" FontWeight="Bold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12"/>
-                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                            <ItemsControl ItemsSource="{Binding UsoPorDia}">
+                        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding UsoPorDia}" VerticalAlignment="Bottom">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Height="140"/>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
@@ -233,7 +238,7 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </ScrollViewer>
-                        <TextBlock Text="Nenhum dado no período." FontSize="12"
+                        <TextBlock Grid.Row="2" Text="Nenhum dado no período." FontSize="12"
                                    Foreground="{DynamicResource TextMutedBrush}">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
@@ -246,7 +251,7 @@
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                    </StackPanel>
+                    </Grid>
                 </Border>
             </Grid>
         </Border>
