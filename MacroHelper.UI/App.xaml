@@ -22,6 +22,7 @@
             <conv:StringEqualsToVisibilityConverter x:Key="StringEqualsToVis"/>
             <conv:StringEqualsToBoolConverter x:Key="StringEqualsToBool"/>
             <conv:ObjectNullToVisibilityConverter x:Key="ObjNullToVis"/>
+            <conv:NullToBoolConverter x:Key="NullToBool"/>
             <conv:EventoWebhookRotuloConverter x:Key="EventoRotulo"/>
 
             <!-- ── ACCENT GRADIENT (usado em tiles de logo/badges "iridescentes" — primary → ciano) ── -->

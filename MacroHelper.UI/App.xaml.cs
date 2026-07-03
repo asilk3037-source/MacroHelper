@@ -163,6 +163,9 @@ public partial class App : Application
         s.AddSingleton<WebhookRepository>();
         s.AddSingleton<NotificacaoRepository>();
         s.AddSingleton<PermissaoTelaRepository>();
+        s.AddSingleton<ProjetoRepository>();
+        s.AddSingleton<AtaRepository>();
+        s.AddSingleton<PendenciaRepository>();
 
         // Services
         s.AddSingleton<WebhookService>();
@@ -183,6 +186,9 @@ public partial class App : Application
         s.AddSingleton<VariavelGlobalService>();
         s.AddSingleton<AgendamentoService>();
         s.AddSingleton<PermissaoTelaService>();
+        s.AddSingleton<ProjetoService>();
+        s.AddSingleton<AtaService>();
+        s.AddSingleton<PendenciaService>();
 
         // ViewModels
         s.AddTransient<ViewModels.MainViewModel>();
@@ -204,6 +210,7 @@ public partial class App : Application
         s.AddTransient<ViewModels.NotificacoesViewModel>();
         s.AddTransient<ViewModels.PerfilViewModel>();
         s.AddTransient<ViewModels.AjudaViewModel>();
+        s.AddTransient<ViewModels.ProjetosViewModel>();
 
         // Views
         s.AddTransient<LoginWindow>();

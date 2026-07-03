@@ -1,0 +1,603 @@
+<UserControl x:Class="MacroHelper.UI.Views.ProjetosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <UserControl.RenderTransform>
+        <TranslateTransform x:Name="PageSlide"/>
+    </UserControl.RenderTransform>
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard><Storyboard>
+                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.22"/>
+            </Storyboard></BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <DockPanel>
+
+        <!-- Header -->
+        <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceBrush}"
+                BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}" Padding="28,18">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Projetos / Atas / Pendências" Style="{StaticResource PageTitleText}"/>
+                    <TextBlock Text="Acompanhe pendências de reuniões organizadas por projeto." Style="{StaticResource PageSubtitleText}"/>
+                </StackPanel>
+                <!-- Mensagem de feedback -->
+                <Border Grid.Column="1" CornerRadius="8" Padding="12,8"
+                        Background="{DynamicResource SuccessBgBrush}" BorderBrush="{DynamicResource SuccessBrush}"
+                        BorderThickness="1"
+                        Visibility="{Binding Mensagem, Converter={StaticResource NullToVis}}">
+                    <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource SuccessBrush}" FontSize="12"/>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Loading -->
+        <Border DockPanel.Dock="Top" Padding="28,10"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="Carregando..." Foreground="{DynamicResource TextMutedBrush}" FontSize="12"/>
+        </Border>
+
+        <!-- 3-column master-detail -->
+        <Grid Margin="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220" MinWidth="160"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="220" MinWidth="160"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ══ COLUNA 1: PROJETOS ══ -->
+            <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderLightBrush}" BorderThickness="1"
+                    CornerRadius="14" ClipToBounds="True">
+                <DockPanel>
+                    <!-- Header projetos -->
+                    <Border DockPanel.Dock="Top" Padding="14,12,14,10"
+                            BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}">
+                        <Grid>
+                            <TextBlock Text="Projetos" FontSize="12" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                            <Button HorizontalAlignment="Right" Width="26" Height="26"
+                                    Style="{StaticResource ButtonIconOnly}"
+                                    Command="{Binding NovoProjetoCommand}"
+                                    ToolTip="Novo projeto">
+                                <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                           Foreground="{DynamicResource AccentBrush}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <!-- Formulário novo projeto -->
+                    <Border DockPanel.Dock="Top" Padding="12,10"
+                            BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}"
+                            Background="{DynamicResource SurfaceElevatedBrush}">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding EditandoProjeto}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel>
+                            <TextBox Style="{StaticResource InputStyle}" Height="36" FontSize="12"
+                                     Text="{Binding ProjetoNomeEdit, UpdateSourceTrigger=PropertyChanged}"
+                                     Tag="Nome do projeto..." Margin="0,0,0,6"/>
+                            <TextBox Style="{StaticResource InputStyle}" Height="32" FontSize="11"
+                                     Text="{Binding ProjetoDescEdit, UpdateSourceTrigger=PropertyChanged}"
+                                     Tag="Descrição (opcional)" Margin="0,0,0,8"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="✕" Width="28" Height="28" FontSize="11"
+                                        Style="{StaticResource ButtonSecondary}" Margin="0,0,6,0"
+                                        Command="{Binding CancelarProjetoCommand}"/>
+                                <Button Content="Salvar" Width="60" Height="28" FontSize="11"
+                                        Style="{StaticResource ButtonPrimary}"
+                                        Command="{Binding SalvarProjetoCommand}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Lista projetos -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Projetos}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="6,3" Padding="12,10" CornerRadius="10" Cursor="Hand">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding DataContext.ProjetoSelecionado.Id,
+                                                        RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        Value="{Binding Id}">
+                                                        <Setter Property="Background" Value="{DynamicResource SidebarItemActiveBrush}"/>
+                                                    </DataTrigger>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource SidebarItemHoverBrush}"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Border.InputBindings>
+                                            <MouseBinding MouseAction="LeftClick"
+                                                Command="{Binding DataContext.SelecionarProjetoCommand,
+                                                    RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"/>
+                                        </Border.InputBindings>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0" Text="{Binding Nome}" FontSize="12" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,3,0,0">
+                                                <Border CornerRadius="4" Padding="5,2" Margin="0,0,5,0">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Background" Value="{DynamicResource SuccessBgBrush}"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Status}" Value="Concluído">
+                                                                    <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Status}" Value="Cancelado">
+                                                                    <Setter Property="Background" Value="{DynamicResource DangerBgBrush}"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <TextBlock Text="{Binding Status}" FontSize="9" FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource TextMutedBrush}"/>
+                                                </Border>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="Transparent"/>
+
+            <!-- ══ COLUNA 2: ATAS ══ -->
+            <Border Grid.Column="2" Background="{DynamicResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderLightBrush}" BorderThickness="1"
+                    CornerRadius="14" ClipToBounds="True">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Opacity" Value="0.4"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ProjetoSelecionado}" Value="{x:Null}">
+                                <Setter Property="Opacity" Value="0.4"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ProjetoSelecionado}" Value="{x:Null}">
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <DockPanel>
+                    <!-- Header atas -->
+                    <Border DockPanel.Dock="Top" Padding="14,12,14,10"
+                            BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}">
+                        <Grid>
+                            <StackPanel>
+                                <TextBlock Text="Atas" FontSize="12" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                <TextBlock Text="{Binding ProjetoSelecionado.Nome}" FontSize="10"
+                                           Foreground="{DynamicResource AccentBrush}"
+                                           TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                            <Button HorizontalAlignment="Right" Width="26" Height="26"
+                                    Style="{StaticResource ButtonIconOnly}"
+                                    Command="{Binding NovaAtaCommand}"
+                                    IsEnabled="{Binding ProjetoSelecionado, Converter={StaticResource NullToBool}}"
+                                    ToolTip="Nova ata">
+                                <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                           Foreground="{DynamicResource AccentBrush}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <!-- Formulário nova ata -->
+                    <Border DockPanel.Dock="Top" Padding="12,10"
+                            BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}"
+                            Background="{DynamicResource SurfaceElevatedBrush}">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding EditandoAta}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel>
+                            <TextBox Style="{StaticResource InputStyle}" Height="34" FontSize="12"
+                                     Text="{Binding AtaTituloEdit, UpdateSourceTrigger=PropertyChanged}"
+                                     Tag="Título da ata..." Margin="0,0,0,6"/>
+                            <DatePicker SelectedDate="{Binding AtaDataEdit}" Margin="0,0,0,6"
+                                        FontSize="11" Height="34"/>
+                            <TextBox Style="{StaticResource InputStyle}" Height="32" FontSize="11"
+                                     Text="{Binding AtaHorarioEdit, UpdateSourceTrigger=PropertyChanged}"
+                                     Tag="Horário (ex: 14:00)" Margin="0,0,0,8"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="✕" Width="28" Height="28" FontSize="11"
+                                        Style="{StaticResource ButtonSecondary}" Margin="0,0,6,0"
+                                        Command="{Binding CancelarAtaCommand}"/>
+                                <Button Content="Salvar" Width="60" Height="28" FontSize="11"
+                                        Style="{StaticResource ButtonPrimary}"
+                                        Command="{Binding SalvarAtaCommand}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Todas as pendências (sem filtro por ata) -->
+                    <Border DockPanel.Dock="Top" Padding="8,6" Cursor="Hand">
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftClick"
+                                Command="{Binding SelecionarAtaCommand}"
+                                CommandParameter="{x:Null}"/>
+                        </Border.InputBindings>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AtaSelecionada}" Value="{x:Null}">
+                                        <Setter Property="Background" Value="{DynamicResource SidebarItemActiveBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <TextBlock Text="Todas as pendências" FontSize="11" FontStyle="Italic"
+                                   Foreground="{DynamicResource TextMutedBrush}"/>
+                    </Border>
+
+                    <!-- Lista atas -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Atas}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="6,3" Padding="11,9" CornerRadius="10" Cursor="Hand">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding DataContext.AtaSelecionada.Id,
+                                                        RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        Value="{Binding Id}">
+                                                        <Setter Property="Background" Value="{DynamicResource SidebarItemActiveBrush}"/>
+                                                    </DataTrigger>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource SidebarItemHoverBrush}"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Border.InputBindings>
+                                            <MouseBinding MouseAction="LeftClick"
+                                                Command="{Binding DataContext.SelecionarAtaCommand,
+                                                    RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"/>
+                                        </Border.InputBindings>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding Titulo}" FontSize="11" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Text="{Binding DataReuniao, StringFormat=dd/MM/yyyy}"
+                                                           FontSize="10" Foreground="{DynamicResource TextMutedBrush}"
+                                                           Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                            <Button Grid.Column="1" Width="22" Height="22" Padding="0"
+                                                    Command="{Binding DataContext.ExcluirAtaCommand,
+                                                        RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip="Excluir ata">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonIconOnly}">
+                                                        <Setter Property="Visibility" Value="Hidden"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsMouseOver,
+                                                                RelativeSource={RelativeSource AncestorType=Border}}"
+                                                                Value="True">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                                           Foreground="{DynamicResource DangerBrush}"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" Background="Transparent"/>
+
+            <!-- ══ COLUNA 3: PENDÊNCIAS ══ -->
+            <Border Grid.Column="4" Background="{DynamicResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderLightBrush}" BorderThickness="1"
+                    CornerRadius="14" ClipToBounds="True">
+                <DockPanel>
+                    <!-- Header pendências -->
+                    <Border DockPanel.Dock="Top" Padding="16,12,16,10"
+                            BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Pendências" FontSize="12" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                <TextBlock FontSize="10" Foreground="{DynamicResource AccentBrush}"
+                                           TextTrimming="CharacterEllipsis">
+                                    <Run Text="{Binding ProjetoSelecionado.Nome, Mode=OneWay}"/>
+                                    <Run Text=" "/>
+                                    <Run Text="{Binding AtaSelecionada.Titulo, Mode=OneWay}"/>
+                                </TextBlock>
+                            </StackPanel>
+                            <!-- Filtro status -->
+                            <ComboBox Grid.Column="1" Width="130" Height="30" Margin="0,0,8,0" FontSize="11"
+                                      ItemsSource="{Binding StatusOptions}"
+                                      SelectedItem="{Binding FiltroStatus}"/>
+                            <Button Grid.Column="2" Style="{StaticResource ButtonPrimary}" Height="32" Padding="12,0"
+                                    Command="{Binding NovaPendenciaCommand}"
+                                    IsEnabled="{Binding ProjetoSelecionado, Converter={StaticResource NullToBool}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Nova" FontSize="11" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <!-- Formulário nova pendência -->
+                    <Border DockPanel.Dock="Top" Padding="14,12"
+                            BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}"
+                            Background="{DynamicResource SurfaceElevatedBrush}">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding EditandoPendencia}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Style="{StaticResource InputStyle}" Height="36" FontSize="12"
+                                     Text="{Binding PendDescricaoEdit, UpdateSourceTrigger=PropertyChanged}"
+                                     Tag="Descrição da pendência..." Margin="0,0,8,0"/>
+                            <TextBox Grid.Column="1" Style="{StaticResource InputStyle}" Height="36" FontSize="11"
+                                     Text="{Binding PendResponsavelEdit, UpdateSourceTrigger=PropertyChanged}"
+                                     Tag="Responsável" Margin="0,0,8,0"/>
+                            <DatePicker Grid.Column="2" SelectedDate="{Binding PendPrazoEdit}"
+                                        Height="36" FontSize="11" Margin="0,0,8,0"/>
+                            <ComboBox Grid.Column="3" Height="36" FontSize="11" Margin="0,0,8,0"
+                                      ItemsSource="{Binding PrioridadeOptions}"
+                                      SelectedItem="{Binding PendPrioridadeEdit}"/>
+                            <StackPanel Grid.Column="4" Orientation="Horizontal">
+                                <Button Content="✕" Width="32" Height="36" Style="{StaticResource ButtonSecondary}"
+                                        Margin="0,0,6,0" Command="{Binding CancelarPendenciaCommand}"/>
+                                <Button Content="Salvar" Width="70" Height="36" Style="{StaticResource ButtonPrimary}"
+                                        Command="{Binding SalvarPendenciaCommand}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Lista pendências -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding PendenciasFiltradas}" Margin="10,8">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="0,3" Padding="14,12" CornerRadius="12"
+                                            BorderThickness="1" BorderBrush="{DynamicResource BorderLightBrush}">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Status}" Value="Concluída">
+                                                        <Setter Property="Opacity" Value="0.55"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Prioridade}" Value="Alta">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource WarningBrush}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Checkbox concluída -->
+                                            <Border Grid.Column="0" Width="20" Height="20" CornerRadius="10"
+                                                    BorderThickness="2" Margin="0,0,12,0"
+                                                    VerticalAlignment="Top" Cursor="Hand">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Concluída">
+                                                                <Setter Property="Background" Value="{DynamicResource SuccessBrush}"/>
+                                                                <Setter Property="BorderBrush" Value="{DynamicResource SuccessBrush}"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <Border.InputBindings>
+                                                    <MouseBinding MouseAction="LeftClick"
+                                                        Command="{Binding DataContext.MarcarConcluidaCommand,
+                                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"/>
+                                                </Border.InputBindings>
+                                                <TextBlock Text="&#xE73E;" FontFamily="Segoe MDL2 Assets" FontSize="9"
+                                                           Foreground="White"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Status}" Value="Concluída">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Border>
+
+                                            <!-- Conteúdo -->
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{Binding Descricao}" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                                           TextWrapping="Wrap" Margin="0,0,0,6">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Status}" Value="Concluída">
+                                                                    <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <!-- Responsável -->
+                                                    <Border CornerRadius="6" Padding="7,3" Margin="0,0,6,0"
+                                                            Background="{DynamicResource SurfaceBrush}"
+                                                            BorderBrush="{DynamicResource BorderLightBrush}" BorderThickness="1"
+                                                            Visibility="{Binding Responsavel, Converter={StaticResource NullToVis}}">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="9"
+                                                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,4,0"
+                                                                       VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding Responsavel}" FontSize="10"
+                                                                       Foreground="{DynamicResource TextMutedBrush}"/>
+                                                        </StackPanel>
+                                                    </Border>
+                                                    <!-- Prazo -->
+                                                    <Border CornerRadius="6" Padding="7,3" Margin="0,0,6,0"
+                                                            Background="{DynamicResource SurfaceBrush}"
+                                                            BorderBrush="{DynamicResource BorderLightBrush}" BorderThickness="1"
+                                                            Visibility="{Binding Prazo, Converter={StaticResource ObjNullToVis}}">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="9"
+                                                                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,4,0"
+                                                                       VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding Prazo, StringFormat=dd/MM/yyyy}"
+                                                                       FontSize="10" Foreground="{DynamicResource TextMutedBrush}"/>
+                                                        </StackPanel>
+                                                    </Border>
+                                                    <!-- Prioridade -->
+                                                    <Border CornerRadius="6" Padding="7,3" Margin="0,0,6,0">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Prioridade}" Value="Alta">
+                                                                        <Setter Property="Background" Value="{DynamicResource WarningBgBrush}"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding Prioridade}" Value="Baixa">
+                                                                        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
+                                                        <TextBlock Text="{Binding Prioridade}" FontSize="10"
+                                                                   Foreground="{DynamicResource TextMutedBrush}"/>
+                                                    </Border>
+                                                    <!-- Status -->
+                                                    <Border CornerRadius="6" Padding="7,3">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Status}" Value="Concluída">
+                                                                        <Setter Property="Background" Value="{DynamicResource SuccessBgBrush}"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding Status}" Value="Em andamento">
+                                                                        <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
+                                                        <TextBlock Text="{Binding Status}" FontSize="10"
+                                                                   Foreground="{DynamicResource TextMutedBrush}"/>
+                                                    </Border>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <!-- Ações -->
+                                            <Button Grid.Column="2" Width="26" Height="26" VerticalAlignment="Top"
+                                                    Command="{Binding DataContext.ExcluirPendenciaCommand,
+                                                        RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip="Excluir pendência">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonIconOnly}">
+                                                        <Setter Property="Opacity" Value="0"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsMouseOver,
+                                                                RelativeSource={RelativeSource AncestorType=Border}}"
+                                                                Value="True">
+                                                                <Setter Property="Opacity" Value="1"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                                           Foreground="{DynamicResource DangerBrush}"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </DockPanel>
+</UserControl>

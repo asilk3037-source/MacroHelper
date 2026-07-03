@@ -412,6 +412,9 @@
                         <DataTemplate DataType="{x:Type vm:AjudaViewModel}">
                             <views:AjudaView/>
                         </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:ProjetosViewModel}">
+                            <views:ProjetosView/>
+                        </DataTemplate>
                     </ContentControl.Resources>
                 </ContentControl>
             </Grid>

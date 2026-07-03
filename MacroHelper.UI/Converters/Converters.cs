@@ -129,6 +129,16 @@ public class EventoWebhookRotuloConverter : IValueConverter
         => throw new NotImplementedException();
 }
 
+/// <summary>Qualquer objeto não-nulo → true; null → false. Útil para IsEnabled.</summary>
+public class NullToBoolConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        => value != null;
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
 /// <summary>Nome completo -> iniciais (até 2 letras), usado no avatar circular do usuário.</summary>
 public class NameInitialsConverter : IValueConverter
 {
