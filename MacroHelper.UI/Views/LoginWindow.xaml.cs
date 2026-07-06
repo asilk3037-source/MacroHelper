@@ -2,6 +2,8 @@ using MacroHelper.Data.Context;
 using MacroHelper.UI.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using Key = System.Windows.Input.Key;
 using Application = System.Windows.Application;
 
 namespace MacroHelper.UI.Views;
@@ -39,6 +41,12 @@ public partial class LoginWindow : Window
 
     private void TxtSenha_PasswordChanged(object sender, RoutedEventArgs e)
         => _vm.SenhaTemp = TxtSenha.Password;
+
+    private void TxtSenha_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter && _vm.EntrarCommand.CanExecute(null))
+            _vm.EntrarCommand.Execute(null);
+    }
 
     private void TxtNovaSenha_PasswordChanged(object sender, RoutedEventArgs e)
         => _vm.NovaSenhaTemp = TxtNovaSenha.Password;

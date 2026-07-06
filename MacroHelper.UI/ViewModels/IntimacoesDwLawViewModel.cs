@@ -54,6 +54,7 @@ public partial class IntimacaoItem : ObservableObject
 public partial class IntimacoesDwLawViewModel : ObservableObject
 {
     private readonly IntimacoesDwLawService _svc;
+    private readonly PdfImportService      _pdf = new();
 
     private List<IntimacaoItem> _todosItens = [];
 
@@ -108,6 +109,28 @@ public partial class IntimacoesDwLawViewModel : ObservableObject
     {
         Painel = false;
         Preview.Clear();
+    }
+
+    [RelayCommand]
+    private void SelecionarPdf()
+    {
+        var dlg = new Microsoft.Win32.OpenFileDialog
+        {
+            Title  = "Selecionar email DW LAW em PDF",
+            Filter = "Arquivos PDF (*.pdf)|*.pdf",
+            Multiselect = false,
+        };
+        if (dlg.ShowDialog() != true) return;
+
+        try
+        {
+            TextoEmail  = _pdf.ExtrairTexto(dlg.FileName);
+            MsgExtracao = $"PDF carregado: {System.IO.Path.GetFileName(dlg.FileName)} — clique em Extrair para prosseguir.";
+        }
+        catch (Exception ex)
+        {
+            MsgExtracao = $"Erro ao ler o PDF: {ex.Message}";
+        }
     }
 
     [RelayCommand]

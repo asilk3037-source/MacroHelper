@@ -252,4 +252,97 @@ public class DwLawParserTests
         Assert.Single(result);
         Assert.Equal(url, result[0].LinkTribunal);
     }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // CENÁRIOS DE EXTRAÇÃO VIA PDF (page.Text — texto livre com cabeçalho)
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public void Parse_PDF_CabecalhoEmailCompleto_IgnoradoNoPrimeiroItem()
+    {
+        // Simula o output de page.Text de um PDF de email DW LAW:
+        // cabeçalho de email completo → preamble → dados da tabela
+        var texto =
+            "Aline Martins | Suporte Netview " +
+            "De: Painel de Intimações - DW LAW <painel.intimacoes@dwlaw.com.br> " +
+            "Enviado em: sexta-feira, 3 de julho de 2026 16:55 " +
+            "Para: Aline Martins | Suporte Netview <aline@netview.com.br> " +
+            "Assunto: PROBLEMAS NO ACESSO AO PAINEL DW LAW " +
+            "Segue abaixo os sistemas onde identificamos problemas de acesso ao Painel: " +
+            "Bruno Wurmbauer Junior - EBSERH EBSERH " +
+            "TRF5 - PJE V1.0 - 2ª instância https://pje.trf5.jus.br/pje/login.seam " +
+            "_FALHA AO INSTALAR CERTIFICADO " +
+            "Gabriela de Magalhães Silva - BDMG MG073945 " +
+            "TJMG - EPROC - 1ª instância https://eproc1g.tjmg.jus.br/ " +
+            "Login/Senha incorretos.";
+
+        var result = DwLawEmailParser.Parse(texto, DataTeste);
+
+        // Deve extrair exatamente 2 itens (não mais o cabeçalho como linha extra)
+        Assert.Equal(2, result.Count);
+        Assert.Contains("Bruno Wurmbauer Junior", result[0].Advogado);
+        Assert.Contains("TRF5", result[0].Sistema);
+        Assert.Contains("Gabriela de Magalhães Silva", result[1].Advogado);
+        Assert.Contains("TJMG", result[1].Sistema);
+    }
+
+    [Fact]
+    public void Parse_PDF_UrlNaoTribunal_EIgnorada()
+    {
+        // URL do painel DW LAW (não jus.br) deve ser ignorada;
+        // apenas URLs de tribunais (*.jus.br) são consideradas âncoras de linha.
+        var texto =
+            "Acesse o painel em https://painel.intimacoes.dwlaw.com.br para mais detalhes. " +
+            "Bruno Wurmbauer Junior - EBSERH EBSERH " +
+            "TRF5 - PJE V1.0 - 2ª instância https://pje.trf5.jus.br/pje/login.seam " +
+            "_FALHA AO INSTALAR CERTIFICADO";
+
+        var result = DwLawEmailParser.Parse(texto, DataTeste);
+
+        // Apenas 1 item — a URL do painel DW LAW não gera linha de dados
+        Assert.Single(result);
+        Assert.Equal("https://pje.trf5.jus.br/pje/login.seam", result[0].LinkTribunal);
+        Assert.Contains("Bruno Wurmbauer Junior", result[0].Advogado);
+    }
+
+    [Fact]
+    public void Parse_PDF_AdvogadoCorreto_MesmoComLixoAntes()
+    {
+        // SplitAdvTipo deve usar o ÚLTIMO padrão "- EMPRESA" (mais próximo do SISTEMA),
+        // ignorando padrões anteriores do cabeçalho ("- DW", "- LAW", etc.)
+        var texto =
+            "De: Painel de Intimações - DW LAW <painel@dwlaw.com.br> " +
+            "Luis Felipe Pires Alves - BDMG MG062009 " +
+            "TJMG - EPROC - 2ª instância https://eproc2g.tjmg.jus.br/ " +
+            "Chave MFA inválida.";
+
+        var result = DwLawEmailParser.Parse(texto, DataTeste);
+
+        Assert.Single(result);
+        Assert.Equal("Luis Felipe Pires Alves - BDMG", result[0].Advogado);
+        Assert.Equal("MG062009", result[0].TipoLogin.Trim());
+    }
+
+    [Fact]
+    public void Parse_PDF_MultiplasLinhas_OrdemCorreta()
+    {
+        var texto =
+            "De: Painel - DW LAW <painel@dwlaw.com.br> Assunto: PROBLEMAS " +
+            "Givaldo Barbosa Macedo Junior - EBSERH ADVOGADO " +
+            "TRF3 - PJE - 1ª instância https://pje1g.trf3.jus.br/pje/login.seam " +
+            "Login/Senha incorretos. " +
+            "Luis Felipe Pires Alves - BDMG MG062009 " +
+            "TJMG - EPROC - 1ª instância https://eproc1g.tjmg.jus.br/ " +
+            "Chave MFA inválida.";
+
+        var result = DwLawEmailParser.Parse(texto, DataTeste);
+
+        Assert.Equal(2, result.Count);
+        Assert.Contains("Givaldo", result[0].Advogado);
+        Assert.Contains("TRF3", result[0].Sistema);
+        Assert.Contains("incorretos", result[0].Erro);
+        Assert.Contains("Luis Felipe", result[1].Advogado);
+        Assert.Contains("TJMG", result[1].Sistema);
+        Assert.Contains("MFA", result[1].Erro);
+    }
 }

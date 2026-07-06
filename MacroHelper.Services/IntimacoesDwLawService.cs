@@ -21,11 +21,17 @@ public class IntimacoesDwLawService
         int count = 0;
         foreach (var item in itens)
         {
-            // Detecta recorrência: mesmo advogado + sistema com status aberto de outra data
+            // Detecta recorrência: mesmo advogado + sistema aberto em data anterior
             var anteriores = await _repo.GetAbertosByAdvSistemaAsync(item.Advogado, item.Sistema);
             var anterior = anteriores.FirstOrDefault(a => a.DataEmail.Date < item.DataEmail.Date);
             if (anterior != null)
-                item.Status = "Recorrente";
+            {
+                // Se o registro anterior está "Pendente cliente", o novo herda esse status
+                // (a pendência é do cliente, não um erro novo recorrente)
+                item.Status = anterior.Status == "Pendente cliente"
+                    ? "Pendente cliente"
+                    : "Recorrente";
+            }
 
             await _repo.InsertAsync(item);
             count++;

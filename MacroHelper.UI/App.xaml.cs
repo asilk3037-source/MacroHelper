@@ -150,6 +150,15 @@ public partial class App : Application
             var supabaseCtx = Services.GetRequiredService<SupabaseContext>();
             await supabaseCtx.Auth.SetSession(sessao.Value.AccessToken, sessao.Value.RefreshToken);
 
+            // Força o refresh imediatamente ao restaurar sessão do disco.
+            // Isso garante um token fresco E inicia o timer de auto-refresh interno
+            // que o SetSession sozinho não ativa.
+            try
+            {
+                await supabaseCtx.Auth.RefreshSession();
+            }
+            catch { /* Se falhar, continua com o token existente */ }
+
             var authUserId = supabaseCtx.Auth.CurrentSession?.User?.Id;
             if (authUserId == null) { SupabaseSessionStore.Clear(); return false; }
 
@@ -157,9 +166,7 @@ public partial class App : Application
             var usuario = await usuarioRepo.ObterPorAuthUserIdAsync(Guid.Parse(authUserId));
             if (usuario == null || !usuario.Ativo) { SupabaseSessionStore.Clear(); return false; }
 
-            // O refresh token do Supabase é rotativo (uso único) — SetSession pode ter emitido
-            // um novo par de tokens. Salva de novo para a PRÓXIMA reabertura não usar um
-            // refresh token já consumido.
+            // Salva o par de tokens atualizado pelo RefreshSession
             var sessaoAtual = supabaseCtx.Auth.CurrentSession;
             if (sessaoAtual?.AccessToken != null && sessaoAtual.RefreshToken != null)
                 SupabaseSessionStore.Save(sessaoAtual.AccessToken, sessaoAtual.RefreshToken);

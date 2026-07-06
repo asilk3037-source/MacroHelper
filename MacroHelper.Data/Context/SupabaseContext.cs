@@ -19,7 +19,8 @@ public class SupabaseContext
         var options = new Supabase.SupabaseOptions
         {
             Schema = "macrohelper",
-            AutoConnectRealtime = false
+            AutoConnectRealtime = false,
+            AutoRefreshToken = true,
         };
         Client = new Supabase.Client(ProjectUrl, AnonKey, options);
     }

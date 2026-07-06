@@ -163,10 +163,36 @@
                         <DatePicker SelectedDate="{Binding DataEmail}" Width="140" Height="34"/>
                     </StackPanel>
 
-                    <!-- TextArea para colar -->
+                    <!-- TextArea para colar ou PDF -->
                     <StackPanel Grid.Column="1" VerticalAlignment="Top">
-                        <TextBlock Text="Cole aqui o conteúdo copiado do email (tabela)" FontSize="11"
-                                   Foreground="{DynamicResource FgSecBrush}" Margin="0,0,0,4"/>
+                        <!-- Cabeçalho da área de texto com botão PDF -->
+                        <Grid Margin="0,0,0,4">
+                            <TextBlock Text="Cole o conteúdo do email ou selecione o PDF:" FontSize="11"
+                                       Foreground="{DynamicResource FgSecBrush}" VerticalAlignment="Center"/>
+                            <Button HorizontalAlignment="Right"
+                                    Command="{Binding SelecionarPdfCommand}"
+                                    Height="26" Padding="10,0" FontSize="12" BorderThickness="0"
+                                    Background="{DynamicResource BorderBrush}" Foreground="{DynamicResource FgBrush}"
+                                    ToolTip="Selecionar arquivo PDF do email DW LAW">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="5"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="📎" FontSize="13" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Selecionar PDF" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
                         <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                 CornerRadius="6" Background="{DynamicResource BgBrush}">
                             <TextBox Text="{Binding TextoEmail, UpdateSourceTrigger=PropertyChanged}"

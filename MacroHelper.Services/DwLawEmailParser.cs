@@ -10,7 +10,8 @@ public static class DwLawEmailParser
         @"(TRF\s*\d+|TJ[A-Z]{2}|STJ|STF|TRT\s*\d*)\s*[-–]\s*(PJE[\w\s\.]*|EPROC|e-proc)[\s\w\.]*[-–]\s*\d+[aªº]\s*inst[aâ]ncia",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-    private static readonly Regex UrlRegex = new(@"https?://\S+", RegexOptions.Compiled);
+    // Only match tribunal URLs — Brazilian court sites all use *.jus.br
+    private static readonly Regex UrlRegex = new(@"https?://\S*\.jus\.br\S*", RegexOptions.Compiled);
 
     public static List<IntimacaoErro> Parse(string text, DateTime dataEmail)
     {
@@ -119,17 +120,27 @@ public static class DwLawEmailParser
 
     // Splits "Bruno Wurmbauer Junior - EBSERH Procuradoria - ..." into
     // ("Bruno Wurmbauer Junior - EBSERH", "Procuradoria - ...")
-    // Relies on ADVOGADO always ending in "- ALLCAPS"
+    // Uses the LAST "- ALLCAPS" match (closest to SISTEMA) so email headers before the
+    // ADV name don't contaminate the result when text was extracted from a PDF.
     private static (string adv, string tipo) SplitAdvTipo(string text)
     {
         if (string.IsNullOrWhiteSpace(text)) return ("", "");
 
-        // Find the FIRST occurrence of " - ALLCAPS_WORD" — that's where ADVOGADO ends
-        var m = Regex.Match(text, @"\s+-\s+([A-ZÁÉÍÓÚÂÊÎÔÛÃÕ]{2,})\b");
-        if (!m.Success) return (text.Trim(), "");
+        var allMatches = Regex.Matches(text, @"\s+-\s+([A-ZÁÉÍÓÚÂÊÎÔÛÃÕ]{2,})\b");
+        if (allMatches.Count == 0) return (text.Trim(), "");
 
+        var m      = allMatches[^1]; // last occurrence — closest to SISTEMA
         var endIdx = m.Index + m.Length;
-        return (text[..endIdx].Trim(), text[endIdx..].Trim());
+
+        // Find where the actual person name starts (the last sequence of Capitalised words
+        // ending just before the " - COMPANY" match). This strips email header garbage that
+        // may appear before the real ADV name when the text comes from a PDF.
+        var before     = text[..m.Index];
+        var nameMatch  = Regex.Match(before,
+            @"[A-ZÁÉÍÓÚÂÊÎÔÛÃÕ][a-záéíóúâêîôûãõ]+(?:\s+(?:[A-ZÁÉÍÓÚÂÊÎÔÛÃÕ][a-záéíóúâêîôûãõ]*|de|da|do|dos|das)){1,6}\s*$");
+        var advStart   = nameMatch.Success ? nameMatch.Index : 0;
+
+        return (text[advStart..endIdx].Trim(), text[endIdx..].Trim());
     }
 
     private static IntimacaoErro Build(DateTime dataEmail, string adv, string tipo,
