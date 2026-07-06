@@ -67,8 +67,8 @@ public class ThemeService
         var app = Application.Current;
         if (app == null) return;
         var uri = new Uri(isDark
-            ? "/MacroHelper.UI;component/Themes/Dark.xaml"
-            : "/MacroHelper.UI;component/Themes/Light.xaml",
+            ? "/MacroHelper;component/Themes/Dark.xaml"
+            : "/MacroHelper;component/Themes/Light.xaml",
             UriKind.RelativeOrAbsolute);
         var existing = app.Resources.MergedDictionaries
             .FirstOrDefault(d => d.Source?.OriginalString.Contains("/Themes/") == true);
