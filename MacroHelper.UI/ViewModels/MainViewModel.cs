@@ -30,6 +30,7 @@ public partial class MainViewModel : ObservableObject
     private readonly KioskModeService    _kioskService;
     private readonly NotificacaoService  _notificacaoService;
     private readonly PermissaoTelaService _permissaoTelaService;
+    private readonly AtualizadorService  _atualizadorSvc;
 
     [ObservableProperty] private ObservableObject? _currentView;
     [ObservableProperty] private string _paginaAtiva    = "macros";
@@ -39,6 +40,13 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private bool   _isAdmin        = false;
     [ObservableProperty] private bool   _modoKiosk      = false;
     [ObservableProperty] private int    _notificacoesNaoLidas = 0;
+
+    // Auto-updater
+    [ObservableProperty] private bool   _mostrarBannerAtualizacao = false;
+    [ObservableProperty] private string _versaoNova    = string.Empty;
+    [ObservableProperty] private bool   _baixandoUpdate = false;
+    [ObservableProperty] private bool   _podeInstalarUpdate = false;
+    private AtualizacaoInfo? _atualizacaoInfo;
 
     public ObservableCollection<NavItem> NavGeral   { get; } = new();
     public ObservableCollection<NavItem> NavEquipe  { get; } = new();
@@ -56,7 +64,7 @@ public partial class MainViewModel : ObservableObject
         ComunidadeViewModel comunidadeVM, PermissoesViewModel permissoesVM,
         IntegracoesViewModel integracoesVM, NotificacoesViewModel notificacoesVM,
         PerfilViewModel perfilVM, AjudaViewModel ajudaVM, ProjetosViewModel projetosVM,
-        NotificacaoService notificacaoService,
+        NotificacaoService notificacaoService, AtualizadorService atualizadorSvc,
         AgendamentoService agendamentoService, PermissaoTelaService permissaoTelaService)
     {
         _macroService   = macroService;
@@ -80,6 +88,7 @@ public partial class MainViewModel : ObservableObject
         _perfilVM        = perfilVM;
         _ajudaVM         = ajudaVM;
         _projetosVM      = projetosVM;
+        _atualizadorSvc  = atualizadorSvc;
         _notificacaoService = notificacaoService;
         _permissaoTelaService = permissaoTelaService;
 
@@ -103,6 +112,15 @@ public partial class MainViewModel : ObservableObject
         notificacaoService.NotificacaoRecebida += (_, _) => _ = AtualizarNotificacoesNaoLidasAsync();
         _ = AtualizarNotificacoesNaoLidasAsync();
         agendamentoService.Iniciar();
+
+        _atualizadorSvc.AtualizacaoDisponivel += (_, info) =>
+        {
+            _atualizacaoInfo        = info;
+            VersaoNova              = info.Versao;
+            PodeInstalarUpdate      = info.PodeInstalar;
+            MostrarBannerAtualizacao = true;
+        };
+        _ = Task.Run(() => _atualizadorSvc.VerificarAsync());
 
         ConstruirNav();
         NavigarParaMacros();
@@ -252,6 +270,25 @@ public partial class MainViewModel : ObservableObject
         PaginaAtiva = "projetos"; CurrentView = _projetosVM; AtualizarNavAtiva();
         _ = _projetosVM.CarregarAsync();
     }
+
+    [RelayCommand]
+    private async Task AplicarAtualizacao()
+    {
+        if (_atualizacaoInfo == null || BaixandoUpdate) return;
+        BaixandoUpdate = true;
+        var ok = await _atualizadorSvc.PrepararAtualizacaoAsync(_atualizacaoInfo);
+        if (ok)
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                System.Windows.Application.Current.Shutdown());
+        else
+        {
+            BaixandoUpdate = false;
+            MostrarBannerAtualizacao = false;
+        }
+    }
+
+    [RelayCommand]
+    private void IgnorarAtualizacao() => MostrarBannerAtualizacao = false;
 
     private async Task AtualizarTotalAsync()
     {

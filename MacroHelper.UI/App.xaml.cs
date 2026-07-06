@@ -189,6 +189,7 @@ public partial class App : Application
         s.AddSingleton<ProjetoService>();
         s.AddSingleton<AtaService>();
         s.AddSingleton<PendenciaService>();
+        s.AddSingleton<AtualizadorService>();
 
         // ViewModels
         s.AddTransient<ViewModels.MainViewModel>();

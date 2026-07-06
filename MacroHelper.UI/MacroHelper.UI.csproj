@@ -12,6 +12,7 @@
     <Company>Silk</Company>
     <Product>SK MacroHelper</Product>
     <Version>1.2.0</Version>
+    <AssemblyName>MacroHelper</AssemblyName>
     <!-- Self-contained para o instalador -->
     <SelfContained>false</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
