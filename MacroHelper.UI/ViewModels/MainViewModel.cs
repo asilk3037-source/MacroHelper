@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MacroHelper.Services;
 using System.Collections.ObjectModel;
@@ -27,6 +27,7 @@ public partial class MainViewModel : ObservableObject
     private readonly PerfilViewModel           _perfilVM;
     private readonly AjudaViewModel            _ajudaVM;
     private readonly ProjetosViewModel          _projetosVM;
+    private readonly IntimacoesDwLawViewModel   _intimacoesVM;
     private readonly KioskModeService    _kioskService;
     private readonly NotificacaoService  _notificacaoService;
     private readonly PermissaoTelaService _permissaoTelaService;
@@ -64,6 +65,7 @@ public partial class MainViewModel : ObservableObject
         ComunidadeViewModel comunidadeVM, PermissoesViewModel permissoesVM,
         IntegracoesViewModel integracoesVM, NotificacoesViewModel notificacoesVM,
         PerfilViewModel perfilVM, AjudaViewModel ajudaVM, ProjetosViewModel projetosVM,
+        IntimacoesDwLawViewModel intimacoesVM,
         NotificacaoService notificacaoService, AtualizadorService atualizadorSvc,
         AgendamentoService agendamentoService, PermissaoTelaService permissaoTelaService)
     {
@@ -88,6 +90,7 @@ public partial class MainViewModel : ObservableObject
         _perfilVM        = perfilVM;
         _ajudaVM         = ajudaVM;
         _projetosVM      = projetosVM;
+        _intimacoesVM    = intimacoesVM;
         _atualizadorSvc  = atualizadorSvc;
         _notificacaoService = notificacaoService;
         _permissaoTelaService = permissaoTelaService;
@@ -152,6 +155,7 @@ public partial class MainViewModel : ObservableObject
         NavGeral.Add(new NavItem { Icone = "", Label = "Agendamentos",      Chave = "agendamentos", Comando = NavigarParaAgendamentosCommand });
         NavGeral.Add(new NavItem { Icone = "", Label = "Comunidade",        Chave = "comunidade",   Comando = NavigarParaComunidadeCommand });
         NavGeral.Add(new NavItem { Icone = "", Label = "Projetos",           Chave = "projetos",     Comando = NavigarParaProjetosCommand });
+        NavGeral.Add(new NavItem { Icone = "⚖", Label = "Intimações DW",     Chave = "intimacoes",   Comando = NavigarParaIntimacoesCommand });
         NavGeral.Add(new NavItem { Icone = "", Label = "Relatório",         Chave = "relatorio",    Comando = NavigarParaRelatorioCommand });
         NavGeral.Add(new NavItem { Icone = "", Label = "Meu Perfil",        Chave = "perfil",       Comando = NavigarParaPerfilCommand });
 
@@ -269,6 +273,11 @@ public partial class MainViewModel : ObservableObject
     {
         PaginaAtiva = "projetos"; CurrentView = _projetosVM; AtualizarNavAtiva();
         _ = _projetosVM.CarregarAsync();
+    }
+    [RelayCommand] public void NavigarParaIntimacoes()
+    {
+        PaginaAtiva = "intimacoes"; CurrentView = _intimacoesVM; AtualizarNavAtiva();
+        _ = _intimacoesVM.CarregarAsync();
     }
 
     [RelayCommand]

@@ -158,3 +158,38 @@ public class NameInitialsConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();
 }
+
+/// <summary>Status de IntimacaoErro → SolidColorBrush colorido para o pill de status.</summary>
+public class StatusToColorConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        var hex = value as string switch
+        {
+            "Novo"              => "#F59E0B",
+            "Recorrente"        => "#EF4444",
+            "Em andamento"      => "#3B82F6",
+            "Pendente cliente"  => "#EA580C",
+            "Resolvido"         => "#10B981",
+            _                   => "#6B7280",
+        };
+        return new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(hex));
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+/// <summary>bool → Visibility. True = Visible, False = Collapsed (ConverterParameter="invert" inverte).</summary>
+public class BoolToVisConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        bool b = value is bool bv && bv;
+        bool inv = parameter as string == "invert";
+        return (inv ? !b : b) ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}

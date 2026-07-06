@@ -504,6 +504,9 @@
                         <DataTemplate DataType="{x:Type vm:ProjetosViewModel}">
                             <views:ProjetosView/>
                         </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:IntimacoesDwLawViewModel}">
+                            <views:IntimacoesDwLawView/>
+                        </DataTemplate>
                     </ContentControl.Resources>
                 </ContentControl>
             </Grid>

@@ -24,6 +24,8 @@
             <conv:ObjectNullToVisibilityConverter x:Key="ObjNullToVis"/>
             <conv:NullToBoolConverter x:Key="NullToBool"/>
             <conv:EventoWebhookRotuloConverter x:Key="EventoRotulo"/>
+            <conv:StatusToColorConverter x:Key="StatusToColor"/>
+            <conv:BoolToVisConverter x:Key="BoolToVisConv"/>
 
             <!-- ── ACCENT GRADIENT (usado em tiles de logo/badges "iridescentes" — primary → ciano) ── -->
             <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="1,1">

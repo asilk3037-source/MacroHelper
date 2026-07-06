@@ -166,6 +166,7 @@ public partial class App : Application
         s.AddSingleton<ProjetoRepository>();
         s.AddSingleton<AtaRepository>();
         s.AddSingleton<PendenciaRepository>();
+        s.AddSingleton<IntimacaoErroRepository>();
 
         // Services
         s.AddSingleton<WebhookService>();
@@ -189,6 +190,7 @@ public partial class App : Application
         s.AddSingleton<ProjetoService>();
         s.AddSingleton<AtaService>();
         s.AddSingleton<PendenciaService>();
+        s.AddSingleton<IntimacoesDwLawService>();
         s.AddSingleton<AtualizadorService>();
 
         // ViewModels
@@ -212,6 +214,7 @@ public partial class App : Application
         s.AddTransient<ViewModels.PerfilViewModel>();
         s.AddTransient<ViewModels.AjudaViewModel>();
         s.AddTransient<ViewModels.ProjetosViewModel>();
+        s.AddTransient<ViewModels.IntimacoesDwLawViewModel>();
 
         // Views
         s.AddTransient<LoginWindow>();
