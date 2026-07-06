@@ -28,6 +28,16 @@ public partial class App : Application
     [DllImport("user32.dll")]
     private static extern IntPtr ActivateKeyboardLayout(IntPtr hkl, uint Flags);
 
+    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    private static extern IntPtr FindWindowByCaption(string? lpClassName, string lpWindowName);
+    private static IntPtr FindWindowByCaption(string caption) => FindWindowByCaption(null, caption);
+
+    [DllImport("user32.dll")]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
     // Ativa explicitamente o layout PT-BR em qualquer janela que ganhar foco
     public static void RestaurarIdiomaDoSistema()
     {
@@ -35,8 +45,26 @@ public partial class App : Application
             ActivateKeyboardLayout(_ptBrLayout, 0);
     }
 
+    private static System.Threading.Mutex? _instanceMutex;
+
     protected override async void OnStartup(StartupEventArgs e)
     {
+        // Garante instância única: se já existe uma rodando, traz ao foco e sai
+        _instanceMutex = new System.Threading.Mutex(true, "MacroHelper_SK_SingleInstance", out var isNewInstance);
+        if (!isNewInstance)
+        {
+            // Tenta ativar a janela existente via Win32
+            var hWnd = FindWindowByCaption("SK MacroHelper");
+            if (hWnd != IntPtr.Zero)
+            {
+                ShowWindow(hWnd, 9); // SW_RESTORE
+                SetForegroundWindow(hWnd);
+            }
+            _instanceMutex.Close();
+            Current.Shutdown();
+            return;
+        }
+
         base.OnStartup(e);
 
         DispatcherUnhandledException += OnDispatcherUnhandledException;
