@@ -14,29 +14,38 @@ public class IntimacoesDwLawService
 
     /// <summary>
     /// Importa um lote de itens extraídos do email.
-    /// Marca como "Recorrente" itens em que o mesmo advogado+sistema já existe em aberto de dias anteriores.
+    /// Se o mesmo advogado+sistema já tem um registro em aberto (não Resolvido),
+    /// não insere — apenas adiciona uma nota "Erro persiste em DD/MM/YYYY" ao registro existente.
+    /// Só insere como novo quando não existe nenhum registro em aberto.
     /// </summary>
-    public async Task<int> ImportarLoteAsync(IEnumerable<IntimacaoErro> itens)
+    public async Task<(int inseridos, int atualizados)> ImportarLoteAsync(IEnumerable<IntimacaoErro> itens)
     {
-        int count = 0;
+        int inseridos = 0, atualizados = 0;
         foreach (var item in itens)
         {
-            // Detecta recorrência: mesmo advogado + sistema aberto em data anterior
-            var anteriores = await _repo.GetAbertosByAdvSistemaAsync(item.Advogado, item.Sistema);
-            var anterior = anteriores.FirstOrDefault(a => a.DataEmail.Date < item.DataEmail.Date);
-            if (anterior != null)
-            {
-                // Se o registro anterior está "Pendente cliente", o novo herda esse status
-                // (a pendência é do cliente, não um erro novo recorrente)
-                item.Status = anterior.Status == "Pendente cliente"
-                    ? "Pendente cliente"
-                    : "Recorrente";
-            }
+            var abertos = await _repo.GetAbertosByAdvSistemaAsync(item.Advogado, item.Sistema);
+            var existente = abertos.FirstOrDefault();
 
-            await _repo.InsertAsync(item);
-            count++;
+            if (existente != null)
+            {
+                var nota = $"Erro persiste em {item.DataEmail:dd/MM/yyyy}";
+                if (existente.Observacao == null || !existente.Observacao.Contains(nota))
+                {
+                    existente.Observacao = string.IsNullOrWhiteSpace(existente.Observacao)
+                        ? nota
+                        : existente.Observacao.TrimEnd() + "\n" + nota;
+                    existente.AtualizadoEm = DateTime.Now;
+                    await _repo.UpdateAsync(existente);
+                }
+                atualizados++;
+            }
+            else
+            {
+                await _repo.InsertAsync(item);
+                inseridos++;
+            }
         }
-        return count;
+        return (inseridos, atualizados);
     }
 
     public async Task AtualizarStatusAsync(IntimacaoErro item, string novoStatus)

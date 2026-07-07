@@ -166,11 +166,16 @@ public partial class IntimacoesDwLawViewModel : ObservableObject
         try
         {
             var entidades = Preview.Select(i => i.Entidade).ToList();
-            var total = await _svc.ImportarLoteAsync(entidades);
-            Painel = false;
+            var (inseridos, atualizados) = await _svc.ImportarLoteAsync(entidades);
             Preview.Clear();
             await CarregarAsync();
-            MsgExtracao = string.Empty;
+            var partes = new System.Collections.Generic.List<string>();
+            if (inseridos  > 0) partes.Add($"{inseridos} novo(s) inserido(s)");
+            if (atualizados > 0) partes.Add($"{atualizados} atualizado(s) — erro persiste");
+            MsgExtracao = partes.Count > 0
+                ? string.Join(", ", partes) + "."
+                : "Concluído sem alterações.";
+            Painel = false;
         }
         finally { Importando = false; }
     }

@@ -111,7 +111,11 @@ public static class DwLawEmailParser
                 ? erroRaw.Substring(0, nextAdvMatch.Index).Trim()
                 : erroRaw;
 
-            if (!string.IsNullOrWhiteSpace(adv) || !string.IsNullOrWhiteSpace(sistemaM.Value))
+            // Filter garbage ADV: real lawyer names never contain | or : and never start with a digit
+            if (!string.IsNullOrWhiteSpace(adv) &&
+                !adv.Contains('|') &&
+                !adv.Contains(':') &&
+                !char.IsDigit(adv[0]))
                 result.Add(Build(dataEmail, adv, tipo, sistemaM.Value.Trim(), urlM.Value, erro));
         }
 
