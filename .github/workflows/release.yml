@@ -1,41 +1,62 @@
 name: Release
 
-# Dispara quando você fizer push de uma tag no formato v1.2.3
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
+
+permissions:
+  contents: write
 
 jobs:
-  build-and-release:
+  release:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
 
-      - name: Restore
-        run: dotnet restore MacroHelper.UI/MacroHelper.UI.csproj
+    - name: Definir versão
+      run: echo "VER=1.2.0.${{ github.run_number }}" >> $env:GITHUB_ENV
+      shell: pwsh
 
-      - name: Publish (single-file, self-contained, win-x64)
-        run: >
-          dotnet publish MacroHelper.UI/MacroHelper.UI.csproj
-          -c Release
-          -r win-x64
-          --self-contained true
-          /p:PublishSingleFile=true
-          /p:IncludeNativeLibrariesForSelfExtract=true
-          -o ./publish
+    - name: Atualizar versão no csproj
+      run: |
+        $f = "MacroHelper.UI/MacroHelper.UI.csproj"
+        $c = Get-Content $f -Raw
+        $c = $c -replace '<Version>[^<]+</Version>',                       "<Version>$env:VER</Version>"
+        $c = $c -replace '<AssemblyVersion>[^<]+</AssemblyVersion>',       "<AssemblyVersion>$env:VER</AssemblyVersion>"
+        $c = $c -replace '<FileVersion>[^<]+</FileVersion>',               "<FileVersion>$env:VER</FileVersion>"
+        Set-Content $f $c
+      shell: pwsh
+      working-directory: MacroHelper
 
-      - name: Create GitHub Release with asset
-        uses: softprops/action-gh-release@v2
-        with:
-          files: ./publish/MacroHelper.exe
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Publicar
+      run: dotnet publish MacroHelper.UI -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
+      working-directory: MacroHelper
+
+    - name: Remover releases anteriores
+      run: |
+        $list = gh release list --json tagName --jq '.[].tagName' 2>$null
+        if ($list) {
+          $list -split "`n" | Where-Object { $_ -ne "" } | ForEach-Object {
+            gh release delete $_ --yes --cleanup-tag 2>$null
+          }
+        }
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      shell: pwsh
+      continue-on-error: true
+
+    - name: Criar release
+      run: |
+        $data = (Get-Date).ToString("dd/MM/yyyy HH:mm")
+        gh release create "v$env:VER" "MacroHelper/publish/MacroHelper.exe" `
+          --title "MacroHelper v$env:VER" `
+          --notes "Versao $env:VER - publicada automaticamente em $data." `
+          --latest
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      shell: pwsh
