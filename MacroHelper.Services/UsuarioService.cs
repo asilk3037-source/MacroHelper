@@ -96,8 +96,9 @@ public class UsuarioService
             {
                 if (_webhookService != null)
                     await _webhookService.DispararAsync(EventosWebhook.UsuarioCriado, new { usuario.Nome, usuario.Email, usuario.Perfil });
-                if (_notificacaoService != null)
-                    await _notificacaoService.RegistrarAsync("Novo usuário", $"{usuario.Nome} ({usuario.Email}) entrou via login social ({provedor}).", "Sucesso");
+                try { if (_notificacaoService != null)
+                    await _notificacaoService.RegistrarAsync("Novo usuário", $"{usuario.Nome} ({usuario.Email}) entrou via login social ({provedor}).", "Sucesso"); }
+                catch { /* notificação é secundária — não falha o login */ }
             }
 
             return (true, "Login realizado!", usuario);
@@ -175,8 +176,9 @@ public class UsuarioService
 
         if (_webhookService != null)
             await _webhookService.DispararAsync(EventosWebhook.UsuarioCriado, new { u.Nome, u.Email, u.Perfil });
-        if (_notificacaoService != null)
-            await _notificacaoService.RegistrarAsync("Novo usuário", $"{u.Nome} ({u.Email}) entrou na equipe.", "Sucesso");
+        try { if (_notificacaoService != null)
+            await _notificacaoService.RegistrarAsync("Novo usuário", $"{u.Nome} ({u.Email}) entrou na equipe.", "Sucesso"); }
+        catch { /* notificação é secundária — não falha a criação */ }
 
         return (true, "Usuário criado com sucesso!");
     }
@@ -239,8 +241,9 @@ public class UsuarioService
 
         if (_webhookService != null)
             await _webhookService.DispararAsync(EventosWebhook.UsuarioCriado, new { u.Nome, u.Email, u.Perfil });
-        if (_notificacaoService != null)
-            await _notificacaoService.RegistrarAsync("Novo usuário", $"{u.Nome} ({u.Email}) entrou na equipe.", "Sucesso");
+        try { if (_notificacaoService != null)
+            await _notificacaoService.RegistrarAsync("Novo usuário", $"{u.Nome} ({u.Email}) entrou na equipe.", "Sucesso"); }
+        catch { /* notificação é secundária — não falha a criação */ }
         if (_auditoriaRepo != null)
             await _auditoriaRepo.RegistrarAsync(UsuarioAtual?.Id, "Criar", "Usuario", u.Id, $"{u.Nome} ({u.Email}) — perfil {u.Perfil}");
 
