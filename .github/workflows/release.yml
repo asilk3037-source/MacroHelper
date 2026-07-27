@@ -34,8 +34,12 @@ jobs:
       working-directory: MacroHelper
 
     - name: Publicar
-      run: dotnet publish MacroHelper.UI -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
+      run: dotnet publish MacroHelper.UI -c Release -r win-x64 --self-contained true -o publish
       working-directory: MacroHelper
+
+    - name: Zipar pasta de publicação
+      run: Compress-Archive -Path "MacroHelper/publish/*" -DestinationPath "MacroHelper/MacroHelper.zip" -Force
+      shell: pwsh
 
     - name: Remover releases anteriores
       run: |
@@ -53,9 +57,9 @@ jobs:
     - name: Criar release
       run: |
         $data = (Get-Date).ToString("dd/MM/yyyy HH:mm")
-        gh release create "v$env:VER" "MacroHelper/publish/MacroHelper.exe" `
+        gh release create "v$env:VER" "MacroHelper/MacroHelper.zip" `
           --title "MacroHelper v$env:VER" `
-          --notes "Versao $env:VER - publicada automaticamente em $data." `
+          --notes "Versao $env:VER - publicada automaticamente em $data.`n`nExtrai o ZIP e execute MacroHelper.exe." `
           --latest
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
