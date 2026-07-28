@@ -8,9 +8,16 @@
         MinHeight="580" MinWidth="900"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource BackgroundBrush}"
-        WindowStyle="None" AllowsTransparency="True"
+        WindowStyle="None" AllowsTransparency="False"
+        UseLayoutRounding="True"
         Icon="/Resources/app.ico"
         Activated="Window_Activated">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="6"
+                      GlassFrameThickness="0" CornerRadius="0"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
 
     <Window.Resources>
         <conv:KioskSidebarWidthConverter x:Key="KioskSidebarWidthConverter"/>
@@ -88,9 +95,6 @@
 
     <Border CornerRadius="16" ClipToBounds="True"
             BorderThickness="1" BorderBrush="{DynamicResource BorderLightBrush}">
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="32" ShadowDepth="0" Opacity="0.4" Color="Black"/>
-        </Border.Effect>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="{Binding ModoKiosk, Converter={StaticResource KioskSidebarWidthConverter}}"/>

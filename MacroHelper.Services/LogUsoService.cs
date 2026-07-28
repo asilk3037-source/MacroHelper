@@ -33,16 +33,16 @@ public class LogUsoService
             await _webhookService.DispararAsync(EventosWebhook.MacroUsada, new { titulo, atalho, usuarioId });
     }
 
-    public async Task<IEnumerable<LogUso>> ObterRecentesAsync(int limite = 200)
-        => await _repo.GetRecentesAsync(limite);
+    public async Task<IEnumerable<LogUso>> ObterRecentesAsync(int limite = 200, int? usuarioId = null)
+        => await _repo.GetRecentesAsync(limite, usuarioId);
 
-    public async Task<IEnumerable<LogUso>> ObterPorPeriodoAsync(DateTime de, DateTime ate)
-        => await _repo.GetByPeriodoAsync(de, ate);
+    public async Task<IEnumerable<LogUso>> ObterPorPeriodoAsync(DateTime de, DateTime ate, int? usuarioId = null)
+        => await _repo.GetByPeriodoAsync(de, ate, usuarioId);
 
-    public async Task<int> TotalHojeAsync() => await _repo.GetTotalHojeAsync();
+    public async Task<int> TotalHojeAsync(int? usuarioId = null) => await _repo.GetTotalHojeAsync(usuarioId);
 
-    public async Task<IEnumerable<(string Titulo, string Atalho, int Total)>> ObterTopMacrosAsync(DateTime de, DateTime ate, int limite = 10)
-        => await _repo.GetTopMacrosAsync(de, ate, limite);
+    public async Task<IEnumerable<(string Titulo, string Atalho, int Total)>> ObterTopMacrosAsync(DateTime de, DateTime ate, int limite = 10, int? usuarioId = null)
+        => await _repo.GetTopMacrosAsync(de, ate, limite, usuarioId);
 
     public async Task<IEnumerable<(DateTime Dia, int Total)>> ObterUsoPorDiaAsync(DateTime de, DateTime ate)
         => await _repo.GetUsoPorDiaAsync(de, ate);
@@ -57,9 +57,9 @@ public class LogUsoService
         => await _repo.GetResumoArquivadoAsync();
 
     /// <summary>Estima o tempo economizado (em minutos) com base nos caracteres inseridos via macro no período.</summary>
-    public async Task<double> EstimarMinutosEconomizadosAsync(DateTime de, DateTime ate)
+    public async Task<double> EstimarMinutosEconomizadosAsync(DateTime de, DateTime ate, int? usuarioId = null)
     {
-        var registros = (await _repo.GetByPeriodoAsync(de, ate)).ToList();
+        var registros = (await _repo.GetByPeriodoAsync(de, ate, usuarioId)).ToList();
         var totalChars = registros.Sum(r => r.Caracteres);
         var minutosDigitacao = totalChars / CHARS_POR_MINUTO_DIGITANDO;
         var minutosGastos    = registros.Count * (SEGUNDOS_POR_INSERCAO / 60.0);

@@ -45,20 +45,25 @@ public partial class DashboardViewModel : ObservableObject
         IsLoading = true;
         try
         {
+            var usuarioId  = _usuarioService.UsuarioAtual?.Id;
+            var ehAdmin    = _usuarioService.UsuarioAtual?.Perfil == "Admin";
+            // Admin vê dados de toda a equipe; outros usuários veem só os próprios
+            var filtroId   = ehAdmin ? (int?)null : usuarioId;
+
             var macros = (await _macroService.ObterTodosAsync()).ToList();
             TotalMacros = macros.Count;
             MacrosNovasSemana = macros.Count(m => m.DataCriacao >= DateTime.Now.AddDays(-7));
-            UsadasHoje  = await _logService.TotalHojeAsync();
+            UsadasHoje  = await _logService.TotalHojeAsync(filtroId);
 
             var inicioMes = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-            var top = await _logService.ObterTopMacrosAsync(inicioMes, DateTime.Now.AddDays(1), 5);
+            var top = await _logService.ObterTopMacrosAsync(inicioMes, DateTime.Now.AddDays(1), 5, filtroId);
             MaisUsadas = new ObservableCollection<RankingItem>(
                 top.Select(t => new RankingItem(t.Titulo, t.Atalho, t.Total)));
 
-            var minutos = await _logService.EstimarMinutosEconomizadosAsync(inicioMes, DateTime.Now.AddDays(1));
+            var minutos = await _logService.EstimarMinutosEconomizadosAsync(inicioMes, DateTime.Now.AddDays(1), filtroId);
             MinutosEconomizados = minutos >= 60 ? $"{minutos / 60:0.#}h" : $"{minutos:0}min";
 
-            var recentes = (await _logService.ObterRecentesAsync(8)).ToList();
+            var recentes = (await _logService.ObterRecentesAsync(8, filtroId)).ToList();
             AtividadeRecente = new ObservableCollection<AtividadeItem>(
                 recentes.Select(r => new AtividadeItem(r.MacroTitulo, r.MacroAtalho, r.DataUso)));
         }

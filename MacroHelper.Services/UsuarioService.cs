@@ -195,11 +195,12 @@ public class UsuarioService
             !ex.Message.Contains("rate limit", StringComparison.OrdinalIgnoreCase))
             return;
 
-        if (_notificacaoService != null)
+        try { if (_notificacaoService != null)
             await _notificacaoService.RegistrarAsync(
                 "Limite de e-mails do Supabase excedido",
                 "O Supabase recusou o envio de e-mail (rate limit do Auth). Novas contas/convites podem falhar por alguns minutos. Aguarde e tente novamente.",
-                "Aviso");
+                "Aviso"); }
+        catch { /* notificação é secundária */ }
     }
 
     public async Task<IEnumerable<Usuario>> ListarAsync() => await _repo.GetAllAsync();

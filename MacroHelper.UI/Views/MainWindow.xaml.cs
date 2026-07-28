@@ -2,7 +2,9 @@ using MacroHelper.Data.Context;
 using MacroHelper.Services;
 using MacroHelper.UI.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Interop;
 using Application = System.Windows.Application;
 
 namespace MacroHelper.UI.Views;
@@ -53,12 +55,30 @@ public partial class MainWindow : Window
         }
     }
 
+    [DllImport("dwmapi.dll")] static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int val, int size);
+
     private void OnWindowLoaded(object sender, RoutedEventArgs e)
     {
+        AplicarEstiloNativo();
         IniciarHook();
         IniciarTray();
         IniciarHotkey();
         MostrarTourSeNecessario();
+    }
+
+    private void AplicarEstiloNativo()
+    {
+        try
+        {
+            var hwnd = new WindowInteropHelper(this).Handle;
+            // Cantos arredondados (Windows 11) — DWMWA_WINDOW_CORNER_PREFERENCE = 33, DWMWCP_ROUND = 2
+            int round = 2;
+            DwmSetWindowAttribute(hwnd, 33, ref round, 4);
+            // Sombra nativa — DWMWA_NCRENDERING_POLICY = 2, DWMNCRP_ENABLED = 2
+            int shadow = 2;
+            DwmSetWindowAttribute(hwnd, 2, ref shadow, 4);
+        }
+        catch { }
     }
 
     private void MostrarTourSeNecessario()

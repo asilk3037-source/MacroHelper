@@ -117,6 +117,10 @@ public class UsuarioRepository
         if (signUp?.User?.Id == null)
             throw new InvalidOperationException("Falha ao criar usuário no Supabase Auth.");
 
+        // Restaura sessão do admin ANTES de inserir em usuarios (SignUp troca para anon/novo usuário)
+        if (sessaoAdmin != null)
+            await _ctx.Auth.SetSession(sessaoAdmin.AccessToken!, sessaoAdmin.RefreshToken!);
+
         var model = new UsuariosModel
         {
             AuthUserId  = Guid.Parse(signUp.User.Id),
@@ -130,7 +134,6 @@ public class UsuarioRepository
 
         if (sessaoAdmin != null)
         {
-            await _ctx.Auth.SetSession(sessaoAdmin.AccessToken!, sessaoAdmin.RefreshToken!);
             var renovada = _ctx.Auth.CurrentSession;
             if (renovada?.AccessToken != null && renovada.RefreshToken != null)
                 onSessaoRestaurada?.Invoke(renovada.AccessToken, renovada.RefreshToken);

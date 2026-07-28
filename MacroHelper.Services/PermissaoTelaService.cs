@@ -43,9 +43,10 @@ public static class TelasApp
         ("ajuda",         "Ajuda"),
     ];
 
-    /// <summary>Telas que só ficam visíveis por padrão para Admins (comportamento histórico do app).</summary>
+    /// <summary>Telas ocultas por padrão para perfil Usuario/Auditor — admin pode liberar individualmente.</summary>
     public static readonly HashSet<string> EquipeAdminPorPadrao =
-        ["usuarios", "grupos", "permissoes", "auditoria", "integracoes"];
+        ["usuarios", "grupos", "permissoes", "auditoria", "integracoes",
+         "categorias", "variaveis", "agendamentos"];
 }
 
 public class PermissaoTelaService

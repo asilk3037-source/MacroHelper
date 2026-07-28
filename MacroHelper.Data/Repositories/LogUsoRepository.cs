@@ -22,9 +22,9 @@ public class LogUsoRepository
 
     /// <summary>Agregações (GroupBy/Count) não têm equivalente fluente no Postgrest — busca-se o
     /// período filtrado e agrega-se em C#. Volume esperado (uso de uma equipe) é pequeno.</summary>
-    public async Task<IEnumerable<(string Titulo, string Atalho, int Total)>> GetTopMacrosAsync(DateTime de, DateTime ate, int limite = 10)
+    public async Task<IEnumerable<(string Titulo, string Atalho, int Total)>> GetTopMacrosAsync(DateTime de, DateTime ate, int limite = 10, int? usuarioId = null)
     {
-        var periodo = await ObterPeriodoAsync(de, ate);
+        var periodo = await ObterPeriodoAsync(de, ate, usuarioId);
         return periodo
             .GroupBy(l => (l.MacroTitulo, l.MacroAtalho))
             .Select(g => (g.Key.MacroTitulo, g.Key.MacroAtalho, Total: g.Count()))
@@ -32,33 +32,35 @@ public class LogUsoRepository
             .Take(limite);
     }
 
-    public async Task<IEnumerable<(DateTime Dia, int Total)>> GetUsoPorDiaAsync(DateTime de, DateTime ate)
+    public async Task<IEnumerable<(DateTime Dia, int Total)>> GetUsoPorDiaAsync(DateTime de, DateTime ate, int? usuarioId = null)
     {
-        var periodo = await ObterPeriodoAsync(de, ate);
+        var periodo = await ObterPeriodoAsync(de, ate, usuarioId);
         return periodo
             .GroupBy(l => l.DataUso.Date)
             .Select(g => (Dia: g.Key, Total: g.Count()))
             .OrderBy(t => t.Dia);
     }
 
-    public async Task<IEnumerable<LogUso>> GetRecentesAsync(int limite = 200)
+    public async Task<IEnumerable<LogUso>> GetRecentesAsync(int limite = 200, int? usuarioId = null)
     {
-        var resp = await _ctx.Client.From<LogUsoModel>()
-            .Order("data_uso", Ordering.Descending)
-            .Limit(limite)
-            .Get();
+        var q = _ctx.Client.From<LogUsoModel>().Order("data_uso", Ordering.Descending);
+        if (usuarioId.HasValue)
+            q = q.Filter("usuario_id", Operator.Equals, usuarioId.Value.ToString());
+        var resp = await q.Limit(limite).Get();
         return resp.Models.Select(MapToLogUso);
     }
 
-    public async Task<IEnumerable<LogUso>> GetByPeriodoAsync(DateTime de, DateTime ate)
-        => (await ObterPeriodoAsync(de, ate)).OrderByDescending(l => l.DataUso);
+    public async Task<IEnumerable<LogUso>> GetByPeriodoAsync(DateTime de, DateTime ate, int? usuarioId = null)
+        => (await ObterPeriodoAsync(de, ate, usuarioId)).OrderByDescending(l => l.DataUso);
 
-    public async Task<int> GetTotalHojeAsync()
+    public async Task<int> GetTotalHojeAsync(int? usuarioId = null)
     {
         var hoje = DateTime.Today;
-        var resp = await _ctx.Client.From<LogUsoModel>()
-            .Filter("data_uso", Operator.GreaterThanOrEqual, hoje.ToString("yyyy-MM-dd"))
-            .Get();
+        var q = _ctx.Client.From<LogUsoModel>()
+            .Filter("data_uso", Operator.GreaterThanOrEqual, hoje.ToString("yyyy-MM-dd"));
+        if (usuarioId.HasValue)
+            q = q.Filter("usuario_id", Operator.Equals, usuarioId.Value.ToString());
+        var resp = await q.Get();
         return resp.Models.Count;
     }
 
@@ -135,12 +137,14 @@ public class LogUsoRepository
             .OrderByDescending(t => t.AnoMes);
     }
 
-    private async Task<List<LogUso>> ObterPeriodoAsync(DateTime de, DateTime ate)
+    private async Task<List<LogUso>> ObterPeriodoAsync(DateTime de, DateTime ate, int? usuarioId = null)
     {
-        var resp = await _ctx.Client.From<LogUsoModel>()
+        var q = _ctx.Client.From<LogUsoModel>()
             .Filter("data_uso", Operator.GreaterThanOrEqual, de.ToString("yyyy-MM-dd HH:mm:ss"))
-            .Filter("data_uso", Operator.LessThanOrEqual, ate.ToString("yyyy-MM-dd HH:mm:ss"))
-            .Get();
+            .Filter("data_uso", Operator.LessThanOrEqual, ate.ToString("yyyy-MM-dd HH:mm:ss"));
+        if (usuarioId.HasValue)
+            q = q.Filter("usuario_id", Operator.Equals, usuarioId.Value.ToString());
+        var resp = await q.Get();
         return resp.Models.Select(MapToLogUso).ToList();
     }
 
