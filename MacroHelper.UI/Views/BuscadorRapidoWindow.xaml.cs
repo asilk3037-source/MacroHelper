@@ -18,6 +18,8 @@ public partial class BuscadorRapidoWindow : Window
 
     public event Action<Macro, string>? MacroSelecionada;
 
+    private IntPtr _janelaOrigem = IntPtr.Zero;
+
     public BuscadorRapidoWindow(MacroService macroService,
         TextInsertionService insertionService, UsuarioService usuarioService, LogUsoService logService)
     {
@@ -36,6 +38,8 @@ public partial class BuscadorRapidoWindow : Window
 
     public void Mostrar()
     {
+        // Salva a janela que estava ativa ANTES do buscador aparecer
+        _janelaOrigem = GetForegroundWindow();
         TxtBusca.Text = string.Empty;
         CarregarTodos();
         PosicionarNaTelaDoCursor();
@@ -125,21 +129,26 @@ public partial class BuscadorRapidoWindow : Window
         if (ListResultados.Items.Count > 0) ListResultados.SelectedIndex = 0;
     }
 
+    private CancellationTokenSource? _buscaCts;
+
     private async void TxtBusca_TextChanged(object sender, TextChangedEventArgs e)
     {
-        var termo  = TxtBusca.Text;
-        List<Macro> lista;
-        if (string.IsNullOrWhiteSpace(termo))
+        var termo = TxtBusca.Text;
+        if (string.IsNullOrWhiteSpace(termo)) { CarregarTodos(); return; }
+
+        _buscaCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _buscaCts = cts;
+        try
         {
-            CarregarTodos();
-            return;
+            await Task.Delay(150, cts.Token);
+            if (cts.IsCancellationRequested) return;
+            var lista = (await _macroService.PesquisarAsync(termo)).ToList();
+            if (cts.IsCancellationRequested) return;
+            ListResultados.ItemsSource = lista;
+            if (lista.Count > 0) ListResultados.SelectedIndex = 0;
         }
-        else
-        {
-            lista = (await _macroService.PesquisarAsync(termo)).ToList();
-        }
-        ListResultados.ItemsSource = lista;
-        if (lista.Count > 0) ListResultados.SelectedIndex = 0;
+        catch (OperationCanceledException) { }
     }
 
     private void AtualizarPreview()
@@ -217,10 +226,6 @@ public partial class BuscadorRapidoWindow : Window
     private async void InserirSelecionada()
     {
         if (ListResultados.SelectedItem is not Macro macro) return;
-
-        // Captura a janela alvo ANTES de esconder o buscador — após ShowDialog() o foco pode mudar
-        var janelaAlvo = GetForegroundWindow();
-
         Hide();
 
         var conteudoFinal = await _macroService.ResolverMacrosAninhadasAsync(macro.Conteudo);
@@ -244,9 +249,9 @@ public partial class BuscadorRapidoWindow : Window
             }
         }
 
-        // Restaura foco no app de destino antes de colar (dialog pode ter alterado o foreground)
-        if (janelaAlvo != IntPtr.Zero)
-            SetForegroundWindow(janelaAlvo);
+        // Restaura a janela que estava ativa antes do buscador abrir
+        if (_janelaOrigem != IntPtr.Zero)
+            SetForegroundWindow(_janelaOrigem);
 
         MacroSelecionada?.Invoke(macro, conteudoFinal);
         _ = _insertionService.InserirTextoAsync(string.Empty, conteudoFinal);

@@ -99,6 +99,7 @@ public partial class MainWindow : Window
 
     // ── Hook de teclado ─────────────────────────────────────────
     private string? _ultimaFraseSugerida;
+    private CancellationTokenSource? _gatilhoCts;
 
     private void IniciarHook()
     {
@@ -132,13 +133,25 @@ public partial class MainWindow : Window
         _hookService.GatilhoDetectado += async (_, gatilho) =>
         {
             if (!_hookAtivo) return;
-            var macros = await _macroService.BuscarPorGatilhoAsync(gatilho, _hookService.Prefixo);
-            var lista  = macros.ToList();
-            await Dispatcher.InvokeAsync(() =>
+
+            // Cancela a busca anterior e aguarda 120ms antes de disparar a nova query
+            _gatilhoCts?.Cancel();
+            var cts = new CancellationTokenSource();
+            _gatilhoCts = cts;
+            try
             {
-                if (lista.Count > 0) _popup!.AtualizarSugestoes(gatilho, lista);
-                else                 _popup!.Fechar();
-            });
+                await Task.Delay(120, cts.Token);
+                if (cts.IsCancellationRequested) return;
+                var macros = await _macroService.BuscarPorGatilhoAsync(gatilho, _hookService.Prefixo);
+                if (cts.IsCancellationRequested) return;
+                var lista  = macros.ToList();
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    if (lista.Count > 0) _popup!.AtualizarSugestoes(gatilho, lista);
+                    else                 _popup!.Fechar();
+                });
+            }
+            catch (OperationCanceledException) { }
         };
 
         _hookService.GatilhoCancelado += (_, _) =>

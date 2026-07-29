@@ -12,7 +12,8 @@ public partial class MacroPopupWindow : Window
     private readonly TextInsertionService _insertionService;
     private readonly UsuarioService       _usuarioService;
     private readonly MacroService         _macroService;
-    private string _gatilhoAtual = string.Empty;
+    private string _gatilhoAtual  = string.Empty;
+    private IntPtr _janelaOrigem  = IntPtr.Zero;
 
     public event Action<Macro>? MacroInserida;
 
@@ -27,6 +28,8 @@ public partial class MacroPopupWindow : Window
     public void AtualizarSugestoes(string gatilho, IEnumerable<Macro> macros)
     {
         _gatilhoAtual = gatilho;
+        // Salva a janela ativa ANTES do popup aparecer
+        if (!IsVisible) _janelaOrigem = GetForegroundWindow();
         TxtGatilho.Text = gatilho;
         ListMacros.ItemsSource = macros.ToList();
         if (ListMacros.Items.Count > 0) ListMacros.SelectedIndex = 0;
@@ -60,10 +63,6 @@ public partial class MacroPopupWindow : Window
     private async void InserirSelecionada()
     {
         if (ListMacros.SelectedItem is not Macro macro) return;
-
-        // Captura janela alvo ANTES de esconder — após ShowDialog() o foco pode mudar
-        var janelaAlvo = GetForegroundWindow();
-
         Hide();
 
         var conteudoBase = await _macroService.ResolverMacrosAninhadasAsync(macro.Conteudo);
@@ -79,7 +78,7 @@ public partial class MacroPopupWindow : Window
                 var valores  = variaveis.ToDictionary(v => v.Nome, v => v.ValorPadrao ?? "");
                 var conteudo = VariavelService.Substituir(conteudoBase, valores);
                 MacroInserida?.Invoke(macro);
-                SetForegroundWindow(janelaAlvo);
+                if (_janelaOrigem != IntPtr.Zero) SetForegroundWindow(_janelaOrigem);
                 _ = _insertionService.InserirTextoAsync(_gatilhoAtual, conteudo);
                 return;
             }
@@ -88,14 +87,14 @@ public partial class MacroPopupWindow : Window
             if (janela.ShowDialog() == true && janela.ConteudoFinal != null)
             {
                 MacroInserida?.Invoke(macro);
-                SetForegroundWindow(janelaAlvo);
+                if (_janelaOrigem != IntPtr.Zero) SetForegroundWindow(_janelaOrigem);
                 _ = _insertionService.InserirTextoAsync(_gatilhoAtual, janela.ConteudoFinal);
             }
             return;
         }
 
         MacroInserida?.Invoke(macro);
-        SetForegroundWindow(janelaAlvo);
+        if (_janelaOrigem != IntPtr.Zero) SetForegroundWindow(_janelaOrigem);
         _ = _insertionService.InserirTextoAsync(_gatilhoAtual, conteudoBase);
     }
 
