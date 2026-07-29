@@ -169,40 +169,43 @@ public partial class BuscadorRapidoWindow : Window
         if (string.IsNullOrWhiteSpace(TxtBusca.Text)) CarregarTodos();
     }
 
-    private void TxtBusca_KeyDown(object sender, KeyEventArgs e)
+    // Captura Up/Down/Enter/Escape em qualquer elemento da janela (PreviewKeyDown = túnel, antes de qualquer controle)
+    private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Down && ListResultados.Items.Count > 0)
+        switch (e.Key)
         {
-            ListResultados.SelectedIndex = Math.Max(0, ListResultados.SelectedIndex);
-            FocarItemSelecionado();
-            e.Handled = true;
-        }
-        else if (e.Key is Key.Return or Key.Enter)
-        {
-            InserirSelecionada();
-            e.Handled = true;
-        }
-        else if (e.Key == Key.Escape)
-        {
-            Hide();
-            e.Handled = true;
+            case Key.Down:
+                MoverSelecao(+1);
+                e.Handled = true;
+                break;
+            case Key.Up:
+                MoverSelecao(-1);
+                e.Handled = true;
+                break;
+            case Key.Return:
+                InserirSelecionada();
+                e.Handled = true;
+                break;
+            case Key.Escape:
+                Hide();
+                e.Handled = true;
+                break;
         }
     }
 
-    private void FocarItemSelecionado()
+    private void MoverSelecao(int delta)
     {
-        ListResultados.UpdateLayout();
-        var idx  = ListResultados.SelectedIndex;
-        var item = ListResultados.ItemContainerGenerator
-                       .ContainerFromIndex(idx) as System.Windows.Controls.ListBoxItem;
-        item?.Focus();
+        if (ListResultados.Items.Count == 0) return;
+        var idx = ListResultados.SelectedIndex + delta;
+        idx = Math.Clamp(idx, 0, ListResultados.Items.Count - 1);
+        ListResultados.SelectedIndex = idx;
+        ListResultados.ScrollIntoView(ListResultados.SelectedItem);
+        TxtBusca.Focus(); // mantém foco no campo de texto
     }
 
-    private void ListResultados_KeyDown(object sender, KeyEventArgs e)
-    {
-        if (e.Key is Key.Return or Key.Enter) { InserirSelecionada(); e.Handled = true; }
-        else if (e.Key == Key.Escape) { Hide(); e.Handled = true; }
-    }
+    private void TxtBusca_KeyDown(object sender, KeyEventArgs e) { /* tratado em Window_PreviewKeyDown */ }
+
+    private void ListResultados_KeyDown(object sender, KeyEventArgs e) { /* tratado em Window_PreviewKeyDown */ }
 
     private void ListResultados_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {

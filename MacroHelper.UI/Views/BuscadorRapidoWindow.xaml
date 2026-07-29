@@ -5,7 +5,8 @@
         WindowStyle="None" AllowsTransparency="True"
         Background="Transparent" Topmost="True"
         ShowInTaskbar="False" ResizeMode="NoResize"
-        WindowStartupLocation="Manual">
+        WindowStartupLocation="Manual"
+        PreviewKeyDown="Window_PreviewKeyDown">
 
     <Border CornerRadius="20" Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1.5">
