@@ -29,16 +29,14 @@ jobs:
         $c = $c -replace '<Version>[^<]+</Version>',                       "<Version>$env:VER</Version>"
         $c = $c -replace '<AssemblyVersion>[^<]+</AssemblyVersion>',       "<AssemblyVersion>$env:VER</AssemblyVersion>"
         $c = $c -replace '<FileVersion>[^<]+</FileVersion>',               "<FileVersion>$env:VER</FileVersion>"
-        Set-Content $f $c
+        Set-Content $f $c -Encoding utf8
       shell: pwsh
-      working-directory: MacroHelper
 
     - name: Publicar
       run: dotnet publish MacroHelper.UI -c Release -r win-x64 --self-contained true -o publish
-      working-directory: MacroHelper
 
     - name: Zipar pasta de publicação
-      run: Compress-Archive -Path "MacroHelper/publish/*" -DestinationPath "MacroHelper/MacroHelper.zip" -Force
+      run: Compress-Archive -Path "publish/*" -DestinationPath "MacroHelper.zip" -Force
       shell: pwsh
 
     - name: Remover releases anteriores
@@ -57,7 +55,7 @@ jobs:
     - name: Criar release
       run: |
         $data = (Get-Date).ToString("dd/MM/yyyy HH:mm")
-        gh release create "v$env:VER" "MacroHelper/MacroHelper.zip" `
+        gh release create "v$env:VER" "MacroHelper.zip" `
           --title "MacroHelper v$env:VER" `
           --notes "Versao $env:VER - publicada automaticamente em $data.`n`nExtrai o ZIP e execute MacroHelper.exe." `
           --latest
