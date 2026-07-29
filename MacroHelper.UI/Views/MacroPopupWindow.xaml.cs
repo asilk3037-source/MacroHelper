@@ -60,41 +60,47 @@ public partial class MacroPopupWindow : Window
     private async void InserirSelecionada()
     {
         if (ListMacros.SelectedItem is not Macro macro) return;
+
+        // Captura janela alvo ANTES de esconder — após ShowDialog() o foco pode mudar
+        var janelaAlvo = GetForegroundWindow();
+
         Hide();
 
         var conteudoBase = await _macroService.ResolverMacrosAninhadasAsync(macro.Conteudo);
         conteudoBase = _macroService.ResolverCondicionais(conteudoBase, macro);
 
-        // Verifica se tem variáveis dinâmicas
         if (VariavelService.TemVariaveis(conteudoBase))
         {
             var nomeUsuario = _usuarioService.UsuarioAtual?.Nome ?? string.Empty;
             var variaveis   = VariavelService.ExtrairVariaveis(conteudoBase, nomeUsuario);
 
-            // Se TODAS são auto-preencher, não mostra janela
             if (variaveis.All(v => v.AutoPreencher))
             {
                 var valores  = variaveis.ToDictionary(v => v.Nome, v => v.ValorPadrao ?? "");
                 var conteudo = VariavelService.Substituir(conteudoBase, valores);
                 MacroInserida?.Invoke(macro);
+                SetForegroundWindow(janelaAlvo);
                 _ = _insertionService.InserirTextoAsync(_gatilhoAtual, conteudo);
                 return;
             }
 
-            // Mostra janela para preencher variáveis manuais
             var janela = new VariaveisWindow(conteudoBase, variaveis);
             if (janela.ShowDialog() == true && janela.ConteudoFinal != null)
             {
                 MacroInserida?.Invoke(macro);
+                SetForegroundWindow(janelaAlvo);
                 _ = _insertionService.InserirTextoAsync(_gatilhoAtual, janela.ConteudoFinal);
             }
             return;
         }
 
         MacroInserida?.Invoke(macro);
+        SetForegroundWindow(janelaAlvo);
         _ = _insertionService.InserirTextoAsync(_gatilhoAtual, conteudoBase);
     }
 
     [DllImport("user32.dll")] private static extern bool GetCursorPos(out POINT p);
+    [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
+    [DllImport("user32.dll")] private static extern bool SetForegroundWindow(IntPtr hWnd);
     [StructLayout(LayoutKind.Sequential)] private struct POINT { public int X; public int Y; }
 }

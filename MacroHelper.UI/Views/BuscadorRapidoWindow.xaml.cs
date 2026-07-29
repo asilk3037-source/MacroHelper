@@ -94,6 +94,8 @@ public partial class BuscadorRapidoWindow : Window
         public uint dwFlags;
     }
 
+    [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
+    [DllImport("user32.dll")] private static extern bool SetForegroundWindow(IntPtr hWnd);
     [DllImport("user32.dll")] private static extern bool GetCursorPos(out POINT lpPoint);
     [DllImport("user32.dll")] private static extern IntPtr MonitorFromPoint(POINT pt, uint dwFlags);
     [DllImport("user32.dll", CharSet = CharSet.Auto)] private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
@@ -215,6 +217,10 @@ public partial class BuscadorRapidoWindow : Window
     private async void InserirSelecionada()
     {
         if (ListResultados.SelectedItem is not Macro macro) return;
+
+        // Captura a janela alvo ANTES de esconder o buscador — após ShowDialog() o foco pode mudar
+        var janelaAlvo = GetForegroundWindow();
+
         Hide();
 
         var conteudoFinal = await _macroService.ResolverMacrosAninhadasAsync(macro.Conteudo);
@@ -238,8 +244,11 @@ public partial class BuscadorRapidoWindow : Window
             }
         }
 
+        // Restaura foco no app de destino antes de colar (dialog pode ter alterado o foreground)
+        if (janelaAlvo != IntPtr.Zero)
+            SetForegroundWindow(janelaAlvo);
+
         MacroSelecionada?.Invoke(macro, conteudoFinal);
-        // Cola diretamente sem remover atalho (buscou pelo Ctrl+Espaço)
         _ = _insertionService.InserirTextoAsync(string.Empty, conteudoFinal);
     }
 }

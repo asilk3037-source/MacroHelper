@@ -61,7 +61,7 @@
                 <Button Content="Cancelar" Style="{StaticResource ButtonSecondary}"
                         Click="BtnCancelar_Click" Margin="0,0,10,0" Width="100"/>
                 <Button Style="{StaticResource ButtonPrimary}"
-                        Click="BtnInserir_Click" Width="150">
+                        Click="BtnInserir_Click" Width="150" IsDefault="True">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE945;" FontFamily="Segoe MDL2 Assets" FontSize="12"
                                    VerticalAlignment="Center" Margin="0,0,7,0"/>
