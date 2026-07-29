@@ -124,11 +124,19 @@ public partial class MainViewModel : ObservableObject
             MostrarBannerAtualizacao = true;
         };
         _ = Task.Run(() => _atualizadorSvc.VerificarAsync());
+        _ = IniciarVerificacaoPeriodicaAsync();
 
         ConstruirNav();
         NavigarParaMacros();
         _ = AtualizarTotalAsync();
         _ = AplicarPermissoesTelaAsync();
+    }
+
+    private async Task IniciarVerificacaoPeriodicaAsync()
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(2));
+        while (await timer.WaitForNextTickAsync())
+            await _atualizadorSvc.VerificarAsync();
     }
 
     /// <summary>Esconde/mostra itens do menu conforme o nível de permissão de tela configurado para o usuário atual.</summary>
