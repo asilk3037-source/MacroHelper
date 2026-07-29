@@ -8,15 +8,21 @@ namespace MacroHelper.UI.ViewModels;
 
 public partial class PermissoesViewModel : ObservableObject
 {
-    private readonly UsuarioService _svc;
+    private readonly UsuarioService        _svc;
+    private readonly PermissaoTelaService  _telaSvc;
 
     [ObservableProperty] private ObservableCollection<Usuario> _usuarios = new();
     [ObservableProperty] private Usuario? _usuarioSelecionado;
-    [ObservableProperty] private ObservableCollection<PermissaoOpcao> _opcoes = new();
+    [ObservableProperty] private ObservableCollection<PermissaoOpcao>  _opcoes = new();
+    [ObservableProperty] private ObservableCollection<TelaOpcao>       _telas  = new();
     [ObservableProperty] private bool    _isLoading = false;
     [ObservableProperty] private string? _mensagem;
 
-    public PermissoesViewModel(UsuarioService svc) => _svc = svc;
+    public PermissoesViewModel(UsuarioService svc, PermissaoTelaService telaSvc)
+    {
+        _svc     = svc;
+        _telaSvc = telaSvc;
+    }
 
     public async Task CarregarAsync()
     {
@@ -24,31 +30,64 @@ public partial class PermissoesViewModel : ObservableObject
         try
         {
             Usuarios = new ObservableCollection<Usuario>((await _svc.ListarAsync()).Where(u => u.Perfil != "Admin"));
-            UsuarioSelecionado = Usuarios.FirstOrDefault();
+            if (UsuarioSelecionado == null)
+                UsuarioSelecionado = Usuarios.FirstOrDefault();
+            else
+                await CarregarPermissoesDoUsuarioAsync(UsuarioSelecionado);
         }
         finally { IsLoading = false; }
     }
 
     partial void OnUsuarioSelecionadoChanged(Usuario? value)
     {
-        var concedidas = (value?.PermissoesCustom ?? string.Empty)
+        if (value == null) { Opcoes = new(); Telas = new(); return; }
+        _ = CarregarPermissoesDoUsuarioAsync(value);
+    }
+
+    private async Task CarregarPermissoesDoUsuarioAsync(Usuario usuario)
+    {
+        // Permissões funcionais
+        var concedidas = (usuario.PermissoesCustom ?? string.Empty)
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         Opcoes = new ObservableCollection<PermissaoOpcao>(
             Permissoes.Todas.Select(p => new PermissaoOpcao(p.Chave, p.Label, p.Descricao, concedidas.Contains(p.Chave))));
+
+        // Visibilidade de telas
+        var mapa = await _telaSvc.ObterMapaAsync(usuario.Id);
+        Telas = new ObservableCollection<TelaOpcao>(
+            TelasApp.Todas.Select(t =>
+            {
+                var nivelEfetivo = PermissaoTelaService.NivelEfetivo(usuario, t.Chave, mapa);
+                var visivel      = nivelEfetivo != NiveisPermissaoTela.Nenhum;
+                return new TelaOpcao(t.Chave, t.Label, visivel);
+            }));
     }
 
     [RelayCommand]
     public void SelecionarUsuario(Usuario usuario) => UsuarioSelecionado = usuario;
 
     [RelayCommand]
+    public void ToggleTela(TelaOpcao tela) => tela.Visivel = !tela.Visivel;
+
+    [RelayCommand]
     public async Task SalvarAsync()
     {
         if (UsuarioSelecionado == null) return;
+
+        // Salva permissões funcionais
         var chaves = Opcoes.Where(o => o.Concedida).Select(o => o.Chave);
         await _svc.AtualizarPermissoesCustomAsync(UsuarioSelecionado.Id, chaves);
-        Mensagem = "Permissões atualizadas.";
+
+        // Salva visibilidade de telas
+        foreach (var tela in Telas)
+        {
+            var nivel = tela.Visivel ? NiveisPermissaoTela.Editar : NiveisPermissaoTela.Nenhum;
+            await _telaSvc.DefinirAsync(UsuarioSelecionado.Id, tela.Chave, nivel);
+        }
+
+        Mensagem = "Permissões salvas com sucesso.";
         if (System.Threading.SynchronizationContext.Current != null)
             Task.Delay(3000).ContinueWith(_ => Mensagem = null, TaskScheduler.FromCurrentSynchronizationContext());
     }
@@ -64,5 +103,17 @@ public partial class PermissaoOpcao : ObservableObject
     public PermissaoOpcao(string chave, string label, string descricao, bool concedida)
     {
         Chave = chave; Label = label; Descricao = descricao; Concedida = concedida;
+    }
+}
+
+public partial class TelaOpcao : ObservableObject
+{
+    public string Chave { get; }
+    public string Label { get; }
+    [ObservableProperty] private bool _visivel;
+
+    public TelaOpcao(string chave, string label, bool visivel)
+    {
+        Chave = chave; Label = label; Visivel = visivel;
     }
 }

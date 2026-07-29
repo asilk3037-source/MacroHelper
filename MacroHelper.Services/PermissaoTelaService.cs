@@ -32,6 +32,8 @@ public static class TelasApp
         ("variaveis",     "Variáveis Globais"),
         ("agendamentos",  "Agendamentos"),
         ("comunidade",    "Comunidade"),
+        ("projetos",      "Projetos"),
+        ("intimacoes",    "Intimações DW"),
         ("relatorio",     "Relatório"),
         ("usuarios",      "Usuários"),
         ("grupos",        "Grupos"),
