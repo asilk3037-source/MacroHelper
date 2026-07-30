@@ -46,6 +46,7 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private bool   _baixandoUpdate = false;
     [ObservableProperty] private bool   _podeInstalarUpdate = false;
     private AtualizacaoInfo? _atualizacaoInfo;
+    private readonly CancellationTokenSource _verificacaoCts = new();
 
     public ObservableCollection<NavItem> NavGeral   { get; } = new();
     public ObservableCollection<NavItem> NavEquipe  { get; } = new();
@@ -133,8 +134,12 @@ public partial class MainViewModel : ObservableObject
     private async Task IniciarVerificacaoPeriodicaAsync()
     {
         using var timer = new PeriodicTimer(TimeSpan.FromHours(2));
-        while (await timer.WaitForNextTickAsync())
-            await _atualizadorSvc.VerificarAsync();
+        try
+        {
+            while (await timer.WaitForNextTickAsync(_verificacaoCts.Token))
+                await _atualizadorSvc.VerificarAsync();
+        }
+        catch (OperationCanceledException) { }
     }
 
     /// <summary>Esconde/mostra itens do menu conforme o nível de permissão de tela configurado para o usuário atual.</summary>

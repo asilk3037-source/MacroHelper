@@ -299,11 +299,16 @@ public partial class MacrosViewModel : ObservableObject
         }
     }
 
+    private CancellationTokenSource? _msgCts;
+
     private void MostrarMsg(string msg, bool ok)
     {
         Mensagem = msg; MensagemSucesso = ok;
+        _msgCts?.Cancel();
+        var cts = _msgCts = new CancellationTokenSource();
         if (System.Threading.SynchronizationContext.Current != null)
-            Task.Delay(3500).ContinueWith(_ => Mensagem = null,
+            Task.Delay(3500, cts.Token).ContinueWith(_ => Mensagem = null,
+                CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
                 TaskScheduler.FromCurrentSynchronizationContext());
     }
 }

@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MacroHelper.Core.Entities;
 using MacroHelper.Services;
@@ -14,6 +14,8 @@ public partial class ComunidadeViewModel : ObservableObject
     [ObservableProperty] private bool    _isLoading = false;
     [ObservableProperty] private string? _mensagem;
     [ObservableProperty] private bool    _mensagemSucesso = true;
+
+    private CancellationTokenSource? _msgCts;
 
     public ComunidadeViewModel(MacroService svc) => _svc = svc;
 
@@ -41,7 +43,11 @@ public partial class ComunidadeViewModel : ObservableObject
     private void MostrarMensagem(string msg, bool ok)
     {
         Mensagem = msg; MensagemSucesso = ok;
+        _msgCts?.Cancel();
+        var cts = _msgCts = new CancellationTokenSource();
         if (System.Threading.SynchronizationContext.Current != null)
-            Task.Delay(3500).ContinueWith(_ => Mensagem = null, TaskScheduler.FromCurrentSynchronizationContext());
+            Task.Delay(3500, cts.Token).ContinueWith(_ => Mensagem = null,
+                CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
+                TaskScheduler.FromCurrentSynchronizationContext());
     }
 }

@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MacroHelper.Data.Repositories;
 using System.Collections.ObjectModel;
@@ -15,6 +15,8 @@ public partial class AuditoriaViewModel : ObservableObject
     [ObservableProperty] private string _busca = string.Empty;
     [ObservableProperty] private bool   _isLoading = false;
     [ObservableProperty] private string? _mensagem;
+
+    private CancellationTokenSource? _msgCts;
 
     public AuditoriaViewModel(LogAuditoriaRepository repo) => _repo = repo;
 
@@ -67,8 +69,12 @@ public partial class AuditoriaViewModel : ObservableObject
 
             await File.WriteAllLinesAsync(path, linhas, System.Text.Encoding.UTF8);
             Mensagem = "Exportado para a Área de Trabalho!";
+            _msgCts?.Cancel();
+            var cts = _msgCts = new CancellationTokenSource();
             if (System.Threading.SynchronizationContext.Current != null)
-                Task.Delay(4000).ContinueWith(_ => Mensagem = null, TaskScheduler.FromCurrentSynchronizationContext());
+                Task.Delay(4000, cts.Token).ContinueWith(_ => Mensagem = null,
+                    CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
+                    TaskScheduler.FromCurrentSynchronizationContext());
         }
         catch (Exception ex) { Mensagem = $"Erro: {ex.Message}"; }
     }

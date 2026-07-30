@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MacroHelper.Core.Entities;
 using MacroHelper.Services;
@@ -28,6 +28,8 @@ public partial class GruposViewModel : ObservableObject
     [ObservableProperty] private string  _formNome = string.Empty;
     [ObservableProperty] private string  _formTitulo = "Novo Grupo";
     [ObservableProperty] private string? _formErro;
+
+    private CancellationTokenSource? _msgCts;
 
     public GruposViewModel(GrupoService svc, UsuarioService usuarioService, PermissaoTelaService? permissaoTelaService = null)
     {
@@ -115,7 +117,11 @@ public partial class GruposViewModel : ObservableObject
     private void MostrarMensagem(string msg, bool ok)
     {
         Mensagem = msg; MensagemSucesso = ok;
+        _msgCts?.Cancel();
+        var cts = _msgCts = new CancellationTokenSource();
         if (System.Threading.SynchronizationContext.Current != null)
-            Task.Delay(3500).ContinueWith(_ => Mensagem = null, TaskScheduler.FromCurrentSynchronizationContext());
+            Task.Delay(3500, cts.Token).ContinueWith(_ => Mensagem = null,
+                CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
+                TaskScheduler.FromCurrentSynchronizationContext());
     }
 }

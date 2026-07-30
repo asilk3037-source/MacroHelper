@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MacroHelper.Core.Entities;
 using MacroHelper.Services;
@@ -38,6 +38,8 @@ public partial class CategoriasViewModel : ObservableObject
     [ObservableProperty] private int?    _formPaiId = null;
     [ObservableProperty] private string  _formTitulo = "Nova Categoria";
     [ObservableProperty] private string? _formErro;
+
+    private CancellationTokenSource? _msgCts;
 
     public CategoriasViewModel(CategoriaService svc, UsuarioService? usuarioService = null,
         PermissaoTelaService? permissaoTelaService = null)
@@ -140,8 +142,11 @@ public partial class CategoriasViewModel : ObservableObject
     private void MostrarMensagem(string msg, bool ok)
     {
         Mensagem = msg; MensagemSucesso = ok;
+        _msgCts?.Cancel();
+        var cts = _msgCts = new CancellationTokenSource();
         if (System.Threading.SynchronizationContext.Current != null)
-            Task.Delay(3500).ContinueWith(_ => Mensagem = null,
+            Task.Delay(3500, cts.Token).ContinueWith(_ => Mensagem = null,
+                CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
                 TaskScheduler.FromCurrentSynchronizationContext());
     }
 }

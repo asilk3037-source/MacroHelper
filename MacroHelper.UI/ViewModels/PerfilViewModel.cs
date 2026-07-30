@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MacroHelper.Services;
 
@@ -19,6 +19,9 @@ public partial class PerfilViewModel : ObservableObject
     [ObservableProperty] private string? _mensagemSenha;
     [ObservableProperty] private bool    _mensagemSenhaSucesso = true;
 
+    private CancellationTokenSource? _perfilCts;
+    private CancellationTokenSource? _senhaCts;
+
     public PerfilViewModel(UsuarioService svc)
     {
         _svc = svc;
@@ -34,8 +37,12 @@ public partial class PerfilViewModel : ObservableObject
         var usuarioId = _svc.UsuarioAtual?.Id ?? 0;
         var (ok, msg) = await _svc.AtualizarPerfilAsync(usuarioId, Nome, Email);
         MensagemPerfil = msg; MensagemPerfilSucesso = ok;
+        _perfilCts?.Cancel();
+        var pcts = _perfilCts = new CancellationTokenSource();
         if (System.Threading.SynchronizationContext.Current != null)
-            Task.Delay(3500).ContinueWith(_ => MensagemPerfil = null, TaskScheduler.FromCurrentSynchronizationContext());
+            Task.Delay(3500, pcts.Token).ContinueWith(_ => MensagemPerfil = null,
+                CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
+                TaskScheduler.FromCurrentSynchronizationContext());
     }
 
     [RelayCommand]
@@ -50,7 +57,11 @@ public partial class PerfilViewModel : ObservableObject
         var (ok, msg) = await _svc.TrocarSenhaAsync(usuarioId, SenhaAtual, NovaSenha);
         MensagemSenha = msg; MensagemSenhaSucesso = ok;
         if (ok) { SenhaAtual = string.Empty; NovaSenha = string.Empty; ConfirmarSenha = string.Empty; }
+        _senhaCts?.Cancel();
+        var scts = _senhaCts = new CancellationTokenSource();
         if (System.Threading.SynchronizationContext.Current != null)
-            Task.Delay(3500).ContinueWith(_ => MensagemSenha = null, TaskScheduler.FromCurrentSynchronizationContext());
+            Task.Delay(3500, scts.Token).ContinueWith(_ => MensagemSenha = null,
+                CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
+                TaskScheduler.FromCurrentSynchronizationContext());
     }
 }

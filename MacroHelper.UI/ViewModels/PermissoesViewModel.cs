@@ -17,6 +17,7 @@ public partial class PermissoesViewModel : ObservableObject
     [ObservableProperty] private ObservableCollection<TelaOpcao>       _telas  = new();
     [ObservableProperty] private bool    _isLoading = false;
     [ObservableProperty] private string? _mensagem;
+    private CancellationTokenSource? _msgCts;
 
     public PermissoesViewModel(UsuarioService svc, PermissaoTelaService telaSvc)
     {
@@ -80,16 +81,20 @@ public partial class PermissoesViewModel : ObservableObject
         var chaves = Opcoes.Where(o => o.Concedida).Select(o => o.Chave);
         await _svc.AtualizarPermissoesCustomAsync(UsuarioSelecionado.Id, chaves);
 
-        // Salva visibilidade de telas
-        foreach (var tela in Telas)
+        // Salva visibilidade de telas em paralelo
+        await Task.WhenAll(Telas.Select(tela =>
         {
             var nivel = tela.Visivel ? NiveisPermissaoTela.Editar : NiveisPermissaoTela.Nenhum;
-            await _telaSvc.DefinirAsync(UsuarioSelecionado.Id, tela.Chave, nivel);
-        }
+            return _telaSvc.DefinirAsync(UsuarioSelecionado.Id, tela.Chave, nivel);
+        }));
 
         Mensagem = "Permissões salvas com sucesso.";
+        _msgCts?.Cancel();
+        var cts = _msgCts = new CancellationTokenSource();
         if (System.Threading.SynchronizationContext.Current != null)
-            Task.Delay(3000).ContinueWith(_ => Mensagem = null, TaskScheduler.FromCurrentSynchronizationContext());
+            Task.Delay(3000, cts.Token).ContinueWith(_ => Mensagem = null,
+                CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
+                TaskScheduler.FromCurrentSynchronizationContext());
     }
 }
 

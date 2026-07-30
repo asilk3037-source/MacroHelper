@@ -337,6 +337,7 @@ public class MacroService
 
         var existentes = (await _repository.GetAllAsync()).Select(m => m.Atalho).ToHashSet(StringComparer.OrdinalIgnoreCase);
         int importadas = 0, ignoradas = 0;
+        var novas = new List<Macro>();
 
         foreach (var dto in dtos)
         {
@@ -344,24 +345,25 @@ public class MacroService
             {
                 ignoradas++; continue;
             }
-            if (existentes.Contains(dto.Atalho))
+            var atalho = dto.Atalho.Trim().ToLower().Replace(" ", "-");
+            if (existentes.Contains(atalho))
             {
                 ignoradas++; continue;
             }
-
-            await _repository.InsertAsync(new Macro
+            existentes.Add(atalho);
+            novas.Add(new Macro
             {
-                Atalho = dto.Atalho.Trim().ToLower().Replace(" ", "-"),
+                Atalho = atalho,
                 Titulo = string.IsNullOrWhiteSpace(dto.Titulo) ? dto.Atalho : dto.Titulo,
                 Conteudo = dto.Conteudo,
                 Categoria = dto.Categoria,
                 Ativo = dto.Ativo,
                 Status = "Aprovada"
             });
-            existentes.Add(dto.Atalho);
             importadas++;
         }
 
+        await _repository.BatchInsertAsync(novas);
         return (true, $"{importadas} macro(s) importada(s), {ignoradas} ignorada(s) (duplicadas ou inválidas).", importadas, ignoradas);
     }
 
@@ -386,6 +388,7 @@ public class MacroService
 
         var existentes = (await _repository.GetAllAsync()).Select(m => m.Atalho).ToHashSet(StringComparer.OrdinalIgnoreCase);
         int importadas = 0, ignoradas = 0;
+        var novas = new List<Macro>();
 
         for (var i = 1; i < linhas.Count; i++)
         {
@@ -406,7 +409,8 @@ public class MacroService
                 ignoradas++; continue;
             }
 
-            await _repository.InsertAsync(new Macro
+            existentes.Add(atalhoNormalizado);
+            novas.Add(new Macro
             {
                 Atalho    = atalhoNormalizado,
                 Titulo    = string.IsNullOrWhiteSpace(Col(idxTitulo)) ? atalho : Col(idxTitulo),
@@ -415,10 +419,10 @@ public class MacroService
                 Ativo     = true,
                 Status    = "Aprovada"
             });
-            existentes.Add(atalhoNormalizado);
             importadas++;
         }
 
+        await _repository.BatchInsertAsync(novas);
         return (true, $"{importadas} macro(s) importada(s), {ignoradas} ignorada(s) (duplicadas ou inválidas).", importadas, ignoradas);
     }
 

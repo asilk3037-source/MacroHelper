@@ -131,6 +131,13 @@ public class MacroRepository : IMacroRepository
         return inserted.Models.First().Id;
     }
 
+    public async Task BatchInsertAsync(IEnumerable<Macro> macros)
+    {
+        var models = macros.Select(m => { var mm = MapToModel(m); mm.DataCriacao = DateTime.Now; return mm; }).ToList();
+        if (models.Count == 0) return;
+        await _ctx.Client.From<MacrosModel>().Insert(models);
+    }
+
     public async Task UpdateAsync(Macro macro)
     {
         var m = await _ctx.Client.From<MacrosModel>().Filter("id", Operator.Equals, macro.Id.ToString()).Single();

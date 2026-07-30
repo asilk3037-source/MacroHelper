@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MacroHelper.Core.Entities;
 using MacroHelper.Services;
@@ -20,6 +20,8 @@ public partial class HistoricoVersoesViewModel : ObservableObject
     [ObservableProperty] private string? _mensagem;
     [ObservableProperty] private bool   _mensagemSucesso = true;
     [ObservableProperty] private bool   _confirmandoRestaurar;
+
+    private CancellationTokenSource? _msgCts;
 
     public HistoricoVersoesViewModel(MacroService macroService) => _macroService = macroService;
 
@@ -60,8 +62,12 @@ public partial class HistoricoVersoesViewModel : ObservableObject
         var (ok, msg, _) = await _macroService.SalvarAsync(MacroSelecionada);
         Mensagem = ok ? "Versão restaurada com sucesso!" : msg;
         MensagemSucesso = ok;
+        _msgCts?.Cancel();
+        var cts = _msgCts = new CancellationTokenSource();
         if (System.Threading.SynchronizationContext.Current != null)
-            Task.Delay(3500).ContinueWith(_ => Mensagem = null, TaskScheduler.FromCurrentSynchronizationContext());
+            Task.Delay(3500, cts.Token).ContinueWith(_ => Mensagem = null,
+                CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
+                TaskScheduler.FromCurrentSynchronizationContext());
 
         if (ok) await SelecionarMacroAsync(MacroSelecionada);
     }

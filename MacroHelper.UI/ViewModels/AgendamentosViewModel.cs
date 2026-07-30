@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MacroHelper.Core.Entities;
 using MacroHelper.Services;
@@ -30,6 +30,8 @@ public partial class AgendamentosViewModel : ObservableObject
         new(1, "Seg"), new(2, "Ter"), new(3, "Qua"), new(4, "Qui"),
         new(5, "Sex"), new(6, "Sáb"), new(0, "Dom")
     ]);
+
+    private CancellationTokenSource? _msgCts;
 
     public AgendamentosViewModel(AgendamentoService svc, MacroService macroService)
     {
@@ -101,8 +103,12 @@ public partial class AgendamentosViewModel : ObservableObject
     private void MostrarMensagem(string msg, bool ok)
     {
         Mensagem = msg; MensagemSucesso = ok;
+        _msgCts?.Cancel();
+        var cts = _msgCts = new CancellationTokenSource();
         if (System.Threading.SynchronizationContext.Current != null)
-            Task.Delay(3500).ContinueWith(_ => Mensagem = null, TaskScheduler.FromCurrentSynchronizationContext());
+            Task.Delay(3500, cts.Token).ContinueWith(_ => Mensagem = null,
+                CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
+                TaskScheduler.FromCurrentSynchronizationContext());
     }
 }
 

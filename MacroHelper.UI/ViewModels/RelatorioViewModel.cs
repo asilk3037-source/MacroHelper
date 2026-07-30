@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MacroHelper.Core.Entities;
 using MacroHelper.Data.Repositories;
@@ -36,6 +36,8 @@ public partial class RelatorioViewModel : ObservableObject
     public bool IsAdmin => _usuarioService.UsuarioAtual?.Perfil == "Admin";
     public bool PodeVerRelatorioEquipe => IsAdmin || _usuarioService.UsuarioAtual?.Perfil == "Auditor"
         || Permissoes.Tem(_usuarioService.UsuarioAtual, Permissoes.VerRelatorios);
+
+    private CancellationTokenSource? _msgCts;
 
     public RelatorioViewModel(LogUsoService logSvc, UsuarioService usuarioService, LogAuditoriaRepository auditoriaRepo)
     {
@@ -127,8 +129,11 @@ public partial class RelatorioViewModel : ObservableObject
 
             await File.WriteAllLinesAsync(path, linhas, System.Text.Encoding.UTF8);
             Mensagem = $"Exportado para a Área de Trabalho!";
+            _msgCts?.Cancel();
+            var cts = _msgCts = new CancellationTokenSource();
             if (System.Threading.SynchronizationContext.Current != null)
-                Task.Delay(4000).ContinueWith(_ => Mensagem = null,
+                Task.Delay(4000, cts.Token).ContinueWith(_ => Mensagem = null,
+                    CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
                     TaskScheduler.FromCurrentSynchronizationContext());
         }
         catch (Exception ex) { Mensagem = $"Erro: {ex.Message}"; }
@@ -170,8 +175,12 @@ public partial class RelatorioViewModel : ObservableObject
             });
 
             Mensagem = "Exportado para a Área de Trabalho!";
+            _msgCts?.Cancel();
+            var cts = _msgCts = new CancellationTokenSource();
             if (System.Threading.SynchronizationContext.Current != null)
-                Task.Delay(4000).ContinueWith(_ => Mensagem = null, TaskScheduler.FromCurrentSynchronizationContext());
+                Task.Delay(4000, cts.Token).ContinueWith(_ => Mensagem = null,
+                    CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
+                    TaskScheduler.FromCurrentSynchronizationContext());
         }
         catch (Exception ex) { Mensagem = $"Erro: {ex.Message}"; }
     }
@@ -194,8 +203,12 @@ public partial class RelatorioViewModel : ObservableObject
 
             await File.WriteAllTextAsync(path, sb.ToString());
             Mensagem = "Exportado em RTF (abre direto no Word) para a Área de Trabalho!";
+            _msgCts?.Cancel();
+            var cts = _msgCts = new CancellationTokenSource();
             if (System.Threading.SynchronizationContext.Current != null)
-                Task.Delay(4000).ContinueWith(_ => Mensagem = null, TaskScheduler.FromCurrentSynchronizationContext());
+                Task.Delay(4000, cts.Token).ContinueWith(_ => Mensagem = null,
+                    CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
+                    TaskScheduler.FromCurrentSynchronizationContext());
         }
         catch (Exception ex) { Mensagem = $"Erro: {ex.Message}"; }
     }
@@ -221,8 +234,12 @@ public partial class RelatorioViewModel : ObservableObject
 
             await File.WriteAllTextAsync(path, sb.ToString());
             Mensagem = "HTML gerado! Abra e use Ctrl+P → \"Salvar como PDF\" para exportar em PDF.";
+            _msgCts?.Cancel();
+            var cts = _msgCts = new CancellationTokenSource();
             if (System.Threading.SynchronizationContext.Current != null)
-                Task.Delay(5000).ContinueWith(_ => Mensagem = null, TaskScheduler.FromCurrentSynchronizationContext());
+                Task.Delay(5000, cts.Token).ContinueWith(_ => Mensagem = null,
+                    CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion,
+                    TaskScheduler.FromCurrentSynchronizationContext());
 
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(path) { UseShellExecute = true });
         }

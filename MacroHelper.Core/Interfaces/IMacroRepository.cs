@@ -10,6 +10,7 @@ public interface IMacroRepository
     Task<Macro?> GetByIdAsync(int id);
     Task<Macro?> GetByAtalhoAsync(string atalho);
     Task<int> InsertAsync(Macro macro);
+    Task BatchInsertAsync(IEnumerable<Macro> macros);
     Task UpdateAsync(Macro macro);
     Task DeleteAsync(int id);
     Task<IEnumerable<string>> GetCategoriasAsync();
