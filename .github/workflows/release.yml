@@ -33,7 +33,7 @@ jobs:
       shell: pwsh
 
     - name: Publicar
-      run: dotnet publish MacroHelper.UI -c Release -r win-x64 --self-contained false -o publish
+      run: dotnet publish MacroHelper.UI -c Release -r win-x64 --self-contained true -o publish
 
     - name: Zipar pasta de publicação
       run: Compress-Archive -Path "publish/*" -DestinationPath "MacroHelper.zip" -Force
@@ -57,7 +57,7 @@ jobs:
         $data = (Get-Date).ToString("dd/MM/yyyy HH:mm")
         gh release create "v$env:VER" "MacroHelper.zip" `
           --title "MacroHelper v$env:VER" `
-          --notes "Versao $env:VER - publicada automaticamente em $data.`n`n**Requisito:** .NET 8 Desktop Runtime instalado na maquina.`nDownload: https://dotnet.microsoft.com/download/dotnet/8.0`n`nExtrai o ZIP e execute MacroHelper.exe." `
+          --notes "Versao $env:VER - publicada automaticamente em $data.`n`nExtrai o ZIP e execute MacroHelper.exe." `
           --latest
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
