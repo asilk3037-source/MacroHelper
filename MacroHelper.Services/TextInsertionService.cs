@@ -24,6 +24,7 @@ public class TextInsertionService
     private const byte   VK_CONTROL        = 0x11;
     private const byte   VK_SHIFT          = 0x10;
     private const byte   VK_LEFT           = 0x25;
+    private const byte   VK_RIGHT          = 0x27;
     private const byte   VK_V              = 0x56;
     private const ushort VK_RETURN         = 0x0D;
     private const uint   KEYEVENTF_KEYUP   = 0x0002;
@@ -142,8 +143,12 @@ public class TextInsertionService
         var end = placeholder.Start + placeholder.Length;
         var leftPresses = _caretPos - end;
 
-        for (int i = 0; i < Math.Abs(leftPresses); i++)
-            EnviarTeclaVirtual(VK_LEFT);
+        if (leftPresses > 0)
+            for (int i = 0; i < leftPresses; i++)
+                EnviarTeclaVirtual(VK_LEFT);
+        else
+            for (int i = 0; i < -leftPresses; i++)
+                EnviarTeclaVirtual(VK_RIGHT);
 
         keybd_event(VK_SHIFT, 0, 0, UIntPtr.Zero);
         try

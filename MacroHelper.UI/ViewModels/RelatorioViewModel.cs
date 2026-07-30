@@ -120,11 +120,10 @@ public partial class RelatorioViewModel : ObservableObject
                 Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
                 $"MacroHelper_Relatorio_{DateTime.Now:yyyyMMdd_HHmm}.csv");
 
-            var linhas = new List<string> { "Data,Hora,Macro,Atalho,Aplicativo" };
+            var linhas = new List<string> { "Data;Hora;Macro;Atalho;Aplicativo" };
             foreach (var r in Registros)
-                linhas.Add($"{r.DataUso:dd/MM/yyyy},{r.DataUso:HH:mm:ss}," +
-                           $"\"{r.MacroTitulo}\",\"{r.MacroAtalho}\"," +
-                           $"\"{r.Aplicativo ?? ""}\"");
+                linhas.Add($"{r.DataUso:dd/MM/yyyy};{r.DataUso:HH:mm:ss};" +
+                           $"{CsvField(r.MacroTitulo)};{CsvField(r.MacroAtalho)};{CsvField(r.Aplicativo)}");
 
             await File.WriteAllLinesAsync(path, linhas, System.Text.Encoding.UTF8);
             Mensagem = $"Exportado para a Área de Trabalho!";
@@ -217,7 +216,7 @@ public partial class RelatorioViewModel : ObservableObject
             sb.Append("<table><tr><th>Data</th><th>Macro</th><th>Atalho</th><th>Aplicativo</th></tr>");
             foreach (var r in Registros)
                 sb.Append($"<tr><td>{r.DataUso:dd/MM/yyyy HH:mm}</td><td>{System.Net.WebUtility.HtmlEncode(r.MacroTitulo)}</td>" +
-                          $"<td>/{System.Net.WebUtility.HtmlEncode(r.MacroAtalho)}</td><td>{System.Net.WebUtility.HtmlEncode(r.Aplicativo)}</td></tr>");
+                          $"<td>/{System.Net.WebUtility.HtmlEncode(r.MacroAtalho)}</td><td>{System.Net.WebUtility.HtmlEncode(r.Aplicativo ?? "")}</td></tr>");
             sb.Append("</table></body></html>");
 
             await File.WriteAllTextAsync(path, sb.ToString());
@@ -230,7 +229,26 @@ public partial class RelatorioViewModel : ObservableObject
         catch (Exception ex) { Mensagem = $"Erro: {ex.Message}"; }
     }
 
-    private static string EscaparRtf(string texto) => texto.Replace("\\", "\\\\").Replace("{", "\\{").Replace("}", "\\}");
+    private static string EscaparRtf(string texto)
+    {
+        var sb = new System.Text.StringBuilder(texto.Length);
+        foreach (var c in texto)
+        {
+            if      (c == '\\') sb.Append("\\\\");
+            else if (c == '{')  sb.Append("\\{");
+            else if (c == '}')  sb.Append("\\}");
+            else if (c > 127)   sb.Append($"\\u{(int)c}?");
+            else                sb.Append(c);
+        }
+        return sb.ToString();
+    }
+
+    private static string CsvField(string? value)
+    {
+        var s = value ?? "";
+        if (s.Length > 0 && "=+-@".Contains(s[0])) s = "'" + s;
+        return "\"" + s.Replace("\"", "\"\"") + "\"";
+    }
 }
 
 public record RankingItem(string Titulo, string Atalho, int Total);

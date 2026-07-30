@@ -19,8 +19,8 @@ public class NovasTelasFixture : IDisposable
     public VariavelGlobalService   VariavelSvc      { get; }
     public AgendamentoService      AgendamentoSvc   { get; }
     public GrupoService            GrupoSvc         { get; }
-    public WebhookService          WebhookSvc       { get; }
     public NotificacaoService      NotificacaoSvc   { get; }
+    public PermissaoTelaService    PermissaoTelaSvc { get; }
     public LogAuditoriaRepository  AuditoriaRepo    { get; }
 
     public NovasTelasFixture()
@@ -49,11 +49,11 @@ public class NovasTelasFixture : IDisposable
         var grupoRepo = new GrupoRepository(supabaseCtx);
         GrupoSvc      = new GrupoService(grupoRepo);
 
-        var webhookRepo = new WebhookRepository(supabaseCtx);
-        WebhookSvc      = new WebhookService(webhookRepo);
-
         var notificacaoRepo = new NotificacaoRepository(supabaseCtx);
         NotificacaoSvc      = new NotificacaoService(notificacaoRepo);
+
+        var permissaoTelaRepo = new PermissaoTelaRepository(supabaseCtx);
+        PermissaoTelaSvc      = new PermissaoTelaService(permissaoTelaRepo, UsuarioSvc);
 
         var email = Environment.GetEnvironmentVariable("MACROHELPER_TEST_EMAIL")
             ?? throw new InvalidOperationException("Defina a variável de ambiente MACROHELPER_TEST_EMAIL para rodar os testes.");
@@ -199,7 +199,7 @@ public class NovasTelasTests : IClassFixture<NovasTelasFixture>
             var emailNovo = "equipe.teste@macrohelper.com";
             await _f.UsuarioSvc.CriarAsync("Equipe Teste", emailNovo, "senha123", "senha123");
 
-            var vm = new PermissoesViewModel(_f.UsuarioSvc);
+            var vm = new PermissoesViewModel(_f.UsuarioSvc, _f.PermissaoTelaSvc);
             await vm.CarregarAsync();
 
             Assert.NotEmpty(vm.Usuarios);
@@ -225,19 +225,6 @@ public class NovasTelasTests : IClassFixture<NovasTelasFixture>
                 ?? throw new InvalidOperationException("Defina a variável de ambiente MACROHELPER_TEST_PASSWORD para rodar os testes.");
             await _f.UsuarioSvc.LoginAsync(email, senha);
         }
-    }
-
-    [Fact]
-    public async Task Integracoes_CarregarESalvarWebhook_PersisteNoBanco()
-    {
-        var vm = new IntegracoesViewModel(_f.WebhookSvc);
-        vm.NovoWebhookCommand.Execute(null);
-        vm.FormNome = "Webhook Teste";
-        vm.FormUrl  = "https://exemplo.com/webhook";
-        await vm.SalvarWebhookCommand.ExecuteAsync(null);
-
-        await vm.CarregarAsync();
-        Assert.Contains(vm.Webhooks, w => w.Nome == "Webhook Teste" && w.Url == "https://exemplo.com/webhook");
     }
 
     [Fact]

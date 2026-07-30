@@ -1,9 +1,9 @@
-<UserControl x:Class="MacroHelper.UI.Views.IntimacoesDwLawView"
+﻿<UserControl x:Class="MacroHelper.UI.Views.IntimacoesDwLawView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:MacroHelper.UI.ViewModels"
              xmlns:conv="clr-namespace:MacroHelper.UI.Converters"
-             Background="{DynamicResource BgBrush}"
+             Background="{DynamicResource BackgroundBrush}"
              FontFamily="Segoe UI">
 
     <UserControl.Resources>
@@ -37,7 +37,7 @@
         </Grid.RowDefinitions>
 
         <!-- ══ HEADER ══════════════════════════════════════════════════════ -->
-        <Border Grid.Row="0" Background="{DynamicResource CardBrush}"
+        <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1"
                 Padding="20,12">
             <Grid>
@@ -51,9 +51,9 @@
                     <TextBlock Text="⚖" FontSize="20" Margin="0,0,10,0" VerticalAlignment="Center"/>
                     <StackPanel>
                         <TextBlock Text="Intimações DW LAW" FontSize="16" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource FgBrush}"/>
+                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
                         <TextBlock Text="Controle de erros de acesso ao painel" FontSize="11"
-                                   Foreground="{DynamicResource FgSecBrush}"/>
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
                     </StackPanel>
                 </StackPanel>
 
@@ -64,12 +64,12 @@
                               ItemsSource="{Binding FiltroOpcoes}"
                               SelectedItem="{Binding FiltroStatus}"
                               Margin="0,0,10,0"/>
-                    <Border Background="{DynamicResource BgBrush}"
+                    <Border Background="{DynamicResource BackgroundBrush}"
                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                             CornerRadius="6" Height="32" Width="220" VerticalAlignment="Center">
                         <Grid>
                             <TextBlock Text="Buscar advogado, sistema..." VerticalAlignment="Center"
-                                       Foreground="{DynamicResource FgSecBrush}" Margin="10,0"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,0"
                                        FontSize="12" IsHitTestVisible="False">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
@@ -85,7 +85,7 @@
                             <TextBox Text="{Binding FiltroTexto, UpdateSourceTrigger=PropertyChanged}"
                                      Background="Transparent" BorderThickness="0"
                                      VerticalAlignment="Center" Margin="8,0" FontSize="12"
-                                     Foreground="{DynamicResource FgBrush}"/>
+                                     Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </Grid>
                     </Border>
                 </StackPanel>
@@ -118,7 +118,7 @@
         </Border>
 
         <!-- ══ PAINEL IMPORT ════════════════════════════════════════════════ -->
-        <Border Grid.Row="1" Background="{DynamicResource CardBrush}"
+        <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}"
                 BorderBrush="{DynamicResource AccentBrush}" BorderThickness="0,0,0,2"
                 Padding="20,16">
             <Border.Style>
@@ -142,7 +142,7 @@
                 <!-- Linha 1: título + fechar -->
                 <Grid Grid.Row="0" Margin="0,0,0,12">
                     <TextBlock Text="Importar novo lote de erros" FontSize="14" FontWeight="SemiBold"
-                               Foreground="{DynamicResource FgBrush}" VerticalAlignment="Center"/>
+                               Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                     <Button HorizontalAlignment="Right" Command="{Binding FecharPainelCommand}"
                             Style="{StaticResource ButtonIconOnly}" ToolTip="Fechar">
                         <TextBlock Text="✕" FontSize="14"/>
@@ -159,7 +159,7 @@
 
                     <!-- Data do email -->
                     <StackPanel Grid.Column="0" Margin="0,0,16,0" VerticalAlignment="Top">
-                        <TextBlock Text="Data do email" FontSize="11" Foreground="{DynamicResource FgSecBrush}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Data do email" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,4"/>
                         <DatePicker SelectedDate="{Binding DataEmail}" Width="140" Height="34"/>
                     </StackPanel>
 
@@ -168,11 +168,11 @@
                         <!-- Cabeçalho da área de texto com botão PDF -->
                         <Grid Margin="0,0,0,4">
                             <TextBlock Text="Cole o conteúdo do email ou selecione o PDF:" FontSize="11"
-                                       Foreground="{DynamicResource FgSecBrush}" VerticalAlignment="Center"/>
+                                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
                             <Button HorizontalAlignment="Right"
                                     Command="{Binding SelecionarPdfCommand}"
                                     Height="26" Padding="10,0" FontSize="12" BorderThickness="0"
-                                    Background="{DynamicResource BorderBrush}" Foreground="{DynamicResource FgBrush}"
+                                    Background="{DynamicResource BorderBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
                                     ToolTip="Selecionar arquivo PDF do email DW LAW">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
@@ -194,12 +194,12 @@
                             </Button>
                         </Grid>
                         <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                                CornerRadius="6" Background="{DynamicResource BgBrush}">
+                                CornerRadius="6" Background="{DynamicResource BackgroundBrush}">
                             <TextBox Text="{Binding TextoEmail, UpdateSourceTrigger=PropertyChanged}"
                                      Height="100" AcceptsReturn="True" TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto"
                                      Background="Transparent" BorderThickness="0"
-                                     Foreground="{DynamicResource FgBrush}"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"
                                      FontSize="12" Padding="8"/>
                         </Border>
                     </StackPanel>
@@ -256,7 +256,7 @@
                         <DataGrid ItemsSource="{Binding Preview}" AutoGenerateColumns="False"
                                   IsReadOnly="True" GridLinesVisibility="Horizontal"
                                   Background="Transparent" RowBackground="Transparent"
-                                  AlternatingRowBackground="{DynamicResource BgBrush}"
+                                  AlternatingRowBackground="{DynamicResource TableRowAltBrush}"
                                   HeadersVisibility="Column" FontSize="12"
                                   CanUserResizeColumns="True" CanUserSortColumns="False"
                                   BorderThickness="0">
@@ -273,17 +273,17 @@
         </Border>
 
         <!-- ══ GRID PRINCIPAL ═══════════════════════════════════════════════ -->
-        <Border Grid.Row="2" Margin="16" Background="{DynamicResource CardBrush}"
+        <Border Grid.Row="2" Margin="16" Background="{DynamicResource SurfaceBrush}"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                 CornerRadius="14">
             <Grid>
                 <!-- Loading overlay -->
-                <Border Background="{DynamicResource CardBrush}" CornerRadius="14" Opacity="0.7"
+                <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="14" Opacity="0.7"
                         Visibility="{Binding Carregando, Converter={StaticResource BoolToVis}}"
                         Panel.ZIndex="10">
                     <TextBlock Text="Carregando…" HorizontalAlignment="Center"
                                VerticalAlignment="Center" FontSize="14"
-                               Foreground="{DynamicResource FgSecBrush}"/>
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
                 </Border>
 
                 <!-- Empty state -->
@@ -300,18 +300,18 @@
                         </Style>
                     </StackPanel.Style>
                     <TextBlock Text="⚖" FontSize="40" HorizontalAlignment="Center"
-                               Foreground="{DynamicResource FgSecBrush}" Margin="0,0,0,12"/>
+                               Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,12"/>
                     <TextBlock Text="Nenhum erro registrado" FontSize="15" FontWeight="SemiBold"
-                               Foreground="{DynamicResource FgBrush}" HorizontalAlignment="Center"/>
+                               Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"/>
                     <TextBlock Text='Clique em "+ Novo Lote" para importar o email do dia'
-                               FontSize="12" Foreground="{DynamicResource FgSecBrush}"
+                               FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
                                HorizontalAlignment="Center" Margin="0,6,0,0"/>
                 </StackPanel>
 
                 <DataGrid ItemsSource="{Binding Itens}" AutoGenerateColumns="False"
                           IsReadOnly="False" GridLinesVisibility="Horizontal"
                           Background="Transparent" RowBackground="Transparent"
-                          AlternatingRowBackground="{DynamicResource BgBrush}"
+                          AlternatingRowBackground="{DynamicResource TableRowAltBrush}"
                           HeadersVisibility="Column" FontSize="12"
                           CanUserResizeColumns="True" CanUserSortColumns="True"
                           CanUserAddRows="False" BorderThickness="0"
@@ -324,7 +324,7 @@
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource FgSecBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
                                     <Setter Property="Margin" Value="8,0"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
@@ -336,7 +336,7 @@
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource FgBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
                                     <Setter Property="Margin" Value="8,0"/>
                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
                                 </Style>
@@ -349,7 +349,7 @@
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource FgBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
                                     <Setter Property="Margin" Value="8,0"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
@@ -361,7 +361,7 @@
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource FgBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
                                     <Setter Property="Margin" Value="8,0"/>
                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
                                     <Setter Property="ToolTip" Value="{Binding ErroTexto}"/>
@@ -401,7 +401,7 @@
                                 <Style TargetType="TextBlock">
                                     <Setter Property="VerticalAlignment" Value="Center"/>
                                     <Setter Property="HorizontalAlignment" Value="Center"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource FgSecBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
@@ -413,7 +413,7 @@
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource FgSecBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
                                     <Setter Property="Margin" Value="8,0"/>
                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
                                     <Setter Property="FontStyle" Value="Italic"/>

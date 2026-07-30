@@ -44,7 +44,12 @@ public class UsuarioRepository
             await _ctx.Client.From<UsuariosModel>().Update(perfil);
         }
 
-        return perfil.Ativo ? MapToUsuario(perfil) : null;
+        if (!perfil.Ativo)
+        {
+            try { await _ctx.Auth.SignOut(); } catch { /* ignora erro de logout */ }
+            return null;
+        }
+        return MapToUsuario(perfil);
     }
 
     public async Task<IEnumerable<Usuario>> GetAllAsync()

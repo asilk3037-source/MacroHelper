@@ -82,7 +82,11 @@ public class UsuarioService
                 session.User.UserMetadata != null && session.User.UserMetadata.TryGetValue("name", out var n) ? n?.ToString() ?? "" : "";
 
             var (usuario, ehNovo) = await _repo.ObterOuCriarViaOAuthAsync(authUserId, session.User.Email, nomeSugerido);
-            if (usuario == null) return (false, "Conta sem acesso liberado. Fale com um administrador.", null);
+            if (usuario == null)
+            {
+                try { await _supabaseContext!.Auth.SignOut(); } catch { }
+                return (false, "Conta sem acesso liberado. Fale com um administrador.", null);
+            }
 
             UsuarioAtual = usuario;
             onSessaoObtida?.Invoke(session.AccessToken!, session.RefreshToken!);
