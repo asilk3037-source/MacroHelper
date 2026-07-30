@@ -6,7 +6,7 @@
 #define MyAppName      "SK MacroHelper"
 #define MyAppVersion   "1.1.0"
 #define MyAppPublisher "Silk · Aline Martins"
-#define MyAppExeName   "MacroHelper.UI.exe"
+#define MyAppExeName   "MacroHelper.exe"
 #define BuildDir       "MacroHelper.UI\bin\Release\net8.0-windows\win-x64\publish"
 
 [Setup]
@@ -40,7 +40,7 @@ Name: "startupicon";  Description: "Iniciar automaticamente com o Windows"; Grou
 Source: "{#BuildDir}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BuildDir}\*.dll";           DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 Source: "{#BuildDir}\*.json";          DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BuildDir}\runtimes\*";      DestDir: "{app}\runtimes"; Flags: ignoreversion recursesubdirs
+Source: "{#BuildDir}\runtimes\*";      DestDir: "{app}\runtimes"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist
 
 [Icons]
 Name: "{group}\{#MyAppName}";            Filename: "{app}\{#MyAppExeName}"
@@ -52,10 +52,7 @@ Name: "{commonstartup}\{#MyAppName}";    Filename: "{app}\{#MyAppExeName}"; Task
 Filename: "{app}\{#MyAppExeName}"; Description: "Abrir SK MacroHelper agora"; Flags: nowait postinstall skipifsilent
 
 [Registry]
-Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run";
-  ValueType: string; ValueName: "SKMacroHelper";
-  ValueData: """{app}\{#MyAppExeName}""";
-  Flags: uninsdeletevalue; Tasks: startupicon
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "SKMacroHelper"; ValueData: """{app}\{#MyAppExeName}"""; Flags: uninsdeletevalue; Tasks: startupicon
 
 [Messages]
 BeveledLabel=SK MacroHelper {#MyAppVersion} — by Aline Martins · Silk

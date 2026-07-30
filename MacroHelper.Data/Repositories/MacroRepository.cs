@@ -11,9 +11,15 @@ public class MacroRepository : IMacroRepository
     private readonly SupabaseContext _ctx;
     public MacroRepository(SupabaseContext ctx) => _ctx = ctx;
 
+    // Colunas carregadas em queries de lista — exclui imagem_base64 (pode ser centenas de KB por macro)
+    private const string ColunasLista =
+        "id,atalho,titulo,conteudo,categoria,categoria_id,ativo,data_criacao,data_atualizacao," +
+        "favorito,atalho_tecla,status,criado_por_id,grupos_permitidos,publica,total_curtidas";
+
     public async Task<IEnumerable<Macro>> GetAllAsync()
     {
         var resp = await _ctx.Client.From<MacrosModel>()
+            .Select(ColunasLista)
             .Order("categoria", Ordering.Ascending)
             .Order("titulo", Ordering.Ascending)
             .Get();
@@ -30,6 +36,7 @@ public class MacroRepository : IMacroRepository
         var like = $"%{termo}%";
 
         var resp = await _ctx.Client.From<MacrosModel>()
+            .Select(ColunasLista)
             .Filter("ativo", Operator.Equals, "true")
             .Filter("status", Operator.Equals, "Aprovada")
             .Or(new List<Supabase.Postgrest.Interfaces.IPostgrestQueryFilter>
@@ -59,6 +66,7 @@ public class MacroRepository : IMacroRepository
     public async Task<IEnumerable<Macro>> GetByCategoriaAsync(string categoria)
     {
         var resp = await _ctx.Client.From<MacrosModel>()
+            .Select(ColunasLista)
             .Filter("categoria", Operator.Equals, categoria)
             .Filter("ativo", Operator.Equals, "true")
             .Filter("status", Operator.Equals, "Aprovada")
@@ -97,6 +105,7 @@ public class MacroRepository : IMacroRepository
     public async Task<IEnumerable<Macro>> GetFavoritosAsync()
     {
         var resp = await _ctx.Client.From<MacrosModel>()
+            .Select(ColunasLista)
             .Filter("favorito", Operator.Equals, "true")
             .Filter("ativo", Operator.Equals, "true")
             .Filter("status", Operator.Equals, "Aprovada")
@@ -180,6 +189,7 @@ public class MacroRepository : IMacroRepository
     public async Task<IEnumerable<Macro>> GetPublicasAsync()
     {
         var resp = await _ctx.Client.From<MacrosModel>()
+            .Select(ColunasLista)
             .Filter("publica", Operator.Equals, "true")
             .Filter("ativo", Operator.Equals, "true")
             .Filter("status", Operator.Equals, "Aprovada")
