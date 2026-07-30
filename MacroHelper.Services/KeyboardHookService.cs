@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace MacroHelper.Services;
 
@@ -11,10 +12,8 @@ public class KeyboardHookService : IDisposable
 
     private IntPtr _hookId = IntPtr.Zero;
     private readonly NativeMethod.LowLevelKeyboardProc _proc;
-    private string _buffer = string.Empty;
-
-    // Buffer de texto livre (independente do gatilho) usado para detectar frases repetidas
-    private string _textoLivre = string.Empty;
+    private readonly StringBuilder _buffer     = new();
+    private readonly StringBuilder _textoLivre = new();
     private readonly Dictionary<string, int> _frasesVistas = new();
     private const int FRASE_MIN_LEN = 25;
     private const int FRASE_MAX_LEN = 400;
@@ -118,8 +117,8 @@ public class KeyboardHookService : IDisposable
         // Escape — cancela
         if (vkCode == 0x1B)
         {
-            _buffer = string.Empty;
-            _textoLivre = string.Empty;
+            _buffer.Clear();
+            _textoLivre.Clear();
             GatilhoCancelado?.Invoke(this, EventArgs.Empty);
             return;
         }
@@ -128,12 +127,12 @@ public class KeyboardHookService : IDisposable
         if (vkCode == 0x08)
         {
             if (_buffer.Length > 0)
-                _buffer = _buffer[..^1];
+                _buffer.Remove(_buffer.Length - 1, 1);
             if (_textoLivre.Length > 0)
-                _textoLivre = _textoLivre[..^1];
+                _textoLivre.Remove(_textoLivre.Length - 1, 1);
 
-            if (_buffer.StartsWith(Prefixo) && _buffer.Length >= 1)
-                GatilhoDetectado?.Invoke(this, _buffer);
+            if (_buffer.Length >= 1 && _buffer[0] == Prefixo)
+                GatilhoDetectado?.Invoke(this, _buffer.ToString());
             else if (_buffer.Length == 0)
                 GatilhoCancelado?.Invoke(this, EventArgs.Empty);
             return;
@@ -142,7 +141,7 @@ public class KeyboardHookService : IDisposable
         // Tab — cancela gatilho, mas não conta como fim de frase
         if (vkCode == 0x09)
         {
-            _buffer = string.Empty;
+            _buffer.Clear();
             GatilhoCancelado?.Invoke(this, EventArgs.Empty);
             return;
         }
@@ -150,7 +149,7 @@ public class KeyboardHookService : IDisposable
         // Enter / Space — cancela gatilho; Enter também fecha a "frase" para detecção de repetição
         if (vkCode is 0x0D or 0x20)
         {
-            _buffer = string.Empty;
+            _buffer.Clear();
             GatilhoCancelado?.Invoke(this, EventArgs.Empty);
             if (vkCode == 0x0D) FecharFraseLivre();
             return;
@@ -162,35 +161,35 @@ public class KeyboardHookService : IDisposable
         var c = VkToChar(vkCode);
         if (c == '\0') return;
 
-        _buffer += c;
+        _buffer.Append(c);
         AcumularTextoLivre(c);
 
         if (_buffer.Length > 80)
         {
-            _buffer = string.Empty;
+            _buffer.Clear();
             GatilhoCancelado?.Invoke(this, EventArgs.Empty);
             return;
         }
 
-        if (_buffer.StartsWith(Prefixo) && _buffer.Length >= 2)
-            GatilhoDetectado?.Invoke(this, _buffer);
-        else if (!_buffer.StartsWith(Prefixo))
-            _buffer = string.Empty;
+        if (_buffer.Length >= 2 && _buffer[0] == Prefixo)
+            GatilhoDetectado?.Invoke(this, _buffer.ToString());
+        else if (_buffer.Length == 0 || _buffer[0] != Prefixo)
+            _buffer.Clear();
     }
 
     private void AcumularTextoLivre(char c)
     {
         if (!DeteccaoFraseAtiva) return;
-        _textoLivre += c;
+        _textoLivre.Append(c);
         if (_textoLivre.Length > FRASE_MAX_LEN)
-            _textoLivre = _textoLivre[^FRASE_MAX_LEN..];
+            _textoLivre.Remove(0, _textoLivre.Length - FRASE_MAX_LEN);
     }
 
     private void FecharFraseLivre()
     {
         if (!DeteccaoFraseAtiva) return;
-        var frase = _textoLivre.Trim();
-        _textoLivre = string.Empty;
+        var frase = _textoLivre.ToString().Trim();
+        _textoLivre.Clear();
         if (frase.Length < FRASE_MIN_LEN) return;
 
         _frasesVistas.TryGetValue(frase, out var qtd);
@@ -243,8 +242,7 @@ public class KeyboardHookService : IDisposable
         var result = NativeMethod.ToUnicodeEx(
             (uint)vkCode, scanCode, state, buf, buf.Length, 4, hkl);
 
-        if (result == 1) return buf[0];
-        if (result == 2) return buf[0];
+        if (result is 1 or 2) return buf[0];
         return '\0';
     }
 

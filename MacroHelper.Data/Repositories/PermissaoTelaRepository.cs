@@ -40,13 +40,6 @@ public class PermissaoTelaRepository
         }
     }
 
-    public async Task RemoverTodasDoUsuarioAsync(int usuarioId)
-    {
-        await _ctx.Client.From<PermissoesTelaModel>()
-            .Filter("usuario_id", Operator.Equals, usuarioId.ToString())
-            .Delete();
-    }
-
     private static PermissaoTela MapToPermissao(PermissoesTelaModel m) => new()
     {
         Id = m.Id, UsuarioId = m.UsuarioId, Tela = m.Tela, Nivel = m.Nivel

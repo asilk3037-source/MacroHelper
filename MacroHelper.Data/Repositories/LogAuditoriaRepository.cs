@@ -19,15 +19,6 @@ public class LogAuditoriaRepository
         });
     }
 
-    public async Task<IEnumerable<LogAuditoria>> GetRecentesAsync(int limite = 200)
-    {
-        var resp = await _ctx.Client.From<LogAuditoriaModel>()
-            .Order("data", Ordering.Descending)
-            .Limit(limite)
-            .Get();
-        return resp.Models.Select(MapToLogAuditoria);
-    }
-
     public async Task<IEnumerable<(DateTime Data, string Acao, string Entidade, string? Detalhes, string UsuarioNome)>> GetRecentesComNomeAsync(int limite = 200)
     {
         var resp = await _ctx.Client.From<LogAuditoriaModel>()

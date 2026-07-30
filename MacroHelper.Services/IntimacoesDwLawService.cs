@@ -20,11 +20,21 @@ public class IntimacoesDwLawService
     /// </summary>
     public async Task<(int inseridos, int atualizados)> ImportarLoteAsync(IEnumerable<IntimacaoErro> itens)
     {
+        // Precarrega todos os registros abertos para evitar N queries ao banco (uma por item)
+        var todosAbertos = await _repo.GetAllAsync();
+        var abertosDict  = todosAbertos
+            .Where(e => e.Status != "Resolvido")
+            .GroupBy(e => (e.Advogado, e.Sistema))
+            .ToDictionary(g => g.Key, g => g.ToList());
+
         int inseridos = 0, atualizados = 0;
+        var paraAtualizar = new List<IntimacaoErro>();
+        var paraInserir   = new List<IntimacaoErro>();
+
         foreach (var item in itens)
         {
-            var abertos = await _repo.GetAbertosByAdvSistemaAsync(item.Advogado, item.Sistema);
-            var existente = abertos.FirstOrDefault();
+            abertosDict.TryGetValue((item.Advogado, item.Sistema), out var abertos);
+            var existente = abertos?.FirstOrDefault();
 
             if (existente != null)
             {
@@ -35,16 +45,20 @@ public class IntimacoesDwLawService
                         ? nota
                         : existente.Observacao.TrimEnd() + "\n" + nota;
                     existente.AtualizadoEm = DateTime.Now;
-                    await _repo.UpdateAsync(existente);
+                    paraAtualizar.Add(existente);
                 }
                 atualizados++;
             }
             else
             {
-                await _repo.InsertAsync(item);
+                paraInserir.Add(item);
                 inseridos++;
             }
         }
+
+        foreach (var e in paraAtualizar) await _repo.UpdateAsync(e);
+        foreach (var e in paraInserir)   await _repo.InsertAsync(e);
+
         return (inseridos, atualizados);
     }
 

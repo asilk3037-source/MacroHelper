@@ -122,8 +122,11 @@ public class LogUsoRepository
             }
         }
 
-        foreach (var l in lista)
-            await _ctx.Client.From<LogUsoModel>().Filter("id", Operator.Equals, l.Id.ToString()).Delete();
+        if (lista.Count > 0)
+        {
+            var ids = lista.Select(l => (object)l.Id).ToList();
+            await _ctx.Client.From<LogUsoModel>().Filter("id", Operator.In, ids).Delete();
+        }
 
         return lista.Count;
     }

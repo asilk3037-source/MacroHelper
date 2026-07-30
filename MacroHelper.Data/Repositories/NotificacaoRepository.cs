@@ -47,18 +47,17 @@ public class NotificacaoRepository
     public async Task MarcarTodasComoLidasAsync()
     {
         var resp = await _ctx.Client.From<NotificacoesModel>().Filter("lida", Operator.Equals, "false").Get();
-        foreach (var m in resp.Models)
-        {
-            m.Lida = true;
-            await _ctx.Client.From<NotificacoesModel>().Update(m);
-        }
+        if (resp.Models.Count == 0) return;
+        foreach (var m in resp.Models) m.Lida = true;
+        await Task.WhenAll(resp.Models.Select(m => _ctx.Client.From<NotificacoesModel>().Update(m)));
     }
 
     public async Task LimparAsync()
     {
         var resp = await _ctx.Client.From<NotificacoesModel>().Get();
-        foreach (var m in resp.Models)
-            await _ctx.Client.From<NotificacoesModel>().Filter("id", Operator.Equals, m.Id.ToString()).Delete();
+        if (resp.Models.Count == 0) return;
+        var ids = resp.Models.Select(m => (object)m.Id).ToList();
+        await _ctx.Client.From<NotificacoesModel>().Filter("id", Operator.In, ids).Delete();
     }
 
     private static Notificacao MapToNotificacao(NotificacoesModel m) => new()

@@ -176,7 +176,7 @@ public class MacroRepository : IMacroRepository
 
     public async Task<IEnumerable<string>> GetCategoriasAsync()
     {
-        var resp = await _ctx.Client.From<MacrosModel>().Get();
+        var resp = await _ctx.Client.From<MacrosModel>().Select("categoria").Get();
         return resp.Models
             .Select(m => m.Categoria)
             .Where(c => !string.IsNullOrEmpty(c))

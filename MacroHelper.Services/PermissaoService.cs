@@ -18,16 +18,13 @@ public static class Permissoes
         (VerRelatorios,        "Ver relatórios da equipe",  "Permite ver o ranking e auditoria de todos os usuários."),
     ];
 
-    // Padrão para usuários comuns quando PermissoesCustom é null (comportamento já existente no app).
-    private static readonly HashSet<string> _padraoUsuario = [];
-
     public static bool Tem(Usuario? usuario, string chave)
     {
         if (usuario == null) return false;
-        if (usuario.Perfil == "Auditor") return false; // somente leitura, sempre
+        if (usuario.Perfil == "Auditor") return false;
         if (usuario.Perfil == "Admin") return true;
 
-        if (usuario.PermissoesCustom == null) return _padraoUsuario.Contains(chave);
+        if (usuario.PermissoesCustom == null) return false;
 
         var concedidas = usuario.PermissoesCustom
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)

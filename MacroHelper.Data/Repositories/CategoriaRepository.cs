@@ -33,16 +33,6 @@ public class CategoriaRepository
         return resp.Models.Select(c => MapToCategoria(c, null));
     }
 
-    public async Task<IEnumerable<Categoria>> GetSubcategoriasAsync(int paiId)
-    {
-        var resp = await _ctx.Client.From<CategoriasModel>()
-            .Filter("pai_id", Operator.Equals, paiId.ToString())
-            .Order("ordem", Ordering.Ascending)
-            .Order("nome", Ordering.Ascending)
-            .Get();
-        return resp.Models.Select(c => MapToCategoria(c, null));
-    }
-
     public async Task<int> InsertAsync(Categoria cat)
     {
         var inserted = await _ctx.Client.From<CategoriasModel>().Insert(new CategoriasModel
@@ -64,10 +54,10 @@ public class CategoriaRepository
     public async Task DeleteAsync(int id)
     {
         var orfas = await _ctx.Client.From<CategoriasModel>().Filter("pai_id", Operator.Equals, id.ToString()).Get();
-        foreach (var orfa in orfas.Models)
+        if (orfas.Models.Count > 0)
         {
-            orfa.PaiId = null;
-            await _ctx.Client.From<CategoriasModel>().Update(orfa);
+            foreach (var orfa in orfas.Models) orfa.PaiId = null;
+            await Task.WhenAll(orfas.Models.Select(orfa => _ctx.Client.From<CategoriasModel>().Update(orfa)));
         }
         await _ctx.Client.From<CategoriasModel>().Filter("id", Operator.Equals, id.ToString()).Delete();
     }

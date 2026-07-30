@@ -119,7 +119,9 @@ public partial class MainViewModel : ObservableObject
             PodeInstalarUpdate      = info.PodeInstalar;
             MostrarBannerAtualizacao = true;
         };
-        _ = Task.Run(() => _atualizadorSvc.VerificarAsync());
+        agendamentoService.AgendamentoExecutado += (_, args) =>
+            StatusMensagem = $"{args.Titulo}: {args.Mensagem}";
+        _ = _atualizadorSvc.VerificarAsync();
         _ = IniciarVerificacaoPeriodicaAsync();
 
         ConstruirNav();
