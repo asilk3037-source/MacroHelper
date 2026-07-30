@@ -493,9 +493,6 @@
                         <DataTemplate DataType="{x:Type vm:PermissoesViewModel}">
                             <views:PermissoesView/>
                         </DataTemplate>
-                        <DataTemplate DataType="{x:Type vm:IntegracoesViewModel}">
-                            <views:IntegracoesView/>
-                        </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:NotificacoesViewModel}">
                             <views:NotificacoesView/>
                         </DataTemplate>
@@ -504,9 +501,6 @@
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:AjudaViewModel}">
                             <views:AjudaView/>
-                        </DataTemplate>
-                        <DataTemplate DataType="{x:Type vm:ProjetosViewModel}">
-                            <views:ProjetosView/>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:IntimacoesDwLawViewModel}">
                             <views:IntimacoesDwLawView/>

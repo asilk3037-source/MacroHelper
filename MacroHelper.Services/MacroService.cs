@@ -14,7 +14,6 @@ public class MacroService
     private readonly LogAuditoriaRepository? _auditoriaRepo;
     private readonly FavoritoUsuarioRepository? _favoritoUsuarioRepo;
     private readonly VariavelGlobalService? _variavelGlobalService;
-    private readonly WebhookService? _webhookService;
     private readonly NotificacaoService? _notificacaoService;
     private static readonly Regex _macroRefRegex = new(@"\{macro:([\w-]+)\}", RegexOptions.Compiled);
     private static readonly Regex _condicionalRegex = new(@"\{se\s+(\w+)=([^}]+)\}(.*?)\{fim\}",
@@ -26,7 +25,7 @@ public class MacroService
     public MacroService(IMacroRepository repository, UsuarioService usuarioService,
         MacroVersaoRepository? versaoRepo = null, LogAuditoriaRepository? auditoriaRepo = null,
         FavoritoUsuarioRepository? favoritoUsuarioRepo = null, VariavelGlobalService? variavelGlobalService = null,
-        WebhookService? webhookService = null, NotificacaoService? notificacaoService = null)
+        NotificacaoService? notificacaoService = null)
     {
         _repository           = repository;
         _usuarioService       = usuarioService;
@@ -34,7 +33,6 @@ public class MacroService
         _auditoriaRepo        = auditoriaRepo;
         _favoritoUsuarioRepo  = favoritoUsuarioRepo;
         _variavelGlobalService = variavelGlobalService;
-        _webhookService       = webhookService;
         _notificacaoService   = notificacaoService;
     }
 
@@ -211,8 +209,6 @@ public class MacroService
             macro.Id = id;
             if (_auditoriaRepo != null)
                 await _auditoriaRepo.RegistrarAsync(_usuarioService.UsuarioAtual?.Id, "Criar", "Macro", macro.Id, $"Atalho: {macro.Atalho}");
-            if (_webhookService != null)
-                await _webhookService.DispararAsync(EventosWebhook.MacroCriada, new { macro.Titulo, macro.Atalho, macro.Categoria });
             var msg = macro.Status == "Pendente" ? "Macro enviada para aprovação!" : "Macro criada com sucesso!";
             return (true, msg, macro);
         }
@@ -253,8 +249,6 @@ public class MacroService
         await _repository.DeleteAsync(id);
         if (_auditoriaRepo != null)
             await _auditoriaRepo.RegistrarAsync(_usuarioService.UsuarioAtual?.Id, "Excluir", "Macro", id, $"Atalho: {macro.Atalho}");
-        if (_webhookService != null)
-            await _webhookService.DispararAsync(EventosWebhook.MacroExcluida, new { macro.Titulo, macro.Atalho });
         return (true, $"Macro \"{macro.Titulo}\" excluída com sucesso.");
     }
 

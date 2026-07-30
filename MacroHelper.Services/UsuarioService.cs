@@ -9,18 +9,15 @@ namespace MacroHelper.Services;
 public class UsuarioService
 {
     private readonly UsuarioRepository _repo;
-    private readonly WebhookService?      _webhookService;
     private readonly NotificacaoService?  _notificacaoService;
     private readonly LogAuditoriaRepository? _auditoriaRepo;
     private readonly SupabaseContext?     _supabaseContext;
     public Usuario? UsuarioAtual { get; private set; }
 
-    public UsuarioService(UsuarioRepository repo, WebhookService? webhookService = null,
-        NotificacaoService? notificacaoService = null, LogAuditoriaRepository? auditoriaRepo = null,
-        SupabaseContext? supabaseContext = null)
+    public UsuarioService(UsuarioRepository repo, NotificacaoService? notificacaoService = null,
+        LogAuditoriaRepository? auditoriaRepo = null, SupabaseContext? supabaseContext = null)
     {
         _repo = repo;
-        _webhookService = webhookService;
         _notificacaoService = notificacaoService;
         _auditoriaRepo = auditoriaRepo;
         _supabaseContext = supabaseContext;
@@ -94,8 +91,6 @@ public class UsuarioService
                 await _auditoriaRepo.RegistrarAsync(usuario.Id, ehNovo ? "CriarViaOAuth" : "LoginSocial", "Usuario", usuario.Id, provedor);
             if (ehNovo)
             {
-                if (_webhookService != null)
-                    await _webhookService.DispararAsync(EventosWebhook.UsuarioCriado, new { usuario.Nome, usuario.Email, usuario.Perfil });
                 try { if (_notificacaoService != null)
                     await _notificacaoService.RegistrarAsync("Novo usuário", $"{usuario.Nome} ({usuario.Email}) entrou via login social ({provedor}).", "Sucesso"); }
                 catch { /* notificação é secundária — não falha o login */ }
@@ -146,11 +141,7 @@ public class UsuarioService
 
         var u = await _repo.AutenticarAsync(email.Trim(), senha);
         if (u == null)
-        {
-            if (_webhookService != null)
-                await _webhookService.DispararAsync(EventosWebhook.LoginFalhou, new { Email = email.Trim() });
             return (false, "E-mail ou senha incorretos.", null);
-        }
 
         UsuarioAtual = u;
         return (true, "Login realizado!", u);
@@ -174,8 +165,6 @@ public class UsuarioService
         try { await _repo.InsertAsync(u, senha); }
         catch (Exception ex) { await AlertarSeRateLimitAsync(ex); throw; }
 
-        if (_webhookService != null)
-            await _webhookService.DispararAsync(EventosWebhook.UsuarioCriado, new { u.Nome, u.Email, u.Perfil });
         try { if (_notificacaoService != null)
             await _notificacaoService.RegistrarAsync("Novo usuário", $"{u.Nome} ({u.Email}) entrou na equipe.", "Sucesso"); }
         catch { /* notificação é secundária — não falha a criação */ }
@@ -240,8 +229,6 @@ public class UsuarioService
         try { await _repo.InsertComoAdminAsync(u, senha, onSessaoRestaurada); }
         catch (Exception ex) { await AlertarSeRateLimitAsync(ex); throw; }
 
-        if (_webhookService != null)
-            await _webhookService.DispararAsync(EventosWebhook.UsuarioCriado, new { u.Nome, u.Email, u.Perfil });
         try { if (_notificacaoService != null)
             await _notificacaoService.RegistrarAsync("Novo usuário", $"{u.Nome} ({u.Email}) entrou na equipe.", "Sucesso"); }
         catch { /* notificação é secundária — não falha a criação */ }
@@ -293,8 +280,6 @@ public class UsuarioService
         await _repo.DeleteAsync(usuarioId);
         if (_auditoriaRepo != null)
             await _auditoriaRepo.RegistrarAsync(UsuarioAtual?.Id, "Excluir", "Usuario", usuarioId, $"{usuario.Nome} ({usuario.Email})");
-        if (_webhookService != null)
-            await _webhookService.DispararAsync(EventosWebhook.UsuarioExcluido, new { usuario.Nome, usuario.Email });
         return (true, "Usuário excluído.");
     }
 

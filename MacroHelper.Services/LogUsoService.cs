@@ -8,11 +8,9 @@ namespace MacroHelper.Services;
 public class LogUsoService
 {
     private readonly LogUsoRepository _repo;
-    private readonly WebhookService?  _webhookService;
-    public LogUsoService(LogUsoRepository repo, WebhookService? webhookService = null)
+    public LogUsoService(LogUsoRepository repo)
     {
         _repo = repo;
-        _webhookService = webhookService;
     }
 
     // Estimativa: usuário digitaria a uma média de 200 caracteres/minuto; a inserção da macro leva ~2s.
@@ -29,8 +27,6 @@ public class LogUsoService
             Caracteres = caracteres
         });
 
-        if (_webhookService != null)
-            await _webhookService.DispararAsync(EventosWebhook.MacroUsada, new { titulo, atalho, usuarioId });
     }
 
     public async Task<IEnumerable<LogUso>> ObterRecentesAsync(int limite = 200, int? usuarioId = null)

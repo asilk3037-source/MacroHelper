@@ -119,15 +119,6 @@ public class IntZeroToVisibilityConverter : IValueConverter
         => throw new NotImplementedException();
 }
 
-/// <summary>Converte a chave interna de um evento de webhook (ex: "MacroCriada") no rótulo amigável (ex: "Macro criada").</summary>
-public class EventoWebhookRotuloConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        => value is string chave ? MacroHelper.Services.EventosWebhook.Rotulo(chave) : value;
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        => throw new NotImplementedException();
-}
 
 /// <summary>Qualquer objeto não-nulo → true; null → false. Útil para IsEnabled.</summary>
 public class NullToBoolConverter : IValueConverter
