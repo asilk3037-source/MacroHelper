@@ -22,11 +22,9 @@ public partial class MainViewModel : ObservableObject
     private readonly AuditoriaViewModel        _auditoriaVM;
     private readonly ComunidadeViewModel       _comunidadeVM;
     private readonly PermissoesViewModel       _permissoesVM;
-    private readonly IntegracoesViewModel      _integracoesVM;
     private readonly NotificacoesViewModel     _notificacoesVM;
     private readonly PerfilViewModel           _perfilVM;
     private readonly AjudaViewModel            _ajudaVM;
-    private readonly ProjetosViewModel          _projetosVM;
     private readonly IntimacoesDwLawViewModel   _intimacoesVM;
     private readonly KioskModeService    _kioskService;
     private readonly NotificacaoService  _notificacaoService;
@@ -63,8 +61,8 @@ public partial class MainViewModel : ObservableObject
         HistoricoVersoesViewModel historicoVM, AgendamentosViewModel agendamentosVM,
         GruposViewModel gruposVM, AuditoriaViewModel auditoriaVM,
         ComunidadeViewModel comunidadeVM, PermissoesViewModel permissoesVM,
-        IntegracoesViewModel integracoesVM, NotificacoesViewModel notificacoesVM,
-        PerfilViewModel perfilVM, AjudaViewModel ajudaVM, ProjetosViewModel projetosVM,
+        NotificacoesViewModel notificacoesVM,
+        PerfilViewModel perfilVM, AjudaViewModel ajudaVM,
         IntimacoesDwLawViewModel intimacoesVM,
         NotificacaoService notificacaoService, AtualizadorService atualizadorSvc,
         AgendamentoService agendamentoService, PermissaoTelaService permissaoTelaService)
@@ -85,11 +83,9 @@ public partial class MainViewModel : ObservableObject
         _auditoriaVM     = auditoriaVM;
         _comunidadeVM    = comunidadeVM;
         _permissoesVM    = permissoesVM;
-        _integracoesVM   = integracoesVM;
         _notificacoesVM  = notificacoesVM;
         _perfilVM        = perfilVM;
         _ajudaVM         = ajudaVM;
-        _projetosVM      = projetosVM;
         _intimacoesVM    = intimacoesVM;
         _atualizadorSvc  = atualizadorSvc;
         _notificacaoService = notificacaoService;
@@ -162,7 +158,6 @@ public partial class MainViewModel : ObservableObject
         NavGeral.Add(new NavItem { Icone = "", Label = "Variáveis Globais", Chave = "variaveis",    Comando = NavigarParaVariaveisCommand });
         NavGeral.Add(new NavItem { Icone = "", Label = "Agendamentos",      Chave = "agendamentos", Comando = NavigarParaAgendamentosCommand });
         NavGeral.Add(new NavItem { Icone = "", Label = "Comunidade",        Chave = "comunidade",   Comando = NavigarParaComunidadeCommand });
-        NavGeral.Add(new NavItem { Icone = "", Label = "Projetos",           Chave = "projetos",     Comando = NavigarParaProjetosCommand });
         NavGeral.Add(new NavItem { Icone = "⚖", Label = "Intimações DW",     Chave = "intimacoes",   Comando = NavigarParaIntimacoesCommand });
         NavGeral.Add(new NavItem { Icone = "", Label = "Relatório",         Chave = "relatorio",    Comando = NavigarParaRelatorioCommand });
         NavGeral.Add(new NavItem { Icone = "", Label = "Meu Perfil",        Chave = "perfil",       Comando = NavigarParaPerfilCommand });
@@ -171,7 +166,6 @@ public partial class MainViewModel : ObservableObject
         NavEquipe.Add(new NavItem { Icone = "", Label = "Grupos",      Chave = "grupos",      Comando = NavigarParaGruposCommand,       Visivel = IsAdmin });
         NavEquipe.Add(new NavItem { Icone = "", Label = "Permissões",  Chave = "permissoes",  Comando = NavigarParaPermissoesCommand,   Visivel = IsAdmin });
         NavEquipe.Add(new NavItem { Icone = "", Label = "Auditoria",   Chave = "auditoria",   Comando = NavigarParaAuditoriaCommand,    Visivel = IsAdmin });
-        NavEquipe.Add(new NavItem { Icone = "", Label = "Integrações", Chave = "integracoes", Comando = NavigarParaIntegracoesCommand,  Visivel = IsAdmin });
 
         NavSistema.Add(new NavItem { Icone = "", Label = "Notificações",   Chave = "notificacoes",   Comando = NavigarParaNotificacoesCommand });
         NavSistema.Add(new NavItem { Icone = "", Label = "Configurações", Chave = "configuracoes", Comando = NavigarParaConfiguracoesCommand });
@@ -259,11 +253,6 @@ public partial class MainViewModel : ObservableObject
         PaginaAtiva = "permissoes"; CurrentView = _permissoesVM; AtualizarNavAtiva();
         _ = _permissoesVM.CarregarAsync();
     }
-    [RelayCommand] public void NavigarParaIntegracoes()
-    {
-        PaginaAtiva = "integracoes"; CurrentView = _integracoesVM; AtualizarNavAtiva();
-        _ = _integracoesVM.CarregarAsync();
-    }
     [RelayCommand] public void NavigarParaNotificacoes()
     {
         PaginaAtiva = "notificacoes"; CurrentView = _notificacoesVM; AtualizarNavAtiva();
@@ -276,11 +265,6 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand] public void NavigarParaAjuda()
     {
         PaginaAtiva = "ajuda"; CurrentView = _ajudaVM; AtualizarNavAtiva();
-    }
-    [RelayCommand] public void NavigarParaProjetos()
-    {
-        PaginaAtiva = "projetos"; CurrentView = _projetosVM; AtualizarNavAtiva();
-        _ = _projetosVM.CarregarAsync();
     }
     [RelayCommand] public void NavigarParaIntimacoes()
     {

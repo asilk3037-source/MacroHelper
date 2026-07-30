@@ -195,16 +195,11 @@ public partial class App : Application
         s.AddSingleton<FavoritoUsuarioRepository>();
         s.AddSingleton<VariavelGlobalRepository>();
         s.AddSingleton<AgendamentoRepository>();
-        s.AddSingleton<WebhookRepository>();
         s.AddSingleton<NotificacaoRepository>();
         s.AddSingleton<PermissaoTelaRepository>();
-        s.AddSingleton<ProjetoRepository>();
-        s.AddSingleton<AtaRepository>();
-        s.AddSingleton<PendenciaRepository>();
         s.AddSingleton<IntimacaoErroRepository>();
 
         // Services
-        s.AddSingleton<WebhookService>();
         s.AddSingleton<NotificacaoService>();
         s.AddSingleton<MacroService>();
         s.AddSingleton<CategoriaService>();
@@ -222,9 +217,6 @@ public partial class App : Application
         s.AddSingleton<VariavelGlobalService>();
         s.AddSingleton<AgendamentoService>();
         s.AddSingleton<PermissaoTelaService>();
-        s.AddSingleton<ProjetoService>();
-        s.AddSingleton<AtaService>();
-        s.AddSingleton<PendenciaService>();
         s.AddSingleton<IntimacoesDwLawService>();
         s.AddSingleton<AtualizadorService>();
 
@@ -244,11 +236,9 @@ public partial class App : Application
         s.AddTransient<ViewModels.AuditoriaViewModel>();
         s.AddTransient<ViewModels.ComunidadeViewModel>();
         s.AddTransient<ViewModels.PermissoesViewModel>();
-        s.AddTransient<ViewModels.IntegracoesViewModel>();
         s.AddTransient<ViewModels.NotificacoesViewModel>();
         s.AddTransient<ViewModels.PerfilViewModel>();
         s.AddTransient<ViewModels.AjudaViewModel>();
-        s.AddTransient<ViewModels.ProjetosViewModel>();
         s.AddTransient<ViewModels.IntimacoesDwLawViewModel>();
 
         // Views

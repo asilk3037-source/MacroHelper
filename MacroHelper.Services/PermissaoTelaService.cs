@@ -32,14 +32,12 @@ public static class TelasApp
         ("variaveis",     "Variáveis Globais"),
         ("agendamentos",  "Agendamentos"),
         ("comunidade",    "Comunidade"),
-        ("projetos",      "Projetos"),
         ("intimacoes",    "Intimações DW"),
         ("relatorio",     "Relatório"),
         ("usuarios",      "Usuários"),
         ("grupos",        "Grupos"),
         ("permissoes",    "Permissões"),
         ("auditoria",     "Auditoria"),
-        ("integracoes",   "Integrações"),
         ("notificacoes",  "Notificações"),
         ("configuracoes", "Configurações"),
         ("ajuda",         "Ajuda"),
@@ -47,7 +45,7 @@ public static class TelasApp
 
     /// <summary>Telas ocultas por padrão para perfil Usuario/Auditor — admin pode liberar individualmente.</summary>
     public static readonly HashSet<string> EquipeAdminPorPadrao =
-        ["usuarios", "grupos", "permissoes", "auditoria", "integracoes",
+        ["usuarios", "grupos", "permissoes", "auditoria",
          "categorias", "variaveis", "agendamentos"];
 }
 
