@@ -104,12 +104,20 @@ public partial class App : Application
         {
             var main = Services.GetRequiredService<MainWindow>();
             main.Show();
+            _ = IniciarRefreshTokenPeriodicoAsync();
             return;
         }
 
         // Abre login
         var login = Services.GetRequiredService<LoginWindow>();
         login.Show();
+    }
+
+    private static async Task IniciarRefreshTokenPeriodicoAsync()
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(45));
+        while (await timer.WaitForNextTickAsync())
+            try { await Services.GetRequiredService<SupabaseContext>().Auth.RefreshSession(); } catch { }
     }
 
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

@@ -1,6 +1,8 @@
 using MacroHelper.Core.Entities;
+using MacroHelper.Data.Context;
 using MacroHelper.Services;
 using MacroHelper.UI.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -107,6 +109,23 @@ public partial class BuscadorRapidoWindow : Window
 
     private async void CarregarTodos()
     {
+        try
+        {
+            await CarregarTodosInternalAsync();
+        }
+        catch (Supabase.Postgrest.Exceptions.PostgrestException ex) when (ex.Message.Contains("PGRST303") || ex.Message.Contains("JWT expired"))
+        {
+            try
+            {
+                await App.Services.GetRequiredService<SupabaseContext>().Auth.RefreshSession();
+                await CarregarTodosInternalAsync();
+            }
+            catch { }
+        }
+    }
+
+    private async Task CarregarTodosInternalAsync()
+    {
         var todos      = (await _macroService.ObterTodosAsync()).ToList();
         var favoritos  = todos.Where(m => m.Favorito).ToList();
         var logsRecentes = (await _logService.ObterRecentesAsync(40)).ToList();
@@ -149,6 +168,17 @@ public partial class BuscadorRapidoWindow : Window
             if (lista.Count > 0) ListResultados.SelectedIndex = 0;
         }
         catch (OperationCanceledException) { }
+        catch (Supabase.Postgrest.Exceptions.PostgrestException ex) when (ex.Message.Contains("PGRST303") || ex.Message.Contains("JWT expired"))
+        {
+            try
+            {
+                await App.Services.GetRequiredService<SupabaseContext>().Auth.RefreshSession();
+                var lista = (await _macroService.PesquisarAsync(termo)).ToList();
+                ListResultados.ItemsSource = lista;
+                if (lista.Count > 0) ListResultados.SelectedIndex = 0;
+            }
+            catch { }
+        }
     }
 
     private void AtualizarPreview()
