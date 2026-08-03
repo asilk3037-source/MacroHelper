@@ -87,10 +87,6 @@
 
                     <Border Grid.Column="0" Margin="0,0,8,0" Style="{StaticResource CardStyle}" Padding="22,20" ClipToBounds="True">
                         <Grid>
-                            <Ellipse Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                     Margin="0,-50,-50,0" Opacity="0.35" Fill="{DynamicResource AccentLightBrush}">
-                                <Ellipse.Effect><BlurEffect Radius="22"/></Ellipse.Effect>
-                            </Ellipse>
                             <StackPanel>
                                 <Grid Margin="0,0,0,16">
                                     <Grid.ColumnDefinitions>
@@ -114,7 +110,7 @@
                                         </StackPanel>
                                     </Border>
                                 </Grid>
-                                <TextBlock Text="{Binding TotalMacros, Mode=OneWay}" FontSize="34" FontFamily="Segoe UI Semibold"
+                                <TextBlock Text="{Binding TotalMacros, Mode=OneWay}" FontSize="26" FontFamily="Segoe UI Semibold"
                                            Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,2"/>
                                 <TextBlock Text="macros cadastradas" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
@@ -123,10 +119,6 @@
 
                     <Border Grid.Column="1" Margin="4,0" Style="{StaticResource CardStyle}" Padding="22,20" ClipToBounds="True">
                         <Grid>
-                            <Ellipse Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                     Margin="0,-50,-50,0" Opacity="0.35" Fill="{DynamicResource CyanSoftBrush}">
-                                <Ellipse.Effect><BlurEffect Radius="22"/></Ellipse.Effect>
-                            </Ellipse>
                             <StackPanel>
                                 <Border Style="{StaticResource IconTile}" Background="{DynamicResource CyanSoftBrush}"
                                         HorizontalAlignment="Left" Margin="0,0,0,16">
@@ -134,7 +126,7 @@
                                                Foreground="{DynamicResource CyanForegroundBrush}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
-                                <TextBlock Text="{Binding UsadasHoje, Mode=OneWay}" FontSize="34" FontFamily="Segoe UI Semibold"
+                                <TextBlock Text="{Binding UsadasHoje, Mode=OneWay}" FontSize="46" FontFamily="Segoe UI Semibold"
                                            Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,2"/>
                                 <TextBlock Text="usos hoje" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
@@ -143,10 +135,6 @@
 
                     <Border Grid.Column="2" Margin="8,0,0,0" Style="{StaticResource CardStyle}" Padding="22,20" ClipToBounds="True">
                         <Grid>
-                            <Ellipse Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                     Margin="0,-50,-50,0" Opacity="0.35" Fill="{DynamicResource SecondaryBrush}">
-                                <Ellipse.Effect><BlurEffect Radius="22"/></Ellipse.Effect>
-                            </Ellipse>
                             <StackPanel>
                                 <Border Style="{StaticResource IconTile}" Background="{DynamicResource SecondaryBrush}"
                                         HorizontalAlignment="Left" Margin="0,0,0,16">
@@ -154,7 +142,7 @@
                                                Foreground="{DynamicResource SecondaryForegroundBrush}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
-                                <TextBlock Text="{Binding MinutosEconomizados, Mode=OneWay}" FontSize="34" FontFamily="Segoe UI Semibold"
+                                <TextBlock Text="{Binding MinutosEconomizados, Mode=OneWay}" FontSize="26" FontFamily="Segoe UI Semibold"
                                            Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,2"/>
                                 <TextBlock Text="economizados este mês" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>

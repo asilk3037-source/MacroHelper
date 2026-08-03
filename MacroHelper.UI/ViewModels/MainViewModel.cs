@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿﻿﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MacroHelper.Services;
 using System.Collections.ObjectModel;
@@ -167,13 +167,13 @@ public partial class MainViewModel : ObservableObject
         NavGeral.Add(new NavItem { Icone = "", Label = "Comunidade",        Chave = "comunidade",   Comando = NavigarParaComunidadeCommand });
         NavGeral.Add(new NavItem { Icone = "⚖", Label = "Intimações DW",     Chave = "intimacoes",   Comando = NavigarParaIntimacoesCommand });
         NavGeral.Add(new NavItem { Icone = "", Label = "Relatório",         Chave = "relatorio",    Comando = NavigarParaRelatorioCommand });
-        NavGeral.Add(new NavItem { Icone = "", Label = "Meu Perfil",        Chave = "perfil",       Comando = NavigarParaPerfilCommand });
 
         NavEquipe.Add(new NavItem { Icone = "", Label = "Usuários",    Chave = "usuarios",    Comando = NavigarParaUsuariosCommand,    Visivel = IsAdmin });
         NavEquipe.Add(new NavItem { Icone = "", Label = "Grupos",      Chave = "grupos",      Comando = NavigarParaGruposCommand,       Visivel = IsAdmin });
         NavEquipe.Add(new NavItem { Icone = "", Label = "Permissões",  Chave = "permissoes",  Comando = NavigarParaPermissoesCommand,   Visivel = IsAdmin });
         NavEquipe.Add(new NavItem { Icone = "", Label = "Auditoria",   Chave = "auditoria",   Comando = NavigarParaAuditoriaCommand,    Visivel = IsAdmin });
 
+        NavSistema.Add(new NavItem { Icone = "", Label = "Meu Perfil",        Chave = "perfil",       Comando = NavigarParaPerfilCommand });
         NavSistema.Add(new NavItem { Icone = "", Label = "Notificações",   Chave = "notificacoes",   Comando = NavigarParaNotificacoesCommand });
         NavSistema.Add(new NavItem { Icone = "", Label = "Configurações", Chave = "configuracoes", Comando = NavigarParaConfiguracoesCommand });
         NavSistema.Add(new NavItem { Icone = "", Label = "Ajuda",         Chave = "ajuda",         Comando = NavigarParaAjudaCommand });
