@@ -3,6 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="{DynamicResource BackgroundBrush}">
 
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="NotifView" Source="{Binding Notificacoes}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="GrupoData"/>
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+    </UserControl.Resources>
+
     <UserControl.RenderTransform>
         <TranslateTransform x:Name="PageSlide"/>
     </UserControl.RenderTransform>
@@ -52,16 +60,31 @@
         </Border>
 
         <ScrollViewer Padding="28,14,28,28">
-            <ItemsControl ItemsSource="{Binding Notificacoes}">
+            <ItemsControl ItemsSource="{Binding Source={StaticResource NotifView}}">
+                <!-- Group style: HOJE / ONTEM / data -->
+                <ItemsControl.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"
+                                           FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextMutedBrush}"
+                                           Margin="0,14,0,6"/>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ItemsControl.GroupStyle>
+
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Padding="18,14" Margin="0,0,0,6"
-                                Cursor="Hand" MouseLeftButtonUp="Item_MouseLeftButtonUp">
+                        <Border Margin="0,0,0,6" Cursor="Hand" MouseLeftButtonUp="Item_MouseLeftButtonUp">
                             <Border.Style>
                                 <Style TargetType="Border" BasedOn="{StaticResource CardStyle}">
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="Padding" Value="18,14"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Lida}" Value="False">
-                                            <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"/>
+                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -72,6 +95,8 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
+
+                                <!-- Ícone de tipo -->
                                 <Border Grid.Column="0" Margin="0,0,12,0" VerticalAlignment="Top">
                                     <Border.Style>
                                         <Style TargetType="Border" BasedOn="{StaticResource IconTileSmall}">
@@ -110,11 +135,30 @@
                                         </TextBlock.Style>
                                     </TextBlock>
                                 </Border>
+
                                 <StackPanel Grid.Column="1">
-                                    <TextBlock Text="{Binding Titulo}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                    <!-- Título + ponto de não-lida -->
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Ellipse Width="6" Height="6" Margin="0,0,6,0" VerticalAlignment="Center"
+                                                 Fill="{DynamicResource AccentBrush}">
+                                            <Ellipse.Style>
+                                                <Style TargetType="Ellipse">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Lida}" Value="False">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Ellipse.Style>
+                                        </Ellipse>
+                                        <TextBlock Text="{Binding Titulo}" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                    </StackPanel>
                                     <TextBlock Text="{Binding Mensagem}" FontSize="11" TextWrapping="Wrap"
                                                Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,2,0,0"/>
                                 </StackPanel>
+
                                 <TextBlock Grid.Column="2" Text="{Binding Data, StringFormat='dd/MM HH:mm'}" FontSize="10"
                                            Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Top" Margin="10,2,0,0"/>
                             </Grid>

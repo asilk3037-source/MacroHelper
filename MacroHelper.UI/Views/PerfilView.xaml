@@ -19,48 +19,93 @@
                 BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLightBrush}" Padding="28,18">
             <StackPanel>
                 <TextBlock Text="Meu Perfil" Style="{StaticResource PageTitleText}"/>
-                <TextBlock Text="Gerencie seus dados pessoais e senha." Style="{StaticResource PageSubtitleText}"/>
+                <TextBlock Text="Seus dados de acesso e senha." Style="{StaticResource PageSubtitleText}"/>
             </StackPanel>
         </Border>
 
-        <ScrollViewer Padding="28,20,28,28">
-            <StackPanel MaxWidth="460">
+        <ScrollViewer Padding="28,22,28,28">
+            <Grid MaxWidth="820">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1" CornerRadius="20" Padding="22" Margin="0,0,0,16">
+                <!-- ── Dados pessoais ── -->
+                <Border Grid.Column="0"
+                        Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderLightBrush}"
+                        BorderThickness="1" CornerRadius="16" Padding="22">
                     <StackPanel>
-                        <TextBlock Text="Dados pessoais" FontSize="14" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,4"/>
-                        <TextBlock Text="{Binding Perfil}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,16"/>
+                        <!-- Avatar + título -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
+                            <Border Width="52" Height="52" CornerRadius="26"
+                                    Background="{DynamicResource AccentLightBrush}" Margin="0,0,13,0"
+                                    VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Iniciais}"
+                                           FontSize="18" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource AccentTextBrush}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Dados pessoais" FontSize="14" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,5"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Border CornerRadius="4" Padding="8,3" Margin="0,0,8,0"
+                                            Background="{DynamicResource AccentLightBrush}">
+                                        <TextBlock Text="{Binding Perfil}" FontSize="11" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource AccentTextBrush}"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding DataCriacaoFormatada}" FontSize="11"
+                                               Foreground="{DynamicResource TextMutedBrush}"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
 
-                        <Border Background="{DynamicResource SuccessBgBrush}" BorderBrush="{DynamicResource SuccessBrush}"
+                        <!-- Feedback perfil -->
+                        <Border Background="{DynamicResource SuccessBgBrush}"
+                                BorderBrush="{DynamicResource SuccessBrush}"
                                 BorderThickness="1" CornerRadius="8" Padding="12,9" Margin="0,0,0,14"
                                 Visibility="{Binding MensagemPerfil, Converter={StaticResource NullToVis}}">
-                            <TextBlock Text="{Binding MensagemPerfil}" Foreground="{DynamicResource SuccessBrush}" FontSize="12"/>
+                            <TextBlock Text="{Binding MensagemPerfil}"
+                                       Foreground="{DynamicResource SuccessBrush}" FontSize="12"/>
                         </Border>
 
-                        <TextBlock Text="NOME" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
-                        <TextBox Style="{StaticResource InputStyle}" Height="42" Text="{Binding Nome, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,14"/>
+                        <TextBlock Text="NOME" FontSize="10" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                        <TextBox Style="{StaticResource InputStyle}" Height="38"
+                                 Text="{Binding Nome, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,14"/>
 
-                        <TextBlock Text="E-MAIL" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
-                        <TextBox Style="{StaticResource InputStyle}" Height="42" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,18"/>
+                        <TextBlock Text="E-MAIL" FontSize="10" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                        <TextBox Style="{StaticResource InputStyle}" Height="38"
+                                 Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,18"/>
 
                         <Button Content="Salvar perfil" Style="{StaticResource ButtonPrimary}"
-                                Command="{Binding SalvarPerfilCommand}" HorizontalAlignment="Left" Width="140"/>
+                                Command="{Binding SalvarPerfilCommand}"
+                                HorizontalAlignment="Left" Width="130"/>
                     </StackPanel>
                 </Border>
 
-                <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1" CornerRadius="20" Padding="22">
+                <!-- ── Trocar senha ── -->
+                <Border Grid.Column="2"
+                        Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderLightBrush}"
+                        BorderThickness="1" CornerRadius="16" Padding="22">
                     <StackPanel>
                         <TextBlock Text="Trocar senha" FontSize="14" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,16"/>
+                                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Mínimo de 8 caracteres, com um número." FontSize="11"
+                                   Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,16"/>
 
-                        <Border Background="{DynamicResource DangerBgBrush}" BorderBrush="{DynamicResource DangerBrush}"
-                                BorderThickness="1" CornerRadius="8" Padding="12,9" Margin="0,0,0,14"
+                        <!-- Feedback senha -->
+                        <Border CornerRadius="8" BorderThickness="1" Padding="12,9" Margin="0,0,0,14"
                                 Visibility="{Binding MensagemSenha, Converter={StaticResource NullToVis}}">
                             <Border.Style>
                                 <Style TargetType="Border">
+                                    <Setter Property="Background" Value="{DynamicResource DangerBgBrush}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource DangerBrush}"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding MensagemSenhaSucesso}" Value="True">
                                             <Setter Property="Background" Value="{DynamicResource SuccessBgBrush}"/>
@@ -83,29 +128,78 @@
                             </TextBlock>
                         </Border>
 
-                        <TextBlock Text="SENHA ATUAL" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
-                        <PasswordBox x:Name="SenhaAtualBox" Height="42" Margin="0,0,0,14" FontSize="13"
-                                     Background="{DynamicResource InputBgBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                        <TextBlock Text="SENHA ATUAL" FontSize="10" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                        <PasswordBox x:Name="SenhaAtualBox" Height="38" Margin="0,0,0,14" FontSize="13"
+                                     Background="{DynamicResource InputBgBrush}"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"
                                      BorderBrush="{DynamicResource InputBorderBrush}"
                                      PasswordChanged="SenhaAtualBox_PasswordChanged"/>
 
-                        <TextBlock Text="NOVA SENHA" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
-                        <PasswordBox x:Name="NovaSenhaBox" Height="42" Margin="0,0,0,14" FontSize="13"
-                                     Background="{DynamicResource InputBgBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                        <TextBlock Text="NOVA SENHA" FontSize="10" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                        <PasswordBox x:Name="NovaSenhaBox" Height="38" Margin="0,0,0,6" FontSize="13"
+                                     Background="{DynamicResource InputBgBrush}"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"
                                      BorderBrush="{DynamicResource InputBorderBrush}"
                                      PasswordChanged="NovaSenhaBox_PasswordChanged"/>
 
-                        <TextBlock Text="CONFIRMAR NOVA SENHA" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
-                        <PasswordBox x:Name="ConfirmarSenhaBox" Height="42" Margin="0,0,0,18" FontSize="13"
-                                     Background="{DynamicResource InputBgBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                        <!-- Barra de força -->
+                        <Grid Margin="0,0,0,14"
+                              Visibility="{Binding SenhaForcaLabel, Converter={StaticResource StringToVis}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ProgressBar Height="3" Value="{Binding SenhaForcaPercent, Mode=OneWay}" Maximum="100">
+                                <ProgressBar.Style>
+                                    <Style TargetType="ProgressBar">
+                                        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SenhaForcaLabel}" Value="Boa">
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding SenhaForcaLabel}" Value="Forte">
+                                                <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ProgressBar.Style>
+                            </ProgressBar>
+                            <TextBlock Grid.Column="1" Text="{Binding SenhaForcaLabel}"
+                                       FontSize="10" FontWeight="SemiBold" Margin="8,0,0,0"
+                                       VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SenhaForcaLabel}" Value="Boa">
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding SenhaForcaLabel}" Value="Forte">
+                                                <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+
+                        <TextBlock Text="CONFIRMAR NOVA SENHA" FontSize="10" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                        <PasswordBox x:Name="ConfirmarSenhaBox" Height="38" Margin="0,0,0,18" FontSize="13"
+                                     Background="{DynamicResource InputBgBrush}"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"
                                      BorderBrush="{DynamicResource InputBorderBrush}"
                                      PasswordChanged="ConfirmarSenhaBox_PasswordChanged"/>
 
                         <Button Content="Trocar senha" Style="{StaticResource ButtonPrimary}"
-                                Command="{Binding TrocarSenhaCommand}" HorizontalAlignment="Left" Width="140"/>
+                                Command="{Binding TrocarSenhaCommand}"
+                                HorizontalAlignment="Left" Width="130"/>
                     </StackPanel>
                 </Border>
-            </StackPanel>
+            </Grid>
         </ScrollViewer>
     </DockPanel>
 </UserControl>

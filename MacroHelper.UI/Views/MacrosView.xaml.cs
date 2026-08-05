@@ -1,9 +1,12 @@
+using MacroHelper.Core.Entities;
 using MacroHelper.UI.ViewModels;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using Brush = System.Windows.Media.Brush;
+using Button = System.Windows.Controls.Button;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace MacroHelper.UI.Views;
@@ -177,5 +180,68 @@ public partial class MacrosView : UserControl
         TxtConteudo.Text = Regex.Replace(TxtConteudo.Text ?? string.Empty,
             Regex.Escape(termo), substituicao, RegexOptions.IgnoreCase);
         AtualizarContagemBusca();
+    }
+
+    // ── Menu "Mais ações" da linha de macro ─────────────────────
+    private void BtnMaisAcoes_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { ContextMenu: { } menu } botao)
+        {
+            menu.PlacementTarget = botao;
+            menu.IsOpen = true;
+        }
+    }
+
+    // Ordem fixa dos itens declarados no ContextMenu (ver XAML):
+    // 0=Destaque de equipe, 1=Enviar e-mail, 2=Arquivar, 3=Restaurar, 4=Separator, 5=Excluir
+    private void MenuMaisAcoes_Opened(object sender, RoutedEventArgs e)
+    {
+        if (sender is not ContextMenu { PlacementTarget: FrameworkElement botao } menu ||
+            botao.DataContext is not Macro macro ||
+            DataContext is not MacrosViewModel vm)
+            return;
+
+        if (menu.Items[0] is MenuItem miDestaque)
+            miDestaque.Visibility = vm.IsAdmin ? Visibility.Visible : Visibility.Collapsed;
+
+        if (menu.Items[2] is MenuItem miArquivar)
+        {
+            miArquivar.Visibility = macro.Ativo ? Visibility.Visible : Visibility.Collapsed;
+            miArquivar.IsEnabled  = vm.PodeEditarTela;
+        }
+
+        if (menu.Items[3] is MenuItem miDesarquivar)
+        {
+            miDesarquivar.Visibility = macro.Ativo ? Visibility.Collapsed : Visibility.Visible;
+            miDesarquivar.IsEnabled  = vm.PodeEditarTela;
+        }
+
+        if (menu.Items[5] is MenuItem miExcluir)
+            miExcluir.IsEnabled = vm.PodeExcluirTela;
+    }
+
+    private void MenuDestaqueEquipe_Click(object sender, RoutedEventArgs e)
+        => ExecutarComandoDaLinha(sender, vm => vm.ToggleDestaqueEquipeCommand);
+
+    private void MenuEnviarEmail_Click(object sender, RoutedEventArgs e)
+        => ExecutarComandoDaLinha(sender, vm => vm.EnviarPorEmailCommand);
+
+    private void MenuArquivar_Click(object sender, RoutedEventArgs e)
+        => ExecutarComandoDaLinha(sender, vm => vm.ArquivarMacroCommand);
+
+    private void MenuDesarquivar_Click(object sender, RoutedEventArgs e)
+        => ExecutarComandoDaLinha(sender, vm => vm.DesarquivarMacroCommand);
+
+    private void MenuExcluir_Click(object sender, RoutedEventArgs e)
+        => ExecutarComandoDaLinha(sender, vm => vm.ExcluirMacroCommand);
+
+    private void ExecutarComandoDaLinha(object sender, Func<MacrosViewModel, ICommand> obterComando)
+    {
+        if (sender is not FrameworkElement { DataContext: Macro macro } ||
+            DataContext is not MacrosViewModel vm)
+            return;
+
+        var comando = obterComando(vm);
+        if (comando.CanExecute(macro)) comando.Execute(macro);
     }
 }

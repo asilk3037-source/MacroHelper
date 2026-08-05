@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
@@ -8,7 +9,7 @@ public partial class AjudaViewModel : ObservableObject
 {
     public ObservableCollection<FaqItem> Faqs { get; } = new(
     [
-        new("Como crio uma macro?", "Vá em Macros → Nova Macro, defina um atalho (ex: ;ola) e o conteúdo a ser inserido. Use Ctrl+Espaço em qualquer campo de texto para buscar e inserir uma macro rapidamente."),
+        new("Como crio uma macro?", "Em Macros, clique em Nova Macro. Defina um atalho em minúsculas com hífens (ex: chamado-recebido), o título e o conteúdo. Depois de salvar, digite o atalho em qualquer campo do Windows.", aberta: true),
         new("Como uso variáveis em uma macro?", "Insira {nome_da_variavel} no conteúdo. Se a variável não existir em Variáveis Globais, o app pergunta o valor no momento do uso."),
         new("Como funcionam as Variáveis Globais?", "São valores fixos (ex: {empresa}) substituídos automaticamente em qualquer macro, sem precisar preencher manualmente toda vez."),
         new("Como agendo uma macro?", "Em Agendamentos, escolha a macro, os dias da semana e o horário. No momento marcado, o conteúdo é copiado para a área de transferência."),
@@ -23,7 +24,22 @@ public partial class AjudaViewModel : ObservableObject
     public string VersaoApp =>
         Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.0";
 
-    public string SubtituloComVersao => $"Perguntas frequentes · SK MacroHelper v{VersaoApp}";
+    public string SubtituloComVersao => $"MacroHelper {VersaoApp} · atualizado em {DateTime.Today:dd/MM/yyyy}";
 }
 
-public record FaqItem(string Pergunta, string Resposta);
+public partial class FaqItem : ObservableObject
+{
+    public string Pergunta { get; }
+    public string Resposta { get; }
+    [ObservableProperty] private bool _aberta;
+
+    public FaqItem(string pergunta, string resposta, bool aberta = false)
+    {
+        Pergunta = pergunta;
+        Resposta = resposta;
+        Aberta   = aberta;
+    }
+
+    [RelayCommand]
+    private void ToggleAberta() => Aberta = !Aberta;
+}

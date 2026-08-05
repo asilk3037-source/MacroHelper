@@ -18,6 +18,7 @@
     </UserControl.Triggers>
 
     <Grid>
+    <!-- Painel permissões (sidebar direita) -->
     <Grid Panel.ZIndex="10">
         <Grid.Style>
             <Style TargetType="Grid">
@@ -88,7 +89,6 @@
                                 Command="{Binding AdicionarGrupoCommand}" Height="36" Padding="12,0"/>
                     </Grid>
 
-                    <!-- Permissões por tela -->
                     <Border BorderThickness="0,1,0,0" BorderBrush="{DynamicResource BorderLightBrush}" Margin="0,8,0,16" Padding="0,16,0,0">
                         <StackPanel>
                             <TextBlock Text="Permissões por tela" FontSize="13" FontWeight="Bold"
@@ -295,81 +295,142 @@
             </Grid>
         </Border>
 
-        <!-- Lista -->
         <ScrollViewer Padding="28,16,28,28">
             <StackPanel>
+                <!-- Cabeçalho de colunas -->
+                <Grid Margin="0,0,0,6" Visibility="{Binding Usuarios.Count, Converter={StaticResource ObjNullToVis}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="1" Text="PESSOA" FontSize="10" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,0"/>
+                    <TextBlock Grid.Column="2" Text="PERFIL" FontSize="10" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextMutedBrush}"/>
+                    <TextBlock Grid.Column="3" Text="STATUS" FontSize="10" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextMutedBrush}"/>
+                </Grid>
+
                 <ItemsControl ItemsSource="{Binding Usuarios}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border Style="{StaticResource CardStyle}"
-                                    Padding="18,14" Margin="0,0,0,8">
+                                    Padding="14,12" Margin="0,0,0,6">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="46"/>
+                                        <ColumnDefinition Width="50"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition Width="100"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
+
                                     <!-- Avatar -->
                                     <Border Width="38" Height="38" CornerRadius="19"
-                                            Background="{DynamicResource AccentBrush}">
+                                            Background="{DynamicResource AccentBrush}"
+                                            VerticalAlignment="Center">
                                         <TextBlock FontSize="15" FontWeight="Bold"
                                                    Foreground="White"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    Text="{Binding Nome[0]}"/>
                                     </Border>
-                                    <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Nome}" FontSize="14" FontWeight="SemiBold"
+
+                                    <!-- Nome + email -->
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,8,0">
+                                        <TextBlock Text="{Binding Nome}" FontSize="13" FontWeight="SemiBold"
                                                    Foreground="{DynamicResource TextPrimaryBrush}"/>
                                         <TextBlock Text="{Binding Email}" FontSize="11"
                                                    Foreground="{DynamicResource TextMutedBrush}" Margin="0,2,0,0"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                        <!-- Badge status ativo -->
-                                        <Border CornerRadius="5" Padding="8,3" Margin="0,0,8,0"
-                                                Background="{DynamicResource SuccessBgBrush}">
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <Ellipse Width="5" Height="5" Fill="{DynamicResource SuccessBrush}"
-                                                         VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                                <TextBlock Text="Ativo" FontSize="11" FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource SuccessBrush}"/>
-                                            </StackPanel>
-                                        </Border>
-                                        <!-- Badge perfil -->
-                                        <Border CornerRadius="5" Padding="8,3" VerticalAlignment="Center">
-                                            <Border.Style>
-                                                <Style TargetType="Border">
-                                                    <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"/>
+
+                                    <!-- Badge perfil -->
+                                    <Border Grid.Column="2" CornerRadius="5" Padding="8,3"
+                                            VerticalAlignment="Center" HorizontalAlignment="Left">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Perfil}" Value="Admin">
+                                                        <Setter Property="Background" Value="{DynamicResource SuccessBgBrush}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock Text="{Binding Perfil}" FontSize="11" FontWeight="SemiBold">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding Perfil}" Value="Admin">
-                                                            <Setter Property="Background" Value="{DynamicResource SuccessBgBrush}"/>
+                                                            <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
-                                            </Border.Style>
-                                            <TextBlock Text="{Binding Perfil}" FontSize="11" FontWeight="SemiBold">
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Border>
+
+                                    <!-- Badge status -->
+                                    <Border Grid.Column="3" CornerRadius="5" Padding="8,3"
+                                            VerticalAlignment="Center" HorizontalAlignment="Left">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Ativo}" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource SuccessBgBrush}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Ellipse Width="5" Height="5" VerticalAlignment="Center" Margin="0,0,5,0">
+                                                <Ellipse.Style>
+                                                    <Style TargetType="Ellipse">
+                                                        <Setter Property="Fill" Value="{DynamicResource TextMutedBrush}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Ativo}" Value="True">
+                                                                <Setter Property="Fill" Value="{DynamicResource SuccessBrush}"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Ellipse.Style>
+                                            </Ellipse>
+                                            <TextBlock FontSize="11" FontWeight="SemiBold">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
+                                                        <Setter Property="Text" Value="Inativo"/>
+                                                        <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Perfil}" Value="Admin">
+                                                            <DataTrigger Binding="{Binding Ativo}" Value="True">
+                                                                <Setter Property="Text" Value="Ativo"/>
                                                                 <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
                                                 </TextBlock.Style>
                                             </TextBlock>
-                                        </Border>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Ações -->
+                                    <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <!-- Engrenagem -->
                                         <Button Style="{StaticResource ButtonIconOnly}"
                                                 ToolTip="Permissões por categoria e por tela"
                                                 CommandParameter="{Binding}"
                                                 Command="{Binding DataContext.AbrirPermissoesCommand,
                                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                Margin="8,0,0,0" Width="32" Height="32">
+                                                Width="32" Height="32">
                                             <TextBlock Text="&#xE72E;" FontFamily="Segoe MDL2 Assets" FontSize="13"
                                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Button>
+                                        <!-- Editar -->
                                         <Button Style="{StaticResource ButtonIconOnly}"
                                                 ToolTip="Editar usuário"
                                                 CommandParameter="{Binding}"
@@ -382,10 +443,15 @@
                                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Button>
+
+                                        <!-- Separador vertical -->
+                                        <Rectangle Width="1" Height="20" Margin="6,0"
+                                                   Fill="{DynamicResource BorderLightBrush}" VerticalAlignment="Center"/>
+
                                         <!-- Lixeira (1º clique arma a confirmação) -->
                                         <Button ToolTip="Excluir usuário" Cursor="Hand"
                                                 Width="32" Height="32" BorderThickness="0"
-                                                Background="Transparent" Margin="2,0,0,0"
+                                                Background="Transparent"
                                                 CommandParameter="{Binding}"
                                                 IsEnabled="{Binding DataContext.PodeExcluirTela,
                                                             RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -412,8 +478,9 @@
                                                 </ControlTemplate>
                                             </Button.Template>
                                         </Button>
-                                        <!-- Confirmar / cancelar (aparece após o 1º clique, só nesta linha) -->
-                                        <StackPanel Orientation="Horizontal" Margin="2,0,0,0">
+
+                                        <!-- Confirmar / cancelar -->
+                                        <StackPanel Orientation="Horizontal">
                                             <StackPanel.Visibility>
                                                 <MultiBinding Converter="{StaticResource EqualsToVis}">
                                                     <Binding Path="DataContext.ConfirmandoExclusaoId" RelativeSource="{RelativeSource AncestorType=UserControl}"/>

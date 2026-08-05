@@ -31,6 +31,44 @@ public partial class PerfilViewModel : ObservableObject
         Perfil = u?.Perfil == "Admin" ? "Administrador" : "Usuário";
     }
 
+    public string Iniciais => string.Join("",
+        Nome.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Take(2).Select(s => char.ToUpper(s[0]).ToString()));
+
+    public string DataCriacaoFormatada =>
+        _svc.UsuarioAtual?.DataCriacao is DateTime d ? $"desde {d:dd/MM/yyyy}" : "";
+
+    public double SenhaForcaPercent
+    {
+        get
+        {
+            if (NovaSenha.Length == 0) return 0;
+            if (NovaSenha.Length < 6) return 25;
+            if (NovaSenha.Length < 8) return 50;
+            return NovaSenha.Any(char.IsDigit) && NovaSenha.Any(char.IsLetter) ? 100 : 75;
+        }
+    }
+
+    public string SenhaForcaLabel => SenhaForcaPercent switch
+    {
+        0    => "",
+        25   => "Muito fraca",
+        50   => "Fraca",
+        75   => "Boa",
+        _    => "Forte"
+    };
+
+    partial void OnNomeChanged(string value)
+    {
+        OnPropertyChanged(nameof(Iniciais));
+    }
+
+    partial void OnNovaSenhaChanged(string value)
+    {
+        OnPropertyChanged(nameof(SenhaForcaPercent));
+        OnPropertyChanged(nameof(SenhaForcaLabel));
+    }
+
     [RelayCommand]
     public async Task SalvarPerfilAsync()
     {

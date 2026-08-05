@@ -24,35 +24,117 @@
         </Border>
 
         <ScrollViewer Padding="28,20,28,28">
-            <StackPanel MaxWidth="700">
-                <ItemsControl ItemsSource="{Binding Faqs}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="18"/>
+                    <ColumnDefinition Width="300"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Coluna esquerda: FAQ accordion -->
+                <ItemsControl Grid.Column="0" ItemsSource="{Binding Faqs}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Style="{StaticResource CardStyle}" Padding="20,16" Margin="0,0,0,8">
+                            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,6">
                                 <StackPanel>
-                                    <TextBlock Text="{Binding Pergunta}" FontSize="13" FontWeight="SemiBold"
-                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
-                                    <TextBlock Text="{Binding Resposta}" FontSize="12" TextWrapping="Wrap"
-                                               Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,6,0,0"/>
+                                    <!-- Cabeçalho clicável -->
+                                    <ToggleButton IsChecked="{Binding Aberta}"
+                                                  Command="{Binding ToggleAbertaCommand}"
+                                                  Padding="20,14" Cursor="Hand"
+                                                  Background="Transparent" BorderThickness="0"
+                                                  HorizontalContentAlignment="Stretch">
+                                        <ToggleButton.Template>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Text="{Binding Pergunta}"
+                                                                   FontSize="13" FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                   TextWrapping="Wrap"/>
+                                                        <TextBlock Grid.Column="1" Margin="12,0,0,0"
+                                                                   FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                                                   Foreground="{DynamicResource TextMutedBrush}"
+                                                                   VerticalAlignment="Center">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Text" Value="&#xE76C;"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Aberta}" Value="True">
+                                                                            <Setter Property="Text" Value="&#xE70D;"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </ToggleButton.Template>
+                                    </ToggleButton>
+
+                                    <!-- Resposta (visível quando Aberta) -->
+                                    <Border Visibility="{Binding Aberta, Converter={StaticResource BoolToVis}}"
+                                            BorderThickness="0,1,0,0" BorderBrush="{DynamicResource BorderLightBrush}"
+                                            Padding="20,12,20,14">
+                                        <TextBlock Text="{Binding Resposta}" FontSize="12" TextWrapping="Wrap"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                    </Border>
                                 </StackPanel>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <Border Style="{StaticResource CardStyle}" Padding="20,16" Margin="0,8,0,0">
-                    <StackPanel>
-                        <TextBlock Text="Atalhos úteis" FontSize="13" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8"/>
-                        <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,4">
-                            <Run Text="Ctrl+Espaço" FontFamily="Consolas" FontWeight="Bold"/><Run Text=" — busca rápida de macros"/>
-                        </TextBlock>
-                        <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}">
-                            <Run Text="Ctrl+Alt+1..9" FontFamily="Consolas" FontWeight="Bold"/><Run Text=" — insere a macro favorita correspondente"/>
-                        </TextBlock>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
+                <!-- Coluna direita: sidebar -->
+                <StackPanel Grid.Column="2">
+                    <!-- Atalhos úteis -->
+                    <Border Style="{StaticResource CardStyle}" Padding="20,16" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="Atalhos úteis" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,10"/>
+                            <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,6">
+                                <Run Text="Ctrl+Espaço" FontFamily="Consolas" FontWeight="Bold"/>
+                                <Run Text=" — busca rápida de macros"/>
+                            </TextBlock>
+                            <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}">
+                                <Run Text="Ctrl+Alt+1..9" FontFamily="Consolas" FontWeight="Bold"/>
+                                <Run Text=" — insere a macro favorita correspondente"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Abrir chamado -->
+                    <Border Style="{StaticResource CardStyle}" Padding="20,16" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="Suporte" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
+                            <TextBlock Text="Encontrou um problema ou tem uma sugestão?" FontSize="11"
+                                       Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap" Margin="0,0,0,12"/>
+                            <Button Content="Abrir chamado" Style="{StaticResource ButtonSecondary}"
+                                    HorizontalAlignment="Stretch" Height="36"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Créditos -->
+                    <Border Padding="16,12" CornerRadius="10"
+                            BorderBrush="{DynamicResource BorderLightBrush}" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock FontSize="11" Foreground="{DynamicResource TextMutedBrush}"
+                                       HorizontalAlignment="Center" TextAlignment="Center">
+                                <Run Text="Desenvolvido por"/>
+                            </TextBlock>
+                            <TextBlock Text="Aline Martins" FontSize="12" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
         </ScrollViewer>
     </DockPanel>
 </UserControl>
