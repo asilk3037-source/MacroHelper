@@ -137,9 +137,11 @@
                                 </Border>
 
                                 <StackPanel Grid.Column="1">
-                                    <!-- Título + ponto de não-lida -->
+                                    <!-- Título + ponto de não-lida (ponto vem DEPOIS do título) -->
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Ellipse Width="6" Height="6" Margin="0,0,6,0" VerticalAlignment="Center"
+                                        <TextBlock Text="{Binding Titulo}" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                        <Ellipse Width="6" Height="6" Margin="7,0,0,0" VerticalAlignment="Center"
                                                  Fill="{DynamicResource AccentBrush}">
                                             <Ellipse.Style>
                                                 <Style TargetType="Ellipse">
@@ -152,8 +154,6 @@
                                                 </Style>
                                             </Ellipse.Style>
                                         </Ellipse>
-                                        <TextBlock Text="{Binding Titulo}" FontSize="13" FontWeight="SemiBold"
-                                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
                                     </StackPanel>
                                     <TextBlock Text="{Binding Mensagem}" FontSize="11" TextWrapping="Wrap"
                                                Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,2,0,0"/>

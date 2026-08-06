@@ -47,6 +47,8 @@ public partial class UsuariosViewModel : ObservableObject
     [ObservableProperty] private string? _mensagem;
     [ObservableProperty] private bool    _mensagemSucesso = true;
     [ObservableProperty] private int?    _confirmandoExclusaoId;
+    [ObservableProperty] private string  _termoBusca = string.Empty;
+    [ObservableProperty] private string  _filtroTipo = "Todos";
 
     // ── Painel de permissões (categorias + grupo + telas) ──
     [ObservableProperty] private bool     _mostrarPermissoes = false;
@@ -83,10 +85,18 @@ public partial class UsuariosViewModel : ObservableObject
         try
         {
             await AtualizarNivelTelaAsync();
-            Usuarios = new ObservableCollection<Usuario>(await _svc.ListarAsync());
+            GruposDisponiveis = new ObservableCollection<Grupo>(await _grupoService.ObterTodosAsync());
+            var grupoMap = GruposDisponiveis.ToDictionary(g => g.Id, g => g.Nome);
+            var users = await _svc.ListarAsync();
+            foreach (var u in users)
+                u.GrupoNome = u.GrupoId != null && grupoMap.TryGetValue(u.GrupoId.Value, out var n) ? n : string.Empty;
+            Usuarios = new ObservableCollection<Usuario>(users);
         }
         finally { IsLoading = false; }
     }
+
+    [RelayCommand]
+    public void FiltrarPor(string tipo) => FiltroTipo = tipo;
 
     private async Task AtualizarNivelTelaAsync()
     {

@@ -48,7 +48,7 @@
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Dados pessoais" FontSize="14" FontWeight="SemiBold"
+                                <TextBlock Text="Dados pessoais" FontSize="15" FontWeight="SemiBold"
                                            Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,5"/>
                                 <StackPanel Orientation="Horizontal">
                                     <Border CornerRadius="4" Padding="8,3" Margin="0,0,8,0"
@@ -94,7 +94,7 @@
                         BorderBrush="{DynamicResource BorderLightBrush}"
                         BorderThickness="1" CornerRadius="16" Padding="22">
                     <StackPanel>
-                        <TextBlock Text="Trocar senha" FontSize="14" FontWeight="SemiBold"
+                        <TextBlock Text="Trocar senha" FontSize="15" FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,4"/>
                         <TextBlock Text="Mínimo de 8 caracteres, com um número." FontSize="11"
                                    Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,16"/>

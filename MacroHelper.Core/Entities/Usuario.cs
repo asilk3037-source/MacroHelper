@@ -17,4 +17,8 @@ public class Usuario
     // Chaves de permissão granular separadas por vírgula (ex: "CriarMacros,EditarMacros").
     // null = usa o padrão do Perfil (Admin = tudo; Usuario = criar e usar macros, sem excluir/gerenciar).
     public string?  PermissoesCustom { get; set; }
+
+    // Propriedade de exibição — preenchida pelo VM após lookup; não persiste no banco.
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string GrupoNome { get; set; } = string.Empty;
 }
